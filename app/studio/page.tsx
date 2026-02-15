@@ -2,26 +2,59 @@
 
 import React, { useState } from "react";
 import { Oswald, Inter } from "next/font/google";
-import { Send, Zap, MessageSquare, Play, Settings, Save, ArrowLeft, ArrowRight, Layout, MessageCircle, Globe, Mail, Clock, Database, Twitter, Check, Plus } from "lucide-react";
+import { Send, Zap, MessageSquare, Play, Settings, Save, ArrowLeft, ArrowRight, Layout, MessageCircle, Globe, Mail, Clock, Database, Twitter, Check, Plus, Terminal, X, ChevronDown } from "lucide-react";
 import { createClient } from '../utils/supabase/client'; 
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
 
+// --- PRE-BUILT TEMPLATES ---
+const TEMPLATES = [
+    {
+        name: "Viral Tweeter",
+        steps: [
+            { id: 1, type: "trigger", name: "Topic Trigger", icon: "Play" },
+            { id: 2, type: "action", name: "Generate 5 Viral Hooks", icon: "Zap" },
+            { id: 3, type: "action", name: "Write Tweet Thread", icon: "Twitter" }
+        ]
+    },
+    {
+        name: "Cold Emailer",
+        steps: [
+            { id: 1, type: "trigger", name: "Company Name", icon: "Play" },
+            { id: 2, type: "action", name: "Research Company", icon: "Globe" },
+            { id: 3, type: "action", name: "Write Sales Email", icon: "Mail" }
+        ]
+    },
+    {
+        name: "Meeting Summarizer",
+        steps: [
+            { id: 1, type: "trigger", name: "Paste Transcript", icon: "MessageSquare" },
+            { id: 2, type: "action", name: "Extract Action Items", icon: "Check" },
+            { id: 3, type: "action", name: "Draft Follow-up Email", icon: "Mail" }
+        ]
+    }
+];
+
 export default function StudioPage() {
   const [messages, setMessages] = useState([
-    { role: "ai", content: "I am the PIXORVA Architect. Describe the agent you want to build." }
+    { role: "ai", content: "I am the PIXORVA Architect. Describe the agent you want to build, or select a template." }
   ]);
   const [input, setInput] = useState("");
   const [mobileTab, setMobileTab] = useState<'chat' | 'blueprint'>('chat'); 
-  const [isSaving, setIsSaving] = useState(false); 
+  const [isSaving, setIsSaving] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
+  
+  // --- LOGS STATE ---
+  const [showLogs, setShowLogs] = useState(false);
+  const [logs, setLogs] = useState<string[]>([]);
+  const [isRunning, setIsRunning] = useState(false);
 
-  // FIX 1: Store the icon as a STRING ("Play"), not a Component (<Play />)
   const [blueprintSteps, setBlueprintSteps] = useState<any[]>([
     { id: 1, type: "trigger", name: "Manual Trigger", icon: "Play" },
   ]);
 
-  // --- 1. THE BRAIN (Gemini) ---
+  // --- 1. THE BRAIN (Gemini Architect) ---
   const handleSend = async () => {
     if (!input.trim()) return;
     const userMessage = input;
@@ -44,7 +77,6 @@ export default function StudioPage() {
                     id: Date.now(), 
                     type: data.step.type, 
                     name: data.step.name, 
-                    // FIX 2: Save the string directly. Do NOT use getIcon() here.
                     icon: data.step.icon 
                 }
             ]);
@@ -55,11 +87,17 @@ export default function StudioPage() {
     }
   };
 
-  // --- 2. THE MEMORY (Supabase Save) ---
+  // --- 2. LOAD TEMPLATE ---
+  const loadTemplate = (template: any) => {
+      setBlueprintSteps(template.steps);
+      setShowTemplates(false);
+      setMessages(prev => [...prev, { role: "ai", content: `Loaded the "${template.name}" template. Click 'Test Run' to try it.` }]);
+  };
+
+  // --- 3. THE MEMORY (Supabase Save) ---
   const handleDeploy = async () => {
     setIsSaving(true);
     const supabase = createClient();
-    
     try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
@@ -67,22 +105,54 @@ export default function StudioPage() {
             setIsSaving(false);
             return;
         }
-
-        // Now this works because blueprintSteps is pure JSON (no components)
         const { error } = await supabase.from('agents').insert({
             user_id: user.id,
             name: "My New Agent", 
             steps: blueprintSteps 
         });
-
         if (error) throw error;
-
         alert("Agent Deployed Successfully! 🚀");
-        
     } catch (e: any) {
         alert("Deploy Failed: " + e.message);
     } finally {
         setIsSaving(false);
+    }
+  };
+
+  // --- 4. THE REAL ENGINE (Run Agent) ---
+  const handleRun = async () => {
+    // 1. Ask for Input
+    const userInput = prompt("Enter input for this agent (e.g. Topic, Company Name, Text):");
+    if (!userInput) return;
+
+    setIsRunning(true);
+    setShowLogs(true);
+    setLogs([`Initializing Agent with input: "${userInput}"...`]);
+
+    try {
+        const response = await fetch('/api/run-agent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ steps: blueprintSteps, input: userInput })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Show logs one by one
+            data.logs.forEach((log: string, i: number) => {
+                setTimeout(() => {
+                    setLogs(prev => [...prev, log]);
+                }, i * 50); // Fast stream
+            });
+        } else {
+            setLogs(prev => [...prev, "❌ Error: Engine Failed."]);
+        }
+
+    } catch (e) {
+        setLogs(prev => [...prev, "❌ Error: Connection Failed."]);
+    } finally {
+        setIsRunning(false);
     }
   };
 
@@ -106,6 +176,24 @@ export default function StudioPage() {
                 </div>
             </div>
         </div>
+        
+        {/* TEMPLATE BUTTON */}
+        <div className="px-4 pt-4">
+            <button onClick={() => setShowTemplates(!showTemplates)} className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl flex items-center justify-between px-4 transition">
+                <span>📂 Load Template</span>
+                <ChevronDown size={16} className={`transform transition ${showTemplates ? 'rotate-180' : ''}`} />
+            </button>
+            {showTemplates && (
+                <div className="mt-2 space-y-2 animate-in fade-in slide-in-from-top-2">
+                    {TEMPLATES.map((t, i) => (
+                        <button key={i} onClick={() => loadTemplate(t)} className="w-full text-left p-3 hover:bg-yellow-50 hover:text-yellow-700 rounded-lg text-sm font-bold border border-transparent hover:border-yellow-200 transition">
+                            {t.name}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+
         <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 bg-white pb-24 md:pb-6">
             {messages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -127,7 +215,10 @@ export default function StudioPage() {
         
         {/* ACTION TOOLBAR */}
         <div className="absolute top-4 right-4 md:top-6 md:right-6 flex gap-2 md:gap-3 z-10">
-            <button className="bg-white border-2 border-black px-3 py-2 md:px-4 rounded-lg font-bold text-xs md:text-sm hover:bg-gray-50 flex items-center gap-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-[2px] active:shadow-none transition-all">
+            <button 
+                onClick={handleRun}
+                className="bg-white border-2 border-black px-3 py-2 md:px-4 rounded-lg font-bold text-xs md:text-sm hover:bg-gray-50 flex items-center gap-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-[2px] active:shadow-none transition-all"
+            >
                 <Play size={14} /> <span className="hidden md:inline">Test Run</span>
             </button>
             <button 
@@ -139,6 +230,28 @@ export default function StudioPage() {
             </button>
         </div>
 
+        {/* LOGS CONSOLE (Pop up) */}
+        {showLogs && (
+            <div className="absolute bottom-0 left-0 right-0 bg-black text-green-400 p-6 font-mono text-sm h-96 overflow-y-auto z-20 border-t-4 border-yellow-400 shadow-2xl">
+                <div className="flex justify-between items-center mb-4 border-b border-white/20 pb-2">
+                    <span className="flex items-center gap-2 font-bold text-white"><Terminal size={16}/> AGENT EXECUTION LOGS</span>
+                    <button onClick={() => setShowLogs(false)}><X size={16} className="text-white hover:text-red-500"/></button>
+                </div>
+                <div className="space-y-4">
+                    {logs.map((log, i) => (
+                        <div key={i} className={`
+                             ${log.includes('✅') ? 'text-white bg-green-900/30 p-2 rounded' : ''}
+                             ${log.includes('❌') ? 'text-red-400' : ''}
+                             ${log.includes('⚡') ? 'text-yellow-400 mt-4' : ''}
+                        `}>
+                            {log}
+                        </div>
+                    ))}
+                    {isRunning && <div className="animate-pulse">_</div>}
+                </div>
+            </div>
+        )}
+
         <div className="flex-1 flex items-center justify-center relative z-0 overflow-auto py-20 pb-20 md:pb-20">
             <div className="flex flex-col items-center space-y-2 w-full px-4">
                 {blueprintSteps.map((step, index) => (
@@ -147,7 +260,6 @@ export default function StudioPage() {
                         <div className="w-full bg-white border-2 border-gray-200 p-4 rounded-xl shadow-sm flex items-center justify-between hover:border-black hover:shadow-md transition cursor-pointer group hover:scale-105 duration-200">
                             <div className="flex items-center gap-4">
                                 <div className={`w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center border-2 border-transparent group-hover:border-black/10 transition ${step.type === 'trigger' ? 'bg-black text-white' : 'bg-yellow-100 text-yellow-700'}`}>
-                                    {/* FIX 3: Convert String to Component HERE, only when drawing */}
                                     {getIcon(step.icon)}
                                 </div>
                                 <div><div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{step.type}</div><div className="font-bold text-base md:text-lg leading-none">{step.name}</div></div>
@@ -165,7 +277,6 @@ export default function StudioPage() {
   );
 }
 
-// Helper to map string names to Lucide Icons
 function getIcon(name: string) {
     switch (name) {
       case "Zap": return <Zap size={16} />;
@@ -177,6 +288,7 @@ function getIcon(name: string) {
       case "Clock": return <Clock size={16} />;
       case "Database": return <Database size={16} />;
       case "Twitter": return <Twitter size={16} />;
+      case "Check": return <Check size={16} />;
       default: return <Zap size={16} />;
     }
 }

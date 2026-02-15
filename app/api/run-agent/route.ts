@@ -1,48 +1,61 @@
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from 'next/server';
 
-// This is the "Engine" that runs your agent
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
+
 export async function POST(req: Request) {
   try {
-    const { steps } = await req.json();
+    const { steps, input } = await req.json();
     const logs: string[] = [];
-
-    // 1. Start the Engine
-    logs.push("🚀 Starting Agent Workflow...");
     
-    // 2. Loop through every step in the blueprint
+    // We keep a "Context" to pass data between steps (Short-term memory)
+    let context = `User Input: ${input}`;
+
+    logs.push(`🚀 Starting Workflow for: "${input}"...`);
+    
+    // Initialize Gemini Model
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
     for (const step of steps) {
         
-        // Simulate "Thinking" time (500ms)
-        await new Promise(r => setTimeout(r, 500));
+        logs.push(`⚡ Executing Step: ${step.name}...`);
 
-        // 3. Execute logic based on the Icon/Type
-        switch (step.name.toLowerCase()) {
-            case 'manual trigger':
-                logs.push(`✅ [TRIGGER] Workflow started manually.`);
-                break;
-            
-            case 'scrape twitter':
-            case 'twitter':
-                logs.push(`🐦 [ACTION] Scraping Twitter... Found 3 new tweets about "AI".`);
-                break;
-            
-            case 'check gmail':
-            case 'gmail':
-            case 'mail':
-                logs.push(`📧 [ACTION] Checking Inbox... found 1 unread email from "Boss".`);
-                break;
-            
-            case 'send email':
-                logs.push(`📤 [ACTION] Sending Reply... Email sent successfully!`);
-                break;
+        // Skip manual triggers, they are just start points
+        if (step.type === 'trigger') continue;
 
-            default:
-                logs.push(`⚡ [STEP] Executing ${step.name}... Done.`);
-                break;
+        // ASK GEMINI TO DO THE WORK
+        const prompt = `
+            You are an AI Agent executing a workflow.
+            
+            Current Context/Memory: ${context}
+            
+            YOUR TASK: Execute the step named "${step.name}".
+            - If it says "Write Tweet", write a real tweet based on the context.
+            - If it says "Summarize", summarize the context.
+            - If it says "Extract Email", find an email in the context.
+            
+            Return ONLY the result of the task. Keep it concise.
+        `;
+
+        try {
+            const result = await model.generateContent(prompt);
+            const response = result.response.text();
+            
+            // Update Context with the new result so the next step can use it
+            context += `\nResult of ${step.name}: ${response}`;
+            
+            // Log the REAL output
+            logs.push(`✅ [RESULT]: ${response}`);
+            
+            // Simulate processing time for UX
+            await new Promise(r => setTimeout(r, 800));
+
+        } catch (aiError) {
+            logs.push(`❌ Error executing step: ${step.name}`);
         }
     }
 
-    logs.push("🏁 Workflow Completed Successfully.");
+    logs.push("🏁 Workflow Completed.");
 
     return NextResponse.json({ success: true, logs });
 
