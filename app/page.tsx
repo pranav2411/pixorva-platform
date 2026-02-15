@@ -203,7 +203,7 @@ export default function Home() {
                                     </div>
                                 </div>
                                 <div className="flex gap-2">
-                                    <button className="flex-1 bg-black text-white py-2 rounded-lg font-bold text-xs uppercase hover:bg-yellow-400 hover:text-black transition">View</button>
+                                  <button className="flex-1 bg-black text-white py-2 rounded-lg ...">View</button>
                                 </div>
                             </div>
                         ))}
