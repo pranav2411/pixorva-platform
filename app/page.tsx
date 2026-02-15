@@ -11,26 +11,39 @@ const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  // --- STATE ---
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<any>(null); // New Profile State
+  const [profile, setProfile] = useState<any>(null); // Store user profile (name/avatar)
   const [myAgents, setMyAgents] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
+  // --- 1. CHECK AUTH & LOAD DATA ---
   useEffect(() => {
     const init = async () => {
       const supabase = createClient();
+      
+      // A. Check User
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
 
+      // B. If User exists, Fetch Agents AND Profile
       if (user) {
         setLoading(true);
+        
         // Fetch Agents
-        const { data: agents } = await supabase.from('agents').select('*').order('created_at', { ascending: false });
+        const { data: agents } = await supabase
+          .from('agents')
+          .select('*')
+          .order('created_at', { ascending: false });
         if (agents) setMyAgents(agents);
 
         // Fetch Profile Name
-        const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-        if (profile) setProfile(profile);
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        if (profileData) setProfile(profileData);
 
         setLoading(false);
       }
@@ -38,14 +51,19 @@ export default function Home() {
     init();
   }, []);
 
+  // --- 2. SIGN OUT LOGIC ---
   const handleSignOut = async () => {
       const supabase = createClient();
       await supabase.auth.signOut();
-      window.location.reload(); // Refresh to clear state
+      setUser(null);
+      setMyAgents([]); 
+      setProfile(null);
+      window.location.reload(); // Refresh to ensure clean state
   }
 
+  // --- 3. DELETE AGENT LOGIC ---
   const handleDelete = async (id: string) => {
-      if(!confirm("Delete this agent?")) return;
+      if(!confirm("Are you sure you want to delete this agent?")) return;
       const supabase = createClient();
       await supabase.from('agents').delete().eq('id', id);
       setMyAgents(prev => prev.filter(a => a.id !== id));
@@ -61,34 +79,51 @@ export default function Home() {
           Pixorva
         </div>
         
+        {/* Restored Tabs */}
+        <div className="hidden md:flex gap-8 text-sm font-bold uppercase tracking-wide">
+          <Link href="#" className="hover:text-yellow-600 transition">AI Employees</Link>
+          <Link href="#" className="hover:text-yellow-600 transition">Pricing</Link>
+          <Link href="/studio" className="hover:text-yellow-600 transition">Studio</Link>
+        </div>
+
         <div className="flex items-center gap-4">
           {user ? (
              <div className="flex items-center gap-3">
-                 {/* SETTINGS LINK */}
+                 {/* LINK TO SETTINGS PAGE */}
                  <Link href="/settings" className="hidden md:flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-black transition">
                     <SettingsIcon size={14} />
+                    {/* Show Name if set, otherwise show part of email */}
                     {profile?.full_name || user.email?.split('@')[0]}
                  </Link>
-                 <button onClick={handleSignOut} className="text-xs font-bold text-red-500 hover:text-red-700 ml-2"><LogOut size={16}/></button>
+                 <button onClick={handleSignOut} className="text-xs font-bold text-gray-400 hover:text-red-500 ml-2" title="Sign Out">
+                    <LogOut size={16}/>
+                 </button>
              </div>
           ) : (
-             // LOGIN LINK
+             // LINK TO LOGIN PAGE
              <Link href="/login" className="hidden md:block font-bold text-sm hover:text-yellow-600 transition">
                 Log in
              </Link>
           )}
           
-          <Link href={user ? "/studio" : "/login"} className="bg-black text-white border-2 border-black px-4 md:px-6 py-2 rounded-lg text-xs md:text-sm font-bold uppercase hover:bg-yellow-400 hover:text-black hover:border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[2px] hover:shadow-none whitespace-nowrap">
+          <Link 
+            href={user ? "/studio" : "/login"} 
+            className="bg-black text-white border-2 border-black px-4 md:px-6 py-2 rounded-lg text-xs md:text-sm font-bold uppercase hover:bg-yellow-400 hover:text-black hover:border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[2px] hover:shadow-none whitespace-nowrap"
+          >
             {user ? "Open Studio" : "Get Started"}
           </Link>
         </div>
       </nav>
 
-      {/* --- DASHBOARD --- */}
+      {/* --- HERO SECTION --- */}
       <main className="max-w-7xl mx-auto px-6 pt-20 pb-24 text-center">
         
+        {/* Dynamic Header */}
         <div className="inline-block bg-yellow-100 border-2 border-black px-4 py-1 rounded-full text-[10px] md:text-xs font-black uppercase mb-8 transform -rotate-2 hover:rotate-0 transition-transform cursor-default">
-          {user ? `Welcome Back, ${profile?.full_name?.split(' ')[0] || 'Boss'}` : "The Future of Work is Here"}
+          {user 
+            ? `Welcome Back, ${profile?.full_name?.split(' ')[0] || 'Boss'}` 
+            : "The Future of Work is Here"
+          }
         </div>
         
         <h1 className={`text-6xl md:text-9xl uppercase leading-[0.9] mb-8 ${oswald.className}`}>
@@ -98,41 +133,160 @@ export default function Home() {
           </span>
         </h1>
         
-        {/* ... (The rest of your Grid code remains the same as before) ... */}
-         {/* Just ensure you copy the grid logic from the previous working version if needed, or I can paste it if you lost it. */}
-         
-         {/* Simple version of grid for brevity: */}
-         {user && (
-             <div className="mt-16 text-left">
-                 <h2 className={`text-4xl uppercase mb-8 ${oswald.className}`}>My Agents</h2>
-                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {myAgents.map(agent => (
-                        <div key={agent.id} className="border-4 border-black p-6 rounded-xl relative group hover:shadow-[8px_8px_0px_0px_black] transition-all">
-                             <div className="flex justify-between">
-                                <div className="w-10 h-10 bg-black text-white flex items-center justify-center rounded-lg">{getIcon(agent.steps?.[0]?.icon || 'Zap')}</div>
-                                <button onClick={() => handleDelete(agent.id)} className="text-gray-300 hover:text-red-500"><Trash2 size={18}/></button>
-                             </div>
-                             <h3 className="font-black text-2xl uppercase mt-4">{agent.name}</h3>
-                             <p className="text-gray-500 text-sm font-bold mt-1">{agent.steps.length} Steps</p>
-                        </div>
-                    ))}
-                    <Link href="/studio" className="border-4 border-dashed border-gray-300 p-6 rounded-xl flex flex-col items-center justify-center hover:border-black hover:bg-gray-50 transition cursor-pointer">
-                        <Plus size={32} className="text-gray-400 mb-2"/>
-                        <span className="font-bold text-gray-500">Hire New Agent</span>
-                    </Link>
-                 </div>
-             </div>
-         )}
+        <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-12 font-medium">
+          {user 
+            ? "Your agents are running 24/7. Check their status below or build a new one."
+            : <span>Get an AI Team who runs your inbox, socials, SEO, lead generation, calls, and support. <span className="text-black font-bold"> No sick days. No drama.</span></span>
+          }
+        </p>
 
+        <div className="flex justify-center gap-4">
+            <Link href={user ? "/studio" : "/login"}>
+                <button className="bg-yellow-400 text-black border-4 border-black px-10 py-5 rounded-xl text-xl font-black uppercase tracking-wide hover:bg-yellow-300 transition-all shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none flex items-center gap-3">
+                {user ? "Build New Agent" : "Get Started"} <ArrowRight strokeWidth={3} />
+                </button>
+            </Link>
+            
+            {/* Payment / Upgrade Button (Placeholder for Phase C) */}
+            {user && (
+                <button className="bg-white text-black border-4 border-black px-10 py-5 rounded-xl text-xl font-black uppercase tracking-wide hover:bg-gray-100 transition-all hover:translate-y-1">
+                 Manage Billing
+                </button>
+            )}
+        </div>
+
+        {/* --- DYNAMIC AGENT GRID --- */}
+        <div className="mt-32">
+          
+          {/* 1. IF LOGGED IN: SHOW REAL AGENTS */}
+          {user ? (
+             <div className="text-left">
+                 <div className="flex flex-col md:flex-row justify-between items-end mb-10 px-4 border-b-4 border-black pb-4">
+                    <h2 className={`text-4xl md:text-6xl uppercase ${oswald.className}`}>My Active Agents</h2>
+                    <span className="font-bold text-gray-500">{myAgents.length} Running</span>
+                 </div>
+
+                 {loading ? (
+                    <div className="text-center py-20 font-bold text-gray-400">Syncing with Mainframe...</div>
+                 ) : myAgents.length === 0 ? (
+                    <div className="text-center py-20 border-4 border-dashed border-gray-300 rounded-3xl">
+                        <h3 className="text-2xl font-bold text-gray-400">No agents hired yet.</h3>
+                        <Link href="/studio" className="text-black underline font-bold mt-2 inline-block">Go to Studio to hire one.</Link>
+                    </div>
+                 ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {myAgents.map((agent) => (
+                             <div key={agent.id} className="group relative h-[300px] border-4 border-black bg-white rounded-2xl p-6 flex flex-col justify-between hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-y-1">
+                                <div>
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div className="w-12 h-12 bg-black text-white rounded-lg flex items-center justify-center border-2 border-black">
+                                            {getIcon(agent.steps?.[0]?.icon || "Zap")}
+                                        </div>
+                                        {/* DELETE BUTTON */}
+                                        <button onClick={() => handleDelete(agent.id)} className="text-gray-300 hover:text-red-600 transition p-1">
+                                            <Trash2 size={18}/>
+                                        </button>
+                                    </div>
+                                    <h3 className="text-2xl font-black uppercase leading-none mb-2">{agent.name}</h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        <span className="text-[10px] font-bold bg-green-100 text-green-800 px-2 py-1 rounded border border-green-200 uppercase">Active</span>
+                                        <span className="text-[10px] font-bold bg-gray-100 px-2 py-1 rounded border border-gray-200 uppercase">{agent.steps?.length || 0} Steps</span>
+                                    </div>
+                                </div>
+                                <div className="flex gap-2">
+                                    <button className="flex-1 bg-black text-white py-2 rounded-lg font-bold text-xs uppercase hover:bg-yellow-400 hover:text-black transition">View</button>
+                                </div>
+                            </div>
+                        ))}
+                         <CustomAgentCard />
+                    </div>
+                 )}
+             </div>
+          ) : (
+            
+          /* 2. IF LOGGED OUT: SHOW DEMO AGENTS */
+            <>
+              <div className="flex flex-col md:flex-row justify-between items-end mb-10 px-4 text-left md:text-center">
+                <h2 className={`text-4xl md:text-6xl uppercase ${oswald.className}`}>Meet Your Team</h2>
+                <Link href="#" className="font-bold underline decoration-4 decoration-yellow-400 hover:text-yellow-600 mt-4 md:mt-0">View all Agents</Link>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                <AgentCard name="EVA" role="Exec. Assistant" color="bg-orange-500" icon={<Briefcase size={64} className="text-white" />} desc="Manages your calendar & inbox." />
+                <AgentCard name="SONNY" role="Social Media" color="bg-green-500" icon={<Megaphone size={64} className="text-white" />} desc="Writes & posts viral content." />
+                <AgentCard name="PENNY" role="SEO Writer" color="bg-blue-600" icon={<PenTool size={64} className="text-white" />} desc="Ranks your blog #1 on Google." />
+                <AgentCard name="STAN" role="Lead Gen" color="bg-red-600" icon={<Target size={64} className="text-white" />} desc="Finds & closes new clients." />
+                <CustomAgentCard />
+              </div>
+            </>
+          )}
+
+        </div>
       </main>
+
+      {/* --- FOOTER --- */}
+      <footer className="relative z-10 bg-black text-white py-16 md:py-24 text-center overflow-hidden">
+        <div className={`absolute top-0 left-0 right-0 text-[20vw] opacity-5 font-black leading-none select-none ${oswald.className}`}>PIXORVA</div>
+        <div className="relative z-10 px-4">
+            <h2 className={`text-4xl md:text-7xl uppercase mb-8 md:mb-10 ${oswald.className}`}>Ready to Scale?</h2>
+            {/* CTA in Footer also points to Login if not logged in */}
+            <Link href={user ? "/studio" : "/login"}>
+                <button className="bg-yellow-400 text-black border-none px-10 py-4 md:px-12 md:py-5 rounded-2xl font-black uppercase hover:bg-white transition text-lg md:text-xl shadow-[0px_0px_20px_rgba(250,204,21,0.5)] w-full md:w-auto">Start Free Trial</button>
+            </Link>
+            <p className="text-gray-500 mt-10 md:mt-12 text-xs md:text-sm font-mono tracking-widest">© 2026 PIXORVA INC. // SYSTEM OPERATIONAL</p>
+        </div>
+      </footer>
     </div>
   );
 }
 
+// --- HELPERS ---
 function getIcon(name: string) {
-    // ... keep your getIcon helper ...
-     switch (name) {
+    switch (name) {
       case "Zap": return <Zap size={24} />;
+      case "Send": return <Zap size={24} />;
+      case "MessageSquare": return <MessageSquare size={24} />;
+      case "Play": return <Play size={24} />;
+      case "Globe": return <Globe size={24} />;
+      case "Mail": return <Mail size={24} />;
+      case "Clock": return <Clock size={24} />;
+      case "Database": return <Database size={24} />;
+      case "Twitter": return <Twitter size={24} />;
       default: return <Zap size={24} />;
     }
+}
+
+function AgentCard({ name, role, color, icon, desc }: any) {
+  return (
+    <div className="group relative cursor-pointer">
+      <div className={`h-64 rounded-2xl border-4 border-black ${color} flex items-center justify-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all group-hover:translate-y-1 group-hover:shadow-none overflow-hidden relative`}>
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle,_black_1px,_transparent_1px)] bg-[length:10px_10px]"></div>
+        <span className="relative z-10 transform transition-transform group-hover:scale-110 duration-300">{icon}</span>
+        <div className="absolute bottom-4 left-4 bg-white border-2 border-black px-3 py-1 rounded-md font-black uppercase text-sm transform -rotate-2 group-hover:rotate-0 transition">{name}</div>
+      </div>
+      <div className="mt-4 text-left px-2">
+        <h3 className="text-xl font-black uppercase leading-none">{role}</h3>
+        <p className="text-sm font-medium text-gray-500 mt-1">{desc}</p>
+      </div>
+    </div>
+  );
+}
+
+function CustomAgentCard() {
+  return (
+    <Link href="/studio">
+      <div className="group relative cursor-pointer">
+        <div className="h-64 rounded-2xl border-4 border-black bg-black flex flex-col items-center justify-center shadow-[8px_8px_0px_0px_rgba(100,100,100,1)] transition-all group-hover:translate-y-1 group-hover:shadow-none relative overflow-hidden">
+          <div className="absolute inset-0 opacity-20 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+          <div className="w-16 h-16 rounded-full border-2 border-white/30 flex items-center justify-center mb-4 group-hover:bg-white group-hover:text-black transition-colors text-white"><Plus size={32} strokeWidth={3} /></div>
+          <span className="text-white font-black uppercase tracking-widest text-lg z-10">Build Custom</span>
+          <span className="text-gray-500 text-xs font-bold uppercase tracking-wide mt-1 z-10">In the Studio</span>
+        </div>
+        <div className="mt-4 text-left px-2 opacity-50 group-hover:opacity-100 transition-opacity">
+          <h3 className="text-xl font-black uppercase leading-none">Your Agent</h3>
+          <p className="text-sm font-medium text-gray-500 mt-1">Design it yourself.</p>
+        </div>
+      </div>
+    </Link>
+  );
 }
