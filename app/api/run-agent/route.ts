@@ -12,13 +12,26 @@ export async function POST(req: Request) {
     const { steps, input, agentId, userId, agentRole, fileData } = await req.json();
     const role = agentRole ? agentRole.toLowerCase() : "";
 
-    // --- 1. FETCH CUSTOM INSTRUCTIONS (The Fix) ---
-    // We fetch the agent to see if it has a custom brain
+    // --- 1. FETCH CUSTOM INSTRUCTIONS (SMART FIX) ---
     let customInstructions = null;
+    
     if (agentId) {
-        const { data: agentData } = await supabase.from('agents').select('instructions').eq('id', agentId).single();
-        if (agentData && agentData.instructions) {
-            customInstructions = agentData.instructions;
+        // Fetch both instructions AND goal
+        const { data: agentData } = await supabase
+            .from('agents')
+            .select('instructions, goal')
+            .eq('id', agentId)
+            .single();
+            
+        if (agentData) {
+            // Priority 1: Use the Brain (Instructions)
+            if (agentData.instructions && agentData.instructions.length > 5) {
+                customInstructions = agentData.instructions;
+            } 
+            // Priority 2: Fallback to Goal (If user put instructions in the wrong box)
+            else if (agentData.goal && agentData.goal.length > 10) {
+                customInstructions = agentData.goal;
+            }
         }
     }
 
@@ -26,19 +39,19 @@ export async function POST(req: Request) {
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
 
     // --- 2. DEFINE SYSTEM PROMPT ---
-    let systemInstruction = "You are a helpful AI Employee.";
+    let systemInstruction = "You are a helpful AI Employee. Keep answers concise.";
 
     if (customInstructions) {
-        // PRIORITY: Use the Custom Brain if it exists (Studio Agent)
+        // Use the Custom Brain
         systemInstruction = customInstructions;
     } else {
-        // FALLBACK: Use Role-Based Logic (Marketplace Agent)
+        // FALLBACK: Use Role-Based Logic (Marketplace Agents)
         if (role.includes('react') || role.includes('frontend')) {
-            systemInstruction = "ROLE: Senior React Developer. OUTPUT: Single HTML file with Tailwind. RAW HTML ONLY (No markdown).";
+            systemInstruction = "ROLE: Senior React Developer. OUTPUT: Single HTML file with Tailwind. RAW HTML ONLY.";
         } else if (role.includes('backend') || role.includes('architect')) {
             systemInstruction = "ROLE: Backend Architect. OUTPUT: SQL Schema or Node.js code blocks.";
         } else if (role.includes('legal')) {
-            systemInstruction = "ROLE: Senior Legal Counsel. OUTPUT: Formal legal analysis or document.";
+            systemInstruction = "ROLE: Senior Legal Counsel. OUTPUT: Formal legal analysis.";
         } else if (role.includes('marketing')) {
             systemInstruction = "ROLE: Marketing Expert. OUTPUT: Viral, engaging copy.";
         }
@@ -63,7 +76,7 @@ export async function POST(req: Request) {
     const result = await model.generateContent(promptParts);
     let finalResult = result.response.text();
 
-    // Clean up if it's code
+    // Clean up code formatting
     if (finalResult.includes('<!DOCTYPE') || finalResult.includes('import React')) {
         finalResult = finalResult.replace(/```html/g, "").replace(/```/g, "").trim();
     }
@@ -85,9 +98,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, result: finalResult });
 
   } catch (error: any) {
+    console.error("Agent API Error:", error);
+    
+    // Handle Rate Limits
     if (error.message?.includes('429')) {
         return NextResponse.json({ success: true, result: "⚠️ System Busy (Rate Limit). Please wait 30s." });
     }
-    return NextResponse.json({ success: false, error: error.message });
+    
+    // RETURN THE ACTUAL ERROR (So you don't see "No response")
+    return NextResponse.json({ success: false, result: `❌ Error: ${error.message}` });
   }
 }
