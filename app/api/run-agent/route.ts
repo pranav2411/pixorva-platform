@@ -12,28 +12,43 @@ export async function POST(req: Request) {
     const { steps, input, agentId, userId, agentRole, fileData } = await req.json();
     const role = agentRole ? agentRole.toLowerCase() : "";
 
-    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
-    // Use 'flash' for speed, or 'pro' if you want deep reasoning.
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
-
-    // --- 1. SYSTEM INSTRUCTIONS ---
-    let systemInstruction = "You are a helpful AI Employee.";
-
-    // Detect Role for better output
-    if (role.includes('react') || role.includes('frontend')) {
-        systemInstruction = "ROLE: Senior React Developer. OUTPUT: Single HTML file with Tailwind. RAW HTML ONLY (No markdown).";
-    } else if (role.includes('backend') || role.includes('architect')) {
-        systemInstruction = "ROLE: Backend Architect. OUTPUT: SQL Schema or Node.js code blocks.";
-    } else if (role.includes('legal')) {
-        systemInstruction = "ROLE: Senior Legal Counsel. OUTPUT: Formal legal analysis or document.";
+    // --- 1. FETCH CUSTOM INSTRUCTIONS (The Fix) ---
+    // We fetch the agent to see if it has a custom brain
+    let customInstructions = null;
+    if (agentId) {
+        const { data: agentData } = await supabase.from('agents').select('instructions').eq('id', agentId).single();
+        if (agentData && agentData.instructions) {
+            customInstructions = agentData.instructions;
+        }
     }
 
-    // --- 2. PREPARE CONTENT ---
+    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    // --- 2. DEFINE SYSTEM PROMPT ---
+    let systemInstruction = "You are a helpful AI Employee.";
+
+    if (customInstructions) {
+        // PRIORITY: Use the Custom Brain if it exists (Studio Agent)
+        systemInstruction = customInstructions;
+    } else {
+        // FALLBACK: Use Role-Based Logic (Marketplace Agent)
+        if (role.includes('react') || role.includes('frontend')) {
+            systemInstruction = "ROLE: Senior React Developer. OUTPUT: Single HTML file with Tailwind. RAW HTML ONLY (No markdown).";
+        } else if (role.includes('backend') || role.includes('architect')) {
+            systemInstruction = "ROLE: Backend Architect. OUTPUT: SQL Schema or Node.js code blocks.";
+        } else if (role.includes('legal')) {
+            systemInstruction = "ROLE: Senior Legal Counsel. OUTPUT: Formal legal analysis or document.";
+        } else if (role.includes('marketing')) {
+            systemInstruction = "ROLE: Marketing Expert. OUTPUT: Viral, engaging copy.";
+        }
+    }
+
+    // --- 3. PREPARE PROMPT ---
     let promptParts: any[] = [
         { text: `${systemInstruction}\n\nUSER REQUEST: "${input}"` }
     ];
 
-    // --- 3. ATTACH FILE (If exists) ---
     if (fileData) {
         promptParts.push({
             inlineData: {
@@ -41,22 +56,22 @@ export async function POST(req: Request) {
                 mimeType: fileData.type
             }
         });
-        promptParts[0].text += `\n\n[CONTEXT]: A file has been attached. Please analyze it based on the user request.`;
+        promptParts[0].text += `\n\n[CONTEXT]: File attached.`;
     }
 
     // --- 4. GENERATE ---
     const result = await model.generateContent(promptParts);
     let finalResult = result.response.text();
 
-    // Clean up if it's a frontend task
-    if (role.includes('react') || role.includes('frontend')) {
+    // Clean up if it's code
+    if (finalResult.includes('<!DOCTYPE') || finalResult.includes('import React')) {
         finalResult = finalResult.replace(/```html/g, "").replace(/```/g, "").trim();
     }
 
-    // --- 5. SAVE TO DB ---
+    // --- 5. SAVE ---
     if (userId && agentId) {
         const isCode = finalResult.includes('<html') || finalResult.includes('function') || finalResult.includes('CREATE TABLE');
-        const saveInput = fileData ? `[File: ${fileData.name}] ${input}` : input;
+        const saveInput = fileData ? `[File] ${input}` : input;
         
         await supabase.from('tasks').insert({
             user_id: userId,
@@ -70,8 +85,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, result: finalResult });
 
   } catch (error: any) {
-    console.error("API Error:", error);
-    // Handle Rate Limits gracefully
     if (error.message?.includes('429')) {
         return NextResponse.json({ success: true, result: "⚠️ System Busy (Rate Limit). Please wait 30s." });
     }
