@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Oswald, Inter } from "next/font/google";
-import { ArrowRight, Briefcase, Megaphone, PenTool, Target, Plus, Zap, Trash2, Play, MessageSquare, Globe, Mail, Clock, Database, Twitter, Settings as SettingsIcon, LogOut } from "lucide-react";
+// FIXED: Added 'Send' to the imports below
+import { ArrowRight, Briefcase, Megaphone, PenTool, Target, Plus, Zap, Trash2, Play, MessageSquare, Globe, Mail, Clock, Database, Twitter, Settings as SettingsIcon, LogOut, Send } from "lucide-react";
 import { createClient } from './utils/supabase/client';
 import { User } from '@supabase/supabase-js';
 
@@ -81,11 +82,10 @@ export default function Home() {
         
         {/* Restored Tabs */}
         <div className="hidden md:flex gap-8 text-sm font-bold uppercase tracking-wide">
-  {/* Update this href */}
-  <Link href="/employees" className="hover:text-yellow-600 transition">AI Employees</Link>
-  <Link href="#" className="hover:text-yellow-600 transition">Pricing</Link>
-  <Link href="/studio" className="hover:text-yellow-600 transition">Studio</Link>
-</div>
+          <Link href="/employees" className="hover:text-yellow-600 transition">AI Employees</Link>
+          <Link href="#" className="hover:text-yellow-600 transition">Pricing</Link>
+          <Link href="/studio" className="hover:text-yellow-600 transition">Studio</Link>
+        </div>
 
         <div className="flex items-center gap-4">
           {user ? (
@@ -189,8 +189,16 @@ export default function Home() {
                                         </button>
                                     </div>
                                     <h3 className="text-2xl font-black uppercase leading-none mb-2">{agent.name}</h3>
+                                    
+                                    {/* --- AGENT TAGS --- */}
                                     <div className="flex flex-wrap gap-2">
                                         <span className="text-[10px] font-bold bg-green-100 text-green-800 px-2 py-1 rounded border border-green-200 uppercase">Active</span>
+                                        
+                                        {/* SCHEDULE BADGE */}
+                                        <span className="text-[10px] font-bold bg-blue-100 text-blue-800 px-2 py-1 rounded border border-blue-200 uppercase flex items-center gap-1">
+                                            <Clock size={10} /> {agent.schedule || 'Manual'}
+                                        </span>
+                                        
                                         <span className="text-[10px] font-bold bg-gray-100 px-2 py-1 rounded border border-gray-200 uppercase">{agent.steps?.length || 0} Steps</span>
                                     </div>
                                 </div>
@@ -245,7 +253,7 @@ export default function Home() {
 function getIcon(name: string) {
     switch (name) {
       case "Zap": return <Zap size={24} />;
-      case "Send": return <Zap size={24} />;
+      case "Send": return <Send size={24} />;
       case "MessageSquare": return <MessageSquare size={24} />;
       case "Play": return <Play size={24} />;
       case "Globe": return <Globe size={24} />;

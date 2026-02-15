@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Oswald, Inter } from "next/font/google";
-import { Send, Zap, MessageSquare, Play, Settings, Save, ArrowLeft, ArrowRight, Layout, MessageCircle, Globe, Mail, Clock, Database, Twitter, Check, Plus, Terminal, X, ChevronDown } from "lucide-react";
+import { Send, Zap, MessageSquare, Play, Settings, Save, ArrowLeft, ArrowRight, Layout, MessageCircle, Globe, Mail, Clock, Database, Twitter, Check, Plus, Terminal, X, ChevronDown, Calendar } from "lucide-react";
 import { createClient } from '../utils/supabase/client'; 
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
@@ -25,14 +25,6 @@ const TEMPLATES = [
             { id: 2, type: "action", name: "Research Company", icon: "Globe" },
             { id: 3, type: "action", name: "Write Sales Email", icon: "Mail" }
         ]
-    },
-    {
-        name: "Meeting Summarizer",
-        steps: [
-            { id: 1, type: "trigger", name: "Paste Transcript", icon: "MessageSquare" },
-            { id: 2, type: "action", name: "Extract Action Items", icon: "Check" },
-            { id: 3, type: "action", name: "Draft Follow-up Email", icon: "Mail" }
-        ]
     }
 ];
 
@@ -45,6 +37,10 @@ export default function StudioPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   
+  // --- SCHEDULE STATE ---
+  const [schedule, setSchedule] = useState("Manual"); // Default
+  const [showSchedule, setShowSchedule] = useState(false);
+
   // --- LOGS STATE ---
   const [showLogs, setShowLogs] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
@@ -87,14 +83,13 @@ export default function StudioPage() {
     }
   };
 
-  // --- 2. LOAD TEMPLATE ---
   const loadTemplate = (template: any) => {
       setBlueprintSteps(template.steps);
       setShowTemplates(false);
-      setMessages(prev => [...prev, { role: "ai", content: `Loaded the "${template.name}" template. Click 'Test Run' to try it.` }]);
+      setMessages(prev => [...prev, { role: "ai", content: `Loaded the "${template.name}" template.` }]);
   };
 
-  // --- 3. THE MEMORY (Supabase Save) ---
+  // --- 2. THE MEMORY (Supabase Save) ---
   const handleDeploy = async () => {
     setIsSaving(true);
     const supabase = createClient();
@@ -106,36 +101,33 @@ export default function StudioPage() {
             return;
         }
 
-        // --- FIX: SANITIZE STEPS ---
-        // We ensure "icon" is just a string name, not a React component
+        // SANITIZE STEPS (Fix circular JSON)
         const cleanSteps = blueprintSteps.map(step => ({
             id: step.id,
             type: step.type,
             name: step.name,
-            icon: typeof step.icon === 'string' ? step.icon : 'Zap' // Force string
+            icon: typeof step.icon === 'string' ? step.icon : 'Zap'
         }));
 
         const { error } = await supabase.from('agents').insert({
             user_id: user.id,
             name: "My New Agent", 
-            steps: cleanSteps 
+            steps: cleanSteps,
+            schedule: schedule // Saving the schedule!
         });
 
         if (error) throw error;
-        alert("Agent Deployed Successfully! 🚀");
-
+        alert(`Agent Deployed! It will run: ${schedule} 🚀`);
     } catch (e: any) {
-        // Show the actual error message to help debug
         alert("Deploy Failed: " + e.message);
     } finally {
         setIsSaving(false);
     }
   };
 
-  // --- 4. THE REAL ENGINE (Run Agent) ---
+  // --- 3. THE ENGINE ---
   const handleRun = async () => {
-    // 1. Ask for Input
-    const userInput = prompt("Enter input for this agent (e.g. Topic, Company Name, Text):");
+    const userInput = prompt("Enter input for this agent:");
     if (!userInput) return;
 
     setIsRunning(true);
@@ -150,18 +142,13 @@ export default function StudioPage() {
         });
         
         const data = await response.json();
-        
         if (data.success) {
-            // Show logs one by one
             data.logs.forEach((log: string, i: number) => {
-                setTimeout(() => {
-                    setLogs(prev => [...prev, log]);
-                }, i * 50); // Fast stream
+                setTimeout(() => setLogs(prev => [...prev, log]), i * 50);
             });
         } else {
             setLogs(prev => [...prev, "❌ Error: Engine Failed."]);
         }
-
     } catch (e) {
         setLogs(prev => [...prev, "❌ Error: Connection Failed."]);
     } finally {
@@ -228,6 +215,23 @@ export default function StudioPage() {
         
         {/* ACTION TOOLBAR */}
         <div className="absolute top-4 right-4 md:top-6 md:right-6 flex gap-2 md:gap-3 z-10">
+            
+            {/* SCHEDULE DROPDOWN */}
+            <div className="relative">
+                <button onClick={() => setShowSchedule(!showSchedule)} className="bg-white border-2 border-black px-3 py-2 md:px-4 rounded-lg font-bold text-xs md:text-sm hover:bg-gray-50 flex items-center gap-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-[2px] active:shadow-none transition-all">
+                    <Clock size={14} /> <span className="hidden md:inline">{schedule}</span>
+                </button>
+                {showSchedule && (
+                    <div className="absolute top-full mt-2 right-0 w-48 bg-white border-2 border-black rounded-xl shadow-xl z-50 overflow-hidden">
+                        {["Manual", "Every Hour", "Daily @ 9am", "Weekly"].map(opt => (
+                            <button key={opt} onClick={() => { setSchedule(opt); setShowSchedule(false); }} className="w-full text-left px-4 py-2 hover:bg-yellow-100 text-sm font-bold border-b border-gray-100 last:border-0">
+                                {opt}
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
+
             <button 
                 onClick={handleRun}
                 className="bg-white border-2 border-black px-3 py-2 md:px-4 rounded-lg font-bold text-xs md:text-sm hover:bg-gray-50 flex items-center gap-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-[2px] active:shadow-none transition-all"
@@ -243,7 +247,7 @@ export default function StudioPage() {
             </button>
         </div>
 
-        {/* LOGS CONSOLE (Pop up) */}
+        {/* LOGS CONSOLE */}
         {showLogs && (
             <div className="absolute bottom-0 left-0 right-0 bg-black text-green-400 p-6 font-mono text-sm h-96 overflow-y-auto z-20 border-t-4 border-yellow-400 shadow-2xl">
                 <div className="flex justify-between items-center mb-4 border-b border-white/20 pb-2">
@@ -252,11 +256,7 @@ export default function StudioPage() {
                 </div>
                 <div className="space-y-4">
                     {logs.map((log, i) => (
-                        <div key={i} className={`
-                             ${log.includes('✅') ? 'text-white bg-green-900/30 p-2 rounded' : ''}
-                             ${log.includes('❌') ? 'text-red-400' : ''}
-                             ${log.includes('⚡') ? 'text-yellow-400 mt-4' : ''}
-                        `}>
+                        <div key={i} className={`${log.includes('✅') ? 'text-white bg-green-900/30 p-2 rounded' : ''} ${log.includes('❌') ? 'text-red-400' : ''} ${log.includes('⚡') ? 'text-yellow-400 mt-4' : ''}`}>
                             {log}
                         </div>
                     ))}
@@ -265,6 +265,7 @@ export default function StudioPage() {
             </div>
         )}
 
+        {/* GRAPH */}
         <div className="flex-1 flex items-center justify-center relative z-0 overflow-auto py-20 pb-20 md:pb-20">
             <div className="flex flex-col items-center space-y-2 w-full px-4">
                 {blueprintSteps.map((step, index) => (
