@@ -133,44 +133,35 @@ export default function EmployeesPage() {
   const [filter, setFilter] = useState("All");
   const router = useRouter();
 
-  // ... imports remain the same
-
   const handleHire = async (employee: any) => {
     setHiring(employee.id);
     const supabase = createClient();
 
     try {
         const { data: { user } } = await supabase.auth.getUser();
-        
-        // 1. Force Login
-        if (!user) { 
-            router.push("/login"); 
-            return; 
+        if (!user) {
+            alert("Please log in to hire employees.");
+            router.push("/login");
+            return;
         }
 
-        // 2. CALL STRIPE API
-        const response = await fetch('/api/checkout', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                agentId: employee.id,
-                agentName: employee.name,
-                userId: user.id
-            })
+        const { error } = await supabase.from('agents').insert({
+            user_id: user.id,
+            name: `${employee.name} (${employee.role})`, 
+            steps: employee.steps,
+            schedule: 'Manual',
+            icon: employee.icon // Save icon for dashboard
         });
 
-        const data = await response.json();
+        if (error) throw error;
 
-        // 3. REDIRECT TO STRIPE
-        if (data.url) {
-            window.location.href = data.url;
-        } else {
-            alert("Payment Error: " + data.error);
-            setHiring(null);
-        }
+        setTimeout(() => {
+            alert(`${employee.name} has joined your team!`);
+            router.push("/");
+        }, 500);
 
     } catch (e: any) {
-        alert("Error: " + e.message);
+        alert("Hiring failed: " + e.message);
         setHiring(null);
     }
   };
