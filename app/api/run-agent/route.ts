@@ -12,7 +12,7 @@ export async function POST(req: Request) {
   try {
     const { steps, input, agentId, userId } = await req.json(); // Accept IDs
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     // --- SMART PROMPT INJECTION ---
     // If the input asks for code/website, force HTML output for the previewer
