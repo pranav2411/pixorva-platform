@@ -3,8 +3,11 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Oswald, Inter } from "next/font/google";
-// FIXED: Added all necessary icons including Marketplace specific ones
-import { ArrowRight, Briefcase, Megaphone, PenTool, Target, Plus, Zap, Trash2, Play, MessageSquare, Globe, Mail, Clock, Database, Twitter, Settings as SettingsIcon, LogOut, Send, Code, ShieldCheck, DollarSign, User as UserIcon } from "lucide-react";
+import { 
+  ArrowRight, Briefcase, Megaphone, PenTool, Target, Plus, Zap, Trash2, 
+  Play, MessageSquare, Globe, Mail, Clock, Database, Twitter, 
+  Settings as SettingsIcon, LogOut, Send, Code, ShieldCheck, DollarSign, User as UserIcon 
+} from "lucide-react";
 import { createClient } from './utils/supabase/client';
 import { User } from '@supabase/supabase-js';
 
@@ -53,17 +56,14 @@ export default function Home() {
       window.location.reload(); 
   }
 
-  // --- 3. DELETE AGENT (FIXED) ---
+  // --- 3. DELETE AGENT ---
   const handleDelete = async (id: string) => {
       if(!confirm("Permanently delete this agent?")) return;
-      
       const supabase = createClient();
       const { error } = await supabase.from('agents').delete().eq('id', id);
-      
       if (error) {
-          alert("Error deleting agent: " + error.message); // Now we see why!
+          alert("Error: " + error.message);
       } else {
-          // Update UI immediately
           setMyAgents(prev => prev.filter(a => a.id !== id));
       }
   }
@@ -102,7 +102,7 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* DASHBOARD */}
+      {/* HERO SECTION */}
       <main className="max-w-7xl mx-auto px-6 pt-20 pb-24 text-center">
         
         <div className="inline-block bg-yellow-100 border-2 border-black px-4 py-1 rounded-full text-[10px] md:text-xs font-black uppercase mb-8 transform -rotate-2 hover:rotate-0 transition-transform cursor-default">
@@ -115,10 +115,26 @@ export default function Home() {
              {user ? "Workforce." : "AI Employee."}
           </span>
         </h1>
+
+        <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-12 font-medium">
+          {user 
+            ? "Your agents are running 24/7. Check their status below or build a new one."
+            : <span>Get an AI Team who runs your inbox, socials, SEO, lead generation, calls, and support. <span className="text-black font-bold"> No sick days. No drama.</span></span>
+          }
+        </p>
+
+        <div className="flex justify-center gap-4">
+            <Link href={user ? "/studio" : "/login"}>
+                <button className="bg-yellow-400 text-black border-4 border-black px-10 py-5 rounded-xl text-xl font-black uppercase tracking-wide hover:bg-yellow-300 transition-all shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none flex items-center gap-3">
+                {user ? "Build New Agent" : "Get Started"} <ArrowRight strokeWidth={3} />
+                </button>
+            </Link>
+        </div>
         
-        {/* AGENT GRID */}
+        {/* AGENT GRID SECTION */}
         <div className="mt-32">
           {user ? (
+             /* --- LOGGED IN VIEW: REAL AGENTS --- */
              <div className="text-left">
                  <div className="flex flex-col md:flex-row justify-between items-end mb-10 px-4 border-b-4 border-black pb-4">
                     <h2 className={`text-4xl md:text-6xl uppercase ${oswald.className}`}>My Active Agents</h2>
@@ -139,7 +155,7 @@ export default function Home() {
                                 <div>
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="w-12 h-12 bg-black text-white rounded-lg flex items-center justify-center border-2 border-black">
-                                            {getIcon(agent.steps?.[0]?.icon || "Zap")}
+                                            {getIcon(agent.steps?.[0]?.icon || agent.icon || "Zap")}
                                         </div>
                                         <button onClick={() => handleDelete(agent.id)} className="text-gray-300 hover:text-red-600 transition p-1">
                                             <Trash2 size={18}/>
@@ -155,7 +171,6 @@ export default function Home() {
                                     </div>
                                 </div>
 
-                                {/* FIX: THIS BUTTON NOW LINKS TO WORKSTATION */}
                                 <div className="flex gap-2">
                                     <Link href={`/agent/${agent.id}`} className="flex-1">
                                         <button className="w-full bg-black text-white py-3 rounded-lg font-bold text-xs uppercase hover:bg-yellow-400 hover:text-black transition flex items-center justify-center gap-2">
@@ -170,13 +185,37 @@ export default function Home() {
                  )}
              </div>
           ) : (
-             <div className="text-center py-20">
-                 <h2 className="text-2xl font-bold mb-4">Log in to see your team.</h2>
-                 <Link href="/login" className="bg-black text-white px-6 py-3 rounded-lg font-bold">Log In</Link>
-             </div>
+             /* --- LOGGED OUT VIEW: DEMO AGENTS --- */
+             /* THIS IS WHAT WAS MISSING! */
+            <>
+              <div className="flex flex-col md:flex-row justify-between items-end mb-10 px-4 text-left md:text-center">
+                <h2 className={`text-4xl md:text-6xl uppercase ${oswald.className}`}>Meet Your Team</h2>
+                <Link href="/employees" className="font-bold underline decoration-4 decoration-yellow-400 hover:text-yellow-600 mt-4 md:mt-0">View all Agents</Link>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                <AgentCard name="EVA" role="Exec. Assistant" color="bg-orange-500" icon={<Briefcase size={64} className="text-white" />} desc="Manages your calendar & inbox." />
+                <AgentCard name="SONNY" role="Social Media" color="bg-green-500" icon={<Megaphone size={64} className="text-white" />} desc="Writes & posts viral content." />
+                <AgentCard name="PENNY" role="SEO Writer" color="bg-blue-600" icon={<PenTool size={64} className="text-white" />} desc="Ranks your blog #1 on Google." />
+                <AgentCard name="STAN" role="Lead Gen" color="bg-red-600" icon={<Target size={64} className="text-white" />} desc="Finds & closes new clients." />
+                <CustomAgentCard />
+              </div>
+            </>
           )}
         </div>
       </main>
+
+      {/* FOOTER */}
+      <footer className="relative z-10 bg-black text-white py-16 md:py-24 text-center overflow-hidden">
+        <div className={`absolute top-0 left-0 right-0 text-[20vw] opacity-5 font-black leading-none select-none ${oswald.className}`}>PIXORVA</div>
+        <div className="relative z-10 px-4">
+            <h2 className={`text-4xl md:text-7xl uppercase mb-8 md:mb-10 ${oswald.className}`}>Ready to Scale?</h2>
+            <Link href={user ? "/studio" : "/login"}>
+                <button className="bg-yellow-400 text-black border-none px-10 py-4 md:px-12 md:py-5 rounded-2xl font-black uppercase hover:bg-white transition text-lg md:text-xl shadow-[0px_0px_20px_rgba(250,204,21,0.5)] w-full md:w-auto">Start Free Trial</button>
+            </Link>
+            <p className="text-gray-500 mt-10 md:mt-12 text-xs md:text-sm font-mono tracking-widest">© 2026 PIXORVA INC. // SYSTEM OPERATIONAL</p>
+        </div>
+      </footer>
     </div>
   );
 }
@@ -198,6 +237,9 @@ function getIcon(name: string) {
       case "Clock": return <Clock size={24} />;
       case "Database": return <Database size={24} />;
       case "Twitter": return <Twitter size={24} />;
+      case "PenTool": return <PenTool size={24} />;
+      case "Target": return <Target size={24} />;
+      case "Briefcase": return <Briefcase size={24} />;
       default: return <Zap size={24} />;
     }
 }
@@ -209,6 +251,7 @@ function CustomAgentCard() {
         <div className="h-full rounded-2xl border-4 border-black bg-black flex flex-col items-center justify-center shadow-[8px_8px_0px_0px_rgba(100,100,100,1)] transition-all group-hover:translate-y-1 group-hover:shadow-none relative overflow-hidden">
           <div className="w-16 h-16 rounded-full border-2 border-white/30 flex items-center justify-center mb-4 text-white"><Plus size={32} /></div>
           <span className="text-white font-black uppercase tracking-widest text-lg z-10">Build Custom</span>
+          <span className="text-gray-500 text-xs font-bold uppercase tracking-wide mt-1 z-10">In the Studio</span>
         </div>
       </div>
     </Link>
@@ -229,4 +272,4 @@ function AgentCard({ name, role, color, icon, desc }: any) {
         </div>
       </div>
     );
-  }
+}
