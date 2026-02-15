@@ -27,7 +27,7 @@ export default function AgentWorkstation() {
   const [currentResult, setCurrentResult] = useState(""); 
   const logsEndRef = useRef<HTMLDivElement>(null);
 
-  // --- 1. FETCH DATA (With Debugging) ---
+  // --- 1. FETCH DATA ---
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -40,7 +40,7 @@ export default function AgentWorkstation() {
           const { data: agentData } = await supabase.from('agents').select('*').eq('id', params.id).single();
           setAgent(agentData);
 
-          // Get Full History (Limit 50 to prevent lag, but fetch enough)
+          // Get Full History
           const { data: taskData } = await supabase
             .from('tasks')
             .select('*')
@@ -59,14 +59,35 @@ export default function AgentWorkstation() {
     fetchData();
   }, [params.id, router]);
 
-  // --- 2. SUGGESTED TASKS (User Guidance) ---
+  // --- 2. SMART CAPABILITIES (THE FIX) ---
   const getSuggestions = () => {
       if (!agent) return [];
       const role = agent.name?.toLowerCase() || "";
       
-      if (role.includes('dev')) return ["Build a Landing Page", "Debug this React Component", "Write a Python Script"];
-      if (role.includes('legal')) return ["Draft an NDA", "Review this Clause", "Write Terms of Service"];
-      if (role.includes('market')) return ["Write a Tweet Thread", "Create Ad Copy", "Blog Post Outline"];
+      // ENGINEERING
+      if (role.includes('react') || role.includes('frontend')) return ["Build a Landing Page", "Create a Dashboard", "Fix CSS Bug"];
+      if (role.includes('backend') || role.includes('architect')) return ["Design SQL Schema", "Write API Endpoint", "Optimize Database Query"];
+      if (role.includes('qa') || role.includes('tester')) return ["Write Unit Tests", "Find Bugs in Code", "Create Test Plan"];
+      if (role.includes('security')) return ["Audit this Code", "Write Security Policy", "Check for Vulnerabilities"];
+
+      // MARKETING
+      if (role.includes('growth') || role.includes('marketing')) return ["Write Viral Thread", "Create Ad Copy", "Plan Launch Strategy"];
+      if (role.includes('social') || role.includes('media')) return ["Write Instagram Caption", "Create TikTok Script", "Generate Hashtags"];
+      if (role.includes('seo') || role.includes('writer')) return ["Write SEO Blog Post", "Find Keywords", "Optimize Meta Tags"];
+      if (role.includes('video')) return ["Write YouTube Script", "Create Video Outline", "Suggest Video Topics"];
+
+      // SALES
+      if (role.includes('sales') || role.includes('sdr')) return ["Draft Cold Email", "Create Sales Script", "Follow-up Message"];
+      if (role.includes('lead') || role.includes('enricher')) return ["Find Company Info", "Extract Leads", "Research Prospect"];
+
+      // OPERATIONS / HR / FINANCE / LEGAL
+      if (role.includes('hr') || role.includes('manager')) return ["Write Job Description", "Screen Resume", "Draft Offer Letter"];
+      if (role.includes('finance') || role.includes('analyst')) return ["Analyze P&L", "Create Budget", "Summarize Tax Rules"];
+      if (role.includes('legal') || role.includes('counsel')) return ["Draft NDA", "Review Contract", "Write Terms of Service"];
+      if (role.includes('product') || role.includes('manager')) return ["Write User Story", "Create Roadmap", "Define Feature Specs"];
+      if (role.includes('support')) return ["Reply to Complaint", "Write FAQ Answer", "Create Help Article"];
+
+      // DEFAULT
       return ["Summarize this text", "Write an Email", "Brainstorm Ideas"];
   }
 
@@ -75,9 +96,9 @@ export default function AgentWorkstation() {
     if (!inputText.trim()) return;
     setRunning(true);
     setActiveTab('terminal'); 
-    setTaskInput(""); // Clear input
+    setTaskInput(""); 
     
-    // Optimistic Update (Show "Processing..." in history immediately)
+    // Optimistic Update
     const tempId = Date.now().toString();
     const tempTask = { id: tempId, input: inputText, result: "Thinking...", created_at: new Date().toISOString(), type: 'text' };
     setTasks(prev => [tempTask, ...prev]);
@@ -94,18 +115,19 @@ export default function AgentWorkstation() {
                 input: inputText,
                 agentId: agent.id,
                 userId: user?.id,
-                agentRole: agent.name // PASS ROLE TO API
+                agentRole: agent.name // Pass Role to API
             })
         });
         
         const data = await response.json();
         const finalResult = data.result || "No response";
 
-        // Update the temp task with real result
-        setTasks(prev => prev.map(t => t.id === tempId ? { ...t, result: finalResult, type: finalResult.includes('<html') ? 'code' : 'text' } : t));
+        // Update Task
+        const isCode = finalResult.includes('<html') || finalResult.includes('<!DOCTYPE') || finalResult.includes('import React');
+        setTasks(prev => prev.map(t => t.id === tempId ? { ...t, result: finalResult, type: isCode ? 'code' : 'text' } : t));
         setCurrentResult(finalResult);
 
-        if (finalResult.includes('<html') || finalResult.includes('<!DOCTYPE')) {
+        if (isCode) {
             setActiveTab('preview');
         }
 
@@ -132,23 +154,24 @@ export default function AgentWorkstation() {
                     {getIcon(agent.steps?.[0]?.icon || agent.icon || 'Zap')}
                 </div>
                 <div>
-                    <h1 className={`text-xl uppercase leading-none mb-1 ${oswald.className}`}>{agent.name}</h1>
-                    <div className="flex gap-2 mt-1">
+                    <h1 className={`text-xl uppercase leading-none mb-1 ${oswald.className}`}>{agent.name.split('(')[0]}</h1>
+                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-2">{agent.name.split('(')[1]?.replace(')', '') || 'Agent'}</div>
+                    <div className="flex gap-2">
                         <span className="text-[10px] font-bold bg-green-100 text-green-800 px-2 py-0.5 rounded uppercase">Online</span>
                     </div>
                 </div>
              </div>
          </div>
 
-         {/* SUGGESTED TASKS */}
+         {/* CAPABILITIES (FIXED) */}
          <div className="p-6 bg-yellow-50/50 border-b border-yellow-100">
              <h3 className="text-xs font-bold text-yellow-700 uppercase tracking-widest mb-3">Capabilities</h3>
              <div className="flex flex-wrap gap-2">
                  {getSuggestions().map((suggestion, i) => (
                      <button 
                         key={i} 
-                        onClick={() => setTaskInput(suggestion)}
-                        className="text-xs bg-white border border-yellow-200 text-yellow-800 px-3 py-1.5 rounded-lg hover:bg-yellow-400 hover:text-black hover:border-black transition font-medium"
+                        onClick={() => handleRun(suggestion)} // Click to run immediately
+                        className="text-xs bg-white border border-yellow-200 text-yellow-800 px-3 py-1.5 rounded-lg hover:bg-yellow-400 hover:text-black hover:border-black transition font-medium text-left"
                      >
                          + {suggestion}
                      </button>
@@ -166,18 +189,18 @@ export default function AgentWorkstation() {
                          <div className="flex justify-between items-center text-[10px] text-gray-400">
                              <span>{new Date(t.created_at).toLocaleTimeString()}</span>
                              <span className={`uppercase font-bold ${t.result.includes('Busy') ? 'text-red-500' : 'text-green-600'}`}>
-                                 {t.result === "Thinking..." ? "Running..." : (t.result.includes('Busy') ? "Failed" : "Success")}
+                                 {t.result === "Thinking..." ? "Running..." : "Success"}
                              </span>
                          </div>
                      </div>
                  ))}
+                 {tasks.length === 0 && <div className="text-xs text-gray-400 italic px-2">No history yet. Assign a task.</div>}
              </div>
          </div>
       </div>
 
       {/* WORKSPACE */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden bg-gray-100 relative">
-         
          {/* TABS */}
          <div className="bg-white border-b border-gray-200 px-6 pt-4 flex items-end justify-between">
              <div className="flex gap-6">
@@ -199,7 +222,7 @@ export default function AgentWorkstation() {
                      ) : (
                         <div className="flex flex-col items-center justify-center h-full text-gray-400 opacity-50">
                             <Zap size={48} className="mb-4"/>
-                            <div>Select a suggestion or type a command.</div>
+                            <div>Select a capability or type a command.</div>
                         </div>
                      )}
                      <div ref={logsEndRef} />

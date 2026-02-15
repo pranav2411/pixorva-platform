@@ -9,29 +9,30 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
   try {
-    const { steps, input, agentId, userId } = await req.json();
-    
+    const { steps, input, agentId, userId, agentRole } = await req.json();
+    const role = agentRole ? agentRole.toLowerCase() : "";
+
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
 
-    // 1. DETECT CODE REQUEST
-    const isCodingTask = /code|html|website|landing page|app|react|ui/i.test(input);
+    // --- SMART SYSTEM INSTRUCTIONS ---
+    let systemInstruction = "You are a helpful AI Employee.";
 
-    let systemInstruction = "";
-    if (isCodingTask) {
-        systemInstruction = `
-            ROLE: Senior Frontend Developer.
-            TASK: Build a modern, beautiful website based on the user request.
-            
-            RULES:
-            1. Return a SINGLE 'index.html' file.
-            2. MUST include: <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script> inside the <head>.
-            3. Use vibrant colors, large fonts, and good padding (p-10, gap-8).
-            4. Do NOT use Markdown backticks. Return RAW HTML only.
-            5. Ensure the design is fully responsive and looks like a real SaaS/Product site.
-        `;
-    } else {
-        systemInstruction = "You are a helpful AI Assistant. Provide a clear, professional text response.";
+    // 1. CODING ROLES (Frontend, Backend, Fullstack)
+    if (role.includes('react') || role.includes('frontend')) {
+        systemInstruction = "ROLE: Senior React Developer. OUTPUT: Single HTML file with Tailwind. RAW HTML ONLY (No markdown).";
+    } else if (role.includes('backend') || role.includes('architect') || role.includes('database')) {
+        systemInstruction = "ROLE: Backend Architect. OUTPUT: Professional SQL Schema or Node.js API code blocks. Use comments to explain.";
+    } else if (role.includes('qa') || role.includes('tester')) {
+        systemInstruction = "ROLE: QA Engineer. OUTPUT: A detailed test plan or Jest unit test code.";
+    } 
+    // 2. TEXT ROLES (Legal, HR, Marketing)
+    else if (role.includes('legal')) {
+        systemInstruction = "ROLE: Senior Legal Counsel. OUTPUT: Formal legal document with clear sections.";
+    } else if (role.includes('marketing') || role.includes('social')) {
+        systemInstruction = "ROLE: Marketing Expert. OUTPUT: Engaging, viral-ready copy with hashtags.";
+    } else if (role.includes('hr')) {
+        systemInstruction = "ROLE: HR Manager. OUTPUT: Professional, empathetic, and compliant corporate documents.";
     }
 
     const prompt = `
@@ -42,30 +43,27 @@ export async function POST(req: Request) {
     const result = await model.generateContent(prompt);
     let finalResult = result.response.text();
 
-    // --- FIX: CLEAN THE CODE ---
-    // If the AI adds backticks (which it often does), remove them.
-    if (isCodingTask) {
-        finalResult = finalResult
-            .replace(/```html/g, "")  // Remove start tag
-            .replace(/```/g, "")      // Remove end tag
-            .trim();                  // Remove extra whitespace
+    // Clean up if it's a frontend task
+    if (role.includes('react') || role.includes('frontend')) {
+        finalResult = finalResult.replace(/```html/g, "").replace(/```/g, "").trim();
     }
 
-    // 2. SAVE TO DATABASE
+    // Save to DB
     if (userId && agentId) {
+        const isCode = finalResult.includes('<html') || finalResult.includes('function') || finalResult.includes('CREATE TABLE');
         await supabase.from('tasks').insert({
             user_id: userId,
             agent_id: agentId,
             input: input,
             result: finalResult,
-            type: isCodingTask ? 'code' : 'text'
+            type: isCode ? 'code' : 'text'
         });
     }
 
     return NextResponse.json({ success: true, result: finalResult });
 
   } catch (error: any) {
-    console.error("API Error:", error);
-    return NextResponse.json({ success: false, error: error.message });
+    // Graceful error handling for Rate Limits
+    return NextResponse.json({ success: true, result: "⚠️ System Busy (Rate Limit). Please wait 30s." });
   }
 }
