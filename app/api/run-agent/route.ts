@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   try {
-    // 1. Check for API Key immediately
     if (!process.env.GOOGLE_API_KEY) {
         throw new Error("Missing GOOGLE_API_KEY in .env.local");
     }
@@ -12,14 +11,15 @@ export async function POST(req: Request) {
     const { steps, input } = await req.json();
     const logs: string[] = [];
     
+    // Initial Context
     let context = `User Input: ${input}`;
     logs.push(`🚀 Starting Workflow for: "${input}"...`);
     
-    // Use the standard model
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    // --- FIX: USE NEW MODEL NAME ---
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     for (const step of steps) {
-        // Skip triggers
+        // Skip triggers (they just start the flow)
         if (step.type === 'trigger') {
             logs.push(`⚡ Trigger: ${step.name}`);
             continue;
@@ -28,23 +28,32 @@ export async function POST(req: Request) {
         logs.push(`⚡ Executing Step: ${step.name}...`);
 
         try {
+            // We tell the AI what to do based on the step name
             const prompt = `
-                You are an AI Agent.
-                Context: ${context}
-                Task: ${step.name}
-                Output: Just the result.
+                You are an AI Workflow Engine.
+                
+                CURRENT CONTEXT: ${context}
+                
+                YOUR TASK: Perform the action: "${step.name}".
+                - If "Write Tweet", write a tweet.
+                - If "Summarize", summarize the context.
+                - If "Extract Email", find the email.
+                
+                OUTPUT: Return ONLY the result text. Do not add "Here is the result".
             `;
             
             const result = await model.generateContent(prompt);
             const response = result.response.text();
             
-            context += `\nResult: ${response}`;
-            logs.push(`✅ [RESULT]: ${response.substring(0, 100)}...`); // Show preview
+            // Update context so next steps know what happened
+            context += `\nResult of ${step.name}: ${response}`;
+            
+            // Log the result for the user
+            logs.push(`✅ [RESULT]: ${response}`); 
             
         } catch (aiError: any) {
-            // LOG THE REAL ERROR
             console.error("Gemini Error:", aiError);
-            logs.push(`❌ Error: ${aiError.message || "AI Connection Failed"}`);
+            logs.push(`❌ Error: ${aiError.message || "AI Processing Failed"}`);
         }
     }
 
@@ -55,7 +64,6 @@ export async function POST(req: Request) {
     console.error("Engine Failure:", error);
     return NextResponse.json({ 
         success: false, 
-        // This will send the specific error back to your screen
         logs: [`❌ CRITICAL ERROR: ${error.message}`] 
     });
   }
