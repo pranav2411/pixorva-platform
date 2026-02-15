@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
-// 1. Setup Supabase Client (Server-Side)
+// 1. Setup Supabase Client
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -10,47 +10,64 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
   try {
-    // 2. Get Data from Client
     const { steps, input, agentId, userId } = await req.json();
     
-    // 3. Setup Gemini
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-    // 4. Smart Prompt (Detect if user wants code)
+    // 2. DETECT IF USER WANTS CODE
+    // If input mentions "landing page", "website", "code", "html", etc.
+    const isCodingTask = /code|html|website|landing page|app|react/i.test(input);
+
     let systemInstruction = "";
-    if (input.toLowerCase().includes('code') || input.toLowerCase().includes('website') || input.toLowerCase().includes('html')) {
-        systemInstruction = " IMPORTANT: The user wants code. Return ONLY a single index.html file with embedded Tailwind CSS scripts. Do not use Markdown backticks. Just raw HTML.";
+    if (isCodingTask) {
+        systemInstruction = `
+            CRITICAL INSTRUCTION:
+            You are a Senior Frontend Engineer.
+            The user wants a FUNCTIONAL WEBSITE.
+            
+            1. Return ONLY a single 'index.html' file.
+            2. Use Tailwind CSS via CDN: <script src="https://cdn.tailwindcss.com"></script>
+            3. Use FontAwesome or Lucide for icons if needed.
+            4. Make it look modern, professional, and mobile-responsive.
+            5. DO NOT wrap the code in markdown backticks (like \`\`\`html). 
+            6. Just return the raw HTML string starting with <!DOCTYPE html>.
+        `;
+    } else {
+        systemInstruction = "You are a helpful AI Assistant. Provide a clear, professional text response.";
     }
 
-    // 5. Generate Content
+    // 3. GENERATE CONTENT
     const prompt = `
-        Role: You are an expert AI Employee.
-        Task Input: ${input}
-        Instructions: ${systemInstruction}
+        ${systemInstruction}
         
-        Execute the task perfectly.
+        USER REQUEST: "${input}"
     `;
 
     const result = await model.generateContent(prompt);
-    const finalResult = result.response.text();
+    let finalResult = result.response.text();
 
-    // --- THE CRITICAL PART: SAVE TO DATABASE ---
-    // We only save if we have the User ID and Agent ID
+    // CLEANUP: Remove markdown backticks if the AI added them by mistake
+    if (isCodingTask) {
+        finalResult = finalResult.replace(/```html/g, "").replace(/```/g, "").trim();
+    }
+
+    // 4. SAVE TO DATABASE (Force Save)
     if (userId && agentId) {
         const { error } = await supabase.from('tasks').insert({
             user_id: userId,
             agent_id: agentId,
             input: input,
             result: finalResult,
-            type: finalResult.includes('<html') ? 'code' : 'text'
+            type: isCodingTask ? 'code' : 'text'
         });
 
         if (error) {
-            console.error("Supabase Save Error:", error);
+            console.error("❌ DB Save Failed:", error.message);
+        } else {
+            console.log("✅ DB Save Success");
         }
     }
-    // -------------------------------------------
 
     return NextResponse.json({ success: true, result: finalResult });
 
