@@ -3,7 +3,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Oswald, Inter } from "next/font/google";
-import { ArrowLeft, Play, Clock, Terminal, Code, Megaphone, ShieldCheck, DollarSign, User as UserIcon, Layout, History, FileText, Zap } from "lucide-react";
+import { 
+  ArrowLeft, Play, Clock, Terminal, Code, Megaphone, ShieldCheck, 
+  DollarSign, User as UserIcon, Layout, History, FileText, Zap, Loader2,
+  Users, PieChart, Camera, Database, Lock, Clipboard, Video, Target, CheckCircle, Smartphone 
+} from "lucide-react";
 import { createClient } from '../../utils/supabase/client';
 import Link from "next/link";
 
@@ -13,50 +17,77 @@ const inter = Inter({ subsets: ["latin"] });
 export default function AgentWorkstation() {
   const params = useParams();
   const router = useRouter();
+  
+  // State
   const [agent, setAgent] = useState<any>(null);
-  const [tasks, setTasks] = useState<any[]>([]); // HISTORY
+  const [tasks, setTasks] = useState<any[]>([]); 
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState(false);
   const [taskInput, setTaskInput] = useState("");
   const [activeTab, setActiveTab] = useState<'terminal' | 'preview' | 'history'>('terminal');
-  const [currentResult, setCurrentResult] = useState(""); // Holds the Live Output
+  const [currentResult, setCurrentResult] = useState(""); 
 
-  // 1. Fetch Agent & History
+  // --- 1. FETCH DATA ---
   useEffect(() => {
     const fetchData = async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) { router.push("/login"); return; }
+      try {
+          const supabase = createClient();
+          const { data: { user } } = await supabase.auth.getUser();
+          
+          if (!user) { router.push("/login"); return; }
 
-      // Get Agent
-      const { data: agentData } = await supabase.from('agents').select('*').eq('id', params.id).single();
-      if (agentData) setAgent(agentData);
+          // Get Agent Details
+          const { data: agentData, error: agentError } = await supabase
+            .from('agents')
+            .select('*')
+            .eq('id', params.id)
+            .single();
+          
+          if (agentError || !agentData) {
+            console.error("Agent Error:", agentError);
+            // alert("Agent not found."); 
+            // router.push("/"); // Optional: redirect if not found
+            return;
+          }
+          setAgent(agentData);
 
-      // Get History
-      const { data: taskData } = await supabase.from('tasks').select('*').eq('agent_id', params.id).order('created_at', { ascending: false });
-      if (taskData) setTasks(taskData);
+          // Get Work History
+          const { data: taskData } = await supabase
+            .from('tasks')
+            .select('*')
+            .eq('agent_id', params.id)
+            .order('created_at', { ascending: false });
 
-      setLoading(false);
+          if (taskData) setTasks(taskData);
+          
+      } catch (e) {
+          console.error("Crash:", e);
+      } finally {
+          setLoading(false);
+      }
     };
     fetchData();
-  }, [params.id, router, running]); // Re-fetch when running changes
+  }, [params.id, router]);
 
-  // 2. Dynamic Placeholders
+  // --- 2. DYNAMIC PLACEHOLDER ---
   const getPlaceholder = () => {
       if (!agent) return "Describe task...";
-      const role = agent.name.toLowerCase();
-      if (role.includes('dev')) return 'Ex: "Build a Landing Page for a Gym with a dark theme and pricing section."';
-      if (role.includes('legal')) return 'Ex: "Draft a Non-Disclosure Agreement for a contractor."';
-      if (role.includes('market')) return 'Ex: "Write a Twitter thread about AI trends."';
+      const role = agent.name?.toLowerCase() || "";
+      if (role.includes('dev')) return 'Ex: "Build a Landing Page for a Gym with a dark theme."';
+      if (role.includes('legal')) return 'Ex: "Draft a Non-Disclosure Agreement."';
+      if (role.includes('market')) return 'Ex: "Write a viral Twitter thread about AI."';
       return 'Describe the task...';
   }
 
-  // 3. Run Agent
+  // --- 3. RUN AGENT ---
   const handleRun = async () => {
     if (!taskInput.trim()) return;
     setRunning(true);
-    setActiveTab('terminal'); // Switch to logs
+    setActiveTab('terminal'); 
+    
+    // Save input for optimistic update
+    const currentInput = taskInput;
+    setTaskInput(""); // Clear immediately for better UX
     
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -66,30 +97,47 @@ export default function AgentWorkstation() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-                steps: agent.steps, 
-                input: taskInput,
-                agentId: agent.id,   // Send IDs so we can save
+                steps: agent.steps || [], 
+                input: currentInput,
+                agentId: agent.id,
                 userId: user?.id 
             })
         });
         
         const data = await response.json();
+        
         if (data.result) {
             setCurrentResult(data.result);
-            // If it looks like HTML code, switch to Preview automatically
-            if (data.result.includes('<html') || data.result.includes('<div')) {
+            
+            // Auto-switch to Preview if HTML is detected
+            const isCode = data.result.includes('<html') || data.result.includes('<div') || data.result.includes('import React');
+            if (isCode) {
                 setActiveTab('preview');
             }
+
+            // --- INSTANT HISTORY UPDATE (Optimistic) ---
+            const newTask = {
+                id: Date.now().toString(), // Temp ID
+                input: currentInput,
+                result: data.result,
+                created_at: new Date().toISOString(),
+                type: isCode ? 'code' : 'text'
+            };
+            setTasks(prev => [newTask, ...prev]); 
+            // -------------------------------------------
+
+        } else {
+            alert("Agent failed to respond. Check API Key.");
         }
     } catch (e) {
-        alert("Connection Error");
+        alert("Connection Error. Check console.");
     } finally {
         setRunning(false);
-        setTaskInput(""); // Clear input
     }
   };
 
-  if (loading) return <div className="h-screen flex items-center justify-center font-bold">Loading Workstation...</div>;
+  if (loading) return <div className="h-screen flex items-center justify-center font-bold gap-2"><Loader2 className="animate-spin"/> Loading Workstation...</div>;
+  if (!agent) return <div className="h-screen flex items-center justify-center">Agent loading...</div>;
 
   return (
     <div className={`min-h-screen bg-gray-50 text-black ${inter.className} flex flex-col md:flex-row`}>
@@ -99,7 +147,9 @@ export default function AgentWorkstation() {
          <Link href="/" className="flex items-center gap-2 text-gray-500 hover:text-black mb-8 font-bold text-sm"><ArrowLeft size={16}/> Back to HQ</Link>
          
          <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-black text-white rounded-2xl flex items-center justify-center mb-4 mx-auto shadow-lg">{getIcon(agent.steps[0].icon)}</div>
+            <div className="w-20 h-20 bg-black text-white rounded-2xl flex items-center justify-center mb-4 mx-auto shadow-lg">
+                {getIcon(agent.steps?.[0]?.icon || agent.icon || 'Zap')}
+            </div>
             <h1 className={`text-2xl uppercase leading-none mb-1 ${oswald.className}`}>{agent.name}</h1>
             <div className="flex justify-center gap-2 mt-2">
                  <span className="text-[10px] font-bold bg-green-100 text-green-800 px-2 py-1 rounded uppercase">Online</span>
@@ -107,7 +157,7 @@ export default function AgentWorkstation() {
             </div>
          </div>
 
-         {/* History List (Mini) */}
+         {/* History List */}
          <div className="flex-1 overflow-y-auto">
              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Recent Memory</h3>
              <div className="space-y-2">
@@ -170,7 +220,7 @@ export default function AgentWorkstation() {
                             srcDoc={currentResult} 
                             className="w-full h-full border-none" 
                             title="Preview"
-                            sandbox="allow-scripts" // Security
+                            sandbox="allow-scripts" 
                          />
                      ) : (
                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
@@ -180,8 +230,8 @@ export default function AgentWorkstation() {
                      )}
                  </div>
              )}
-             
-             {/* 3. HISTORY VIEW (List) */}
+
+            {/* 3. HISTORY VIEW (List) */}
              {activeTab === 'history' && (
                  <div className="p-8 space-y-4">
                      {tasks.map((t) => (
@@ -193,6 +243,7 @@ export default function AgentWorkstation() {
                              </div>
                          </div>
                      ))}
+                     {tasks.length === 0 && <div className="text-center text-gray-400 mt-10">No history found. Run a task first!</div>}
                  </div>
              )}
 
@@ -224,7 +275,7 @@ export default function AgentWorkstation() {
   );
 }
 
-// Simple Icon Helper
+// Full Icon Helper
 function getIcon(name: string) {
     switch(name) {
         case "Code": return <Code size={32} />;
@@ -232,6 +283,17 @@ function getIcon(name: string) {
         case "DollarSign": return <DollarSign size={32} />;
         case "ShieldCheck": return <ShieldCheck size={32} />;
         case "User": return <UserIcon size={32} />;
+        case "Users": return <Users size={32} />;
+        case "PieChart": return <PieChart size={32} />;
+        case "Camera": return <Camera size={32} />;
+        case "Database": return <Database size={32} />;
+        case "Lock": return <Lock size={32} />;
+        case "Clipboard": return <Clipboard size={32} />;
+        case "Video": return <Video size={32} />;
+        case "Target": return <Target size={32} />;
+        case "CheckCircle": return <CheckCircle size={32} />;
+        case "Smartphone": return <Smartphone size={32} />;
+        case "FileText": return <FileText size={32} />;
         default: return <Zap size={32} />;
     }
 }
