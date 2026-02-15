@@ -1,65 +1,62 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from 'next/server';
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
-
 export async function POST(req: Request) {
   try {
+    // 1. Check for API Key immediately
+    if (!process.env.GOOGLE_API_KEY) {
+        throw new Error("Missing GOOGLE_API_KEY in .env.local");
+    }
+
+    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
     const { steps, input } = await req.json();
     const logs: string[] = [];
     
-    // We keep a "Context" to pass data between steps (Short-term memory)
     let context = `User Input: ${input}`;
-
     logs.push(`🚀 Starting Workflow for: "${input}"...`);
     
-    // Initialize Gemini Model
+    // Use the standard model
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
     for (const step of steps) {
-        
+        // Skip triggers
+        if (step.type === 'trigger') {
+            logs.push(`⚡ Trigger: ${step.name}`);
+            continue;
+        }
+
         logs.push(`⚡ Executing Step: ${step.name}...`);
 
-        // Skip manual triggers, they are just start points
-        if (step.type === 'trigger') continue;
-
-        // ASK GEMINI TO DO THE WORK
-        const prompt = `
-            You are an AI Agent executing a workflow.
-            
-            Current Context/Memory: ${context}
-            
-            YOUR TASK: Execute the step named "${step.name}".
-            - If it says "Write Tweet", write a real tweet based on the context.
-            - If it says "Summarize", summarize the context.
-            - If it says "Extract Email", find an email in the context.
-            
-            Return ONLY the result of the task. Keep it concise.
-        `;
-
         try {
+            const prompt = `
+                You are an AI Agent.
+                Context: ${context}
+                Task: ${step.name}
+                Output: Just the result.
+            `;
+            
             const result = await model.generateContent(prompt);
             const response = result.response.text();
             
-            // Update Context with the new result so the next step can use it
-            context += `\nResult of ${step.name}: ${response}`;
+            context += `\nResult: ${response}`;
+            logs.push(`✅ [RESULT]: ${response.substring(0, 100)}...`); // Show preview
             
-            // Log the REAL output
-            logs.push(`✅ [RESULT]: ${response}`);
-            
-            // Simulate processing time for UX
-            await new Promise(r => setTimeout(r, 800));
-
-        } catch (aiError) {
-            logs.push(`❌ Error executing step: ${step.name}`);
+        } catch (aiError: any) {
+            // LOG THE REAL ERROR
+            console.error("Gemini Error:", aiError);
+            logs.push(`❌ Error: ${aiError.message || "AI Connection Failed"}`);
         }
     }
 
     logs.push("🏁 Workflow Completed.");
-
     return NextResponse.json({ success: true, logs });
 
-  } catch (error) {
-    return NextResponse.json({ success: false, error: "Engine Failure" }, { status: 500 });
+  } catch (error: any) {
+    console.error("Engine Failure:", error);
+    return NextResponse.json({ 
+        success: false, 
+        // This will send the specific error back to your screen
+        logs: [`❌ CRITICAL ERROR: ${error.message}`] 
+    });
   }
 }

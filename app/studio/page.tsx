@@ -105,14 +105,27 @@ export default function StudioPage() {
             setIsSaving(false);
             return;
         }
+
+        // --- FIX: SANITIZE STEPS ---
+        // We ensure "icon" is just a string name, not a React component
+        const cleanSteps = blueprintSteps.map(step => ({
+            id: step.id,
+            type: step.type,
+            name: step.name,
+            icon: typeof step.icon === 'string' ? step.icon : 'Zap' // Force string
+        }));
+
         const { error } = await supabase.from('agents').insert({
             user_id: user.id,
             name: "My New Agent", 
-            steps: blueprintSteps 
+            steps: cleanSteps 
         });
+
         if (error) throw error;
         alert("Agent Deployed Successfully! 🚀");
+
     } catch (e: any) {
+        // Show the actual error message to help debug
         alert("Deploy Failed: " + e.message);
     } finally {
         setIsSaving(false);
