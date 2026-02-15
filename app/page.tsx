@@ -66,7 +66,7 @@ export default function Home() {
         
         <div className="hidden md:flex gap-8 text-sm font-bold uppercase tracking-wide">
           <Link href="/employees" className="hover:text-yellow-600 transition">Marketplace</Link>
-          <Link href="#" className="hover:text-yellow-600 transition">Pricing</Link>
+          <Link href="/pricing" className="hover:text-yellow-600 transition">Pricing</Link>
           <Link href="/studio" className="hover:text-yellow-600 transition">Studio</Link>
         </div>
 
