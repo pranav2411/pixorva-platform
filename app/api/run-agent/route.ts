@@ -1,8 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { createClient } from '@supabase/supabase-js'; // Import Supabase
+import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
-// Create Supabase Client for the API
+// 1. Setup Supabase Client (Server-Side)
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -10,50 +10,52 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
   try {
-    const { steps, input, agentId, userId } = await req.json(); // Accept IDs
+    // 2. Get Data from Client
+    const { steps, input, agentId, userId } = await req.json();
+    
+    // 3. Setup Gemini
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-    // --- SMART PROMPT INJECTION ---
-    // If the input asks for code/website, force HTML output for the previewer
+    // 4. Smart Prompt (Detect if user wants code)
     let systemInstruction = "";
     if (input.toLowerCase().includes('code') || input.toLowerCase().includes('website') || input.toLowerCase().includes('html')) {
-        systemInstruction = " IMPORTANT: If asking for code/website, return ONLY a single index.html file with embedded Tailwind CSS scripts. Do not use Markdown backticks. Just raw HTML.";
+        systemInstruction = " IMPORTANT: The user wants code. Return ONLY a single index.html file with embedded Tailwind CSS scripts. Do not use Markdown backticks. Just raw HTML.";
     }
 
-    let logs: string[] = [];
-    let finalResult = "";
-
-    logs.push(`🚀 Starting Workflow for: "${input}"...`);
-    
-    // ... (Your existing step loop logic here) ...
-    // For simplicity in this demo, we will just do a Direct Execution for the result
-    // In a real app, you would loop through steps. Let's simulate the final output:
-    
+    // 5. Generate Content
     const prompt = `
-        Context: ${input}
-        Role: You are an expert AI Agent.
-        ${systemInstruction}
-        Task: Perform the requested work.
+        Role: You are an expert AI Employee.
+        Task Input: ${input}
+        Instructions: ${systemInstruction}
+        
+        Execute the task perfectly.
     `;
 
     const result = await model.generateContent(prompt);
-    finalResult = result.response.text();
+    const finalResult = result.response.text();
 
-    // --- SAVE TO DATABASE (MEMORY) ---
-    if (agentId && userId) {
-        await supabase.from('tasks').insert({
-            agent_id: agentId,
+    // --- THE CRITICAL PART: SAVE TO DATABASE ---
+    // We only save if we have the User ID and Agent ID
+    if (userId && agentId) {
+        const { error } = await supabase.from('tasks').insert({
             user_id: userId,
+            agent_id: agentId,
             input: input,
             result: finalResult,
             type: finalResult.includes('<html') ? 'code' : 'text'
         });
-    }
 
-    return NextResponse.json({ success: true, logs: ["✅ Work Saved to Memory."], result: finalResult });
+        if (error) {
+            console.error("Supabase Save Error:", error);
+        }
+    }
+    // -------------------------------------------
+
+    return NextResponse.json({ success: true, result: finalResult });
 
   } catch (error: any) {
+    console.error("API Error:", error);
     return NextResponse.json({ success: false, error: error.message });
   }
 }
