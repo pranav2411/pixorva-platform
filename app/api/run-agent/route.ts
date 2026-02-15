@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     }
 
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     // --- 2. DEFINE SYSTEM PROMPT ---
     let systemInstruction = "You are a helpful AI Employee. Keep answers concise.";

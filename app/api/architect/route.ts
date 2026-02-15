@@ -10,7 +10,7 @@ export async function POST(req: Request) {
 
     // 2. FIXED: Use "gemini-1.5-flash-latest" which is the stable alias
     // If this still fails, try "gemini-pro"
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     // 3. The "System Prompt" - Teaching the AI how to behave
     const prompt = `
