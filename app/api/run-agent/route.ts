@@ -9,38 +9,43 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
   try {
-    const { steps, input, agentId, userId, agentRole } = await req.json();
+    const { steps, input, agentId, userId, agentRole, fileData } = await req.json();
     const role = agentRole ? agentRole.toLowerCase() : "";
 
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
+    // Use 'flash' for speed, or 'pro' if you want deep reasoning.
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
 
-    // --- SMART SYSTEM INSTRUCTIONS ---
+    // --- 1. SYSTEM INSTRUCTIONS ---
     let systemInstruction = "You are a helpful AI Employee.";
 
-    // 1. CODING ROLES (Frontend, Backend, Fullstack)
+    // Detect Role for better output
     if (role.includes('react') || role.includes('frontend')) {
         systemInstruction = "ROLE: Senior React Developer. OUTPUT: Single HTML file with Tailwind. RAW HTML ONLY (No markdown).";
-    } else if (role.includes('backend') || role.includes('architect') || role.includes('database')) {
-        systemInstruction = "ROLE: Backend Architect. OUTPUT: Professional SQL Schema or Node.js API code blocks. Use comments to explain.";
-    } else if (role.includes('qa') || role.includes('tester')) {
-        systemInstruction = "ROLE: QA Engineer. OUTPUT: A detailed test plan or Jest unit test code.";
-    } 
-    // 2. TEXT ROLES (Legal, HR, Marketing)
-    else if (role.includes('legal')) {
-        systemInstruction = "ROLE: Senior Legal Counsel. OUTPUT: Formal legal document with clear sections.";
-    } else if (role.includes('marketing') || role.includes('social')) {
-        systemInstruction = "ROLE: Marketing Expert. OUTPUT: Engaging, viral-ready copy with hashtags.";
-    } else if (role.includes('hr')) {
-        systemInstruction = "ROLE: HR Manager. OUTPUT: Professional, empathetic, and compliant corporate documents.";
+    } else if (role.includes('backend') || role.includes('architect')) {
+        systemInstruction = "ROLE: Backend Architect. OUTPUT: SQL Schema or Node.js code blocks.";
+    } else if (role.includes('legal')) {
+        systemInstruction = "ROLE: Senior Legal Counsel. OUTPUT: Formal legal analysis or document.";
     }
 
-    const prompt = `
-        ${systemInstruction}
-        USER REQUEST: "${input}"
-    `;
+    // --- 2. PREPARE CONTENT ---
+    let promptParts: any[] = [
+        { text: `${systemInstruction}\n\nUSER REQUEST: "${input}"` }
+    ];
 
-    const result = await model.generateContent(prompt);
+    // --- 3. ATTACH FILE (If exists) ---
+    if (fileData) {
+        promptParts.push({
+            inlineData: {
+                data: fileData.base64,
+                mimeType: fileData.type
+            }
+        });
+        promptParts[0].text += `\n\n[CONTEXT]: A file has been attached. Please analyze it based on the user request.`;
+    }
+
+    // --- 4. GENERATE ---
+    const result = await model.generateContent(promptParts);
     let finalResult = result.response.text();
 
     // Clean up if it's a frontend task
@@ -48,13 +53,15 @@ export async function POST(req: Request) {
         finalResult = finalResult.replace(/```html/g, "").replace(/```/g, "").trim();
     }
 
-    // Save to DB
+    // --- 5. SAVE TO DB ---
     if (userId && agentId) {
         const isCode = finalResult.includes('<html') || finalResult.includes('function') || finalResult.includes('CREATE TABLE');
+        const saveInput = fileData ? `[File: ${fileData.name}] ${input}` : input;
+        
         await supabase.from('tasks').insert({
             user_id: userId,
             agent_id: agentId,
-            input: input,
+            input: saveInput,
             result: finalResult,
             type: isCode ? 'code' : 'text'
         });
@@ -63,7 +70,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, result: finalResult });
 
   } catch (error: any) {
-    // Graceful error handling for Rate Limits
-    return NextResponse.json({ success: true, result: "⚠️ System Busy (Rate Limit). Please wait 30s." });
+    console.error("API Error:", error);
+    // Handle Rate Limits gracefully
+    if (error.message?.includes('429')) {
+        return NextResponse.json({ success: true, result: "⚠️ System Busy (Rate Limit). Please wait 30s." });
+    }
+    return NextResponse.json({ success: false, error: error.message });
   }
 }

@@ -6,7 +6,7 @@ import { Oswald, Inter } from "next/font/google";
 import { 
   ArrowLeft, Play, Clock, Terminal, Code, Megaphone, ShieldCheck, 
   DollarSign, User as UserIcon, Layout, History, FileText, Zap, Loader2,
-  Users, PieChart, Camera, Database, Lock, Clipboard, Video, Target, CheckCircle, Smartphone 
+  Users, PieChart, Camera, Database, Lock, Clipboard, Video, Target, CheckCircle, Smartphone, Paperclip, X
 } from "lucide-react";
 import { createClient } from '../../utils/supabase/client';
 import Link from "next/link";
@@ -25,6 +25,10 @@ export default function AgentWorkstation() {
   const [taskInput, setTaskInput] = useState("");
   const [activeTab, setActiveTab] = useState<'terminal' | 'preview' | 'history'>('terminal');
   const [currentResult, setCurrentResult] = useState(""); 
+  
+  // --- FILE UPLOAD STATE ---
+  const [selectedFile, setSelectedFile] = useState<{ name: string, type: string, base64: string } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const logsEndRef = useRef<HTMLDivElement>(null);
 
   // --- 1. FETCH DATA ---
@@ -36,11 +40,9 @@ export default function AgentWorkstation() {
           
           if (!user) { router.push("/login"); return; }
 
-          // Get Agent
           const { data: agentData } = await supabase.from('agents').select('*').eq('id', params.id).single();
           setAgent(agentData);
 
-          // Get Full History
           const { data: taskData } = await supabase
             .from('tasks')
             .select('*')
@@ -49,7 +51,6 @@ export default function AgentWorkstation() {
             .limit(50); 
 
           if (taskData) setTasks(taskData);
-          
       } catch (e) {
           console.error("Error loading workstation:", e);
       } finally {
@@ -59,48 +60,43 @@ export default function AgentWorkstation() {
     fetchData();
   }, [params.id, router]);
 
-  // --- 2. SMART CAPABILITIES (THE FIX) ---
-  const getSuggestions = () => {
-      if (!agent) return [];
-      const role = agent.name?.toLowerCase() || "";
-      
-      // ENGINEERING
-      if (role.includes('react') || role.includes('frontend')) return ["Build a Landing Page", "Create a Dashboard", "Fix CSS Bug"];
-      if (role.includes('backend') || role.includes('architect')) return ["Design SQL Schema", "Write API Endpoint", "Optimize Database Query"];
-      if (role.includes('qa') || role.includes('tester')) return ["Write Unit Tests", "Find Bugs in Code", "Create Test Plan"];
-      if (role.includes('security')) return ["Audit this Code", "Write Security Policy", "Check for Vulnerabilities"];
+  // --- 2. HANDLE FILE UPLOAD ---
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
 
-      // MARKETING
-      if (role.includes('growth') || role.includes('marketing')) return ["Write Viral Thread", "Create Ad Copy", "Plan Launch Strategy"];
-      if (role.includes('social') || role.includes('media')) return ["Write Instagram Caption", "Create TikTok Script", "Generate Hashtags"];
-      if (role.includes('seo') || role.includes('writer')) return ["Write SEO Blog Post", "Find Keywords", "Optimize Meta Tags"];
-      if (role.includes('video')) return ["Write YouTube Script", "Create Video Outline", "Suggest Video Topics"];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+          const base64String = reader.result as string;
+          // Clean base64 string (remove "data:image/png;base64,")
+          const base64Data = base64String.split(',')[1]; 
+          
+          setSelectedFile({
+              name: file.name,
+              type: file.type,
+              base64: base64Data
+          });
+      };
+      reader.readAsDataURL(file);
+  };
 
-      // SALES
-      if (role.includes('sales') || role.includes('sdr')) return ["Draft Cold Email", "Create Sales Script", "Follow-up Message"];
-      if (role.includes('lead') || role.includes('enricher')) return ["Find Company Info", "Extract Leads", "Research Prospect"];
-
-      // OPERATIONS / HR / FINANCE / LEGAL
-      if (role.includes('hr') || role.includes('manager')) return ["Write Job Description", "Screen Resume", "Draft Offer Letter"];
-      if (role.includes('finance') || role.includes('analyst')) return ["Analyze P&L", "Create Budget", "Summarize Tax Rules"];
-      if (role.includes('legal') || role.includes('counsel')) return ["Draft NDA", "Review Contract", "Write Terms of Service"];
-      if (role.includes('product') || role.includes('manager')) return ["Write User Story", "Create Roadmap", "Define Feature Specs"];
-      if (role.includes('support')) return ["Reply to Complaint", "Write FAQ Answer", "Create Help Article"];
-
-      // DEFAULT
-      return ["Summarize this text", "Write an Email", "Brainstorm Ideas"];
-  }
+  const removeFile = () => {
+      setSelectedFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   // --- 3. RUN AGENT ---
   const handleRun = async (inputText: string = taskInput) => {
-    if (!inputText.trim()) return;
+    if (!inputText.trim() && !selectedFile) return;
     setRunning(true);
     setActiveTab('terminal'); 
     setTaskInput(""); 
     
     // Optimistic Update
     const tempId = Date.now().toString();
-    const tempTask = { id: tempId, input: inputText, result: "Thinking...", created_at: new Date().toISOString(), type: 'text' };
+    const displayInput = selectedFile ? `[Attachment: ${selectedFile.name}] ${inputText}` : inputText;
+    
+    const tempTask = { id: tempId, input: displayInput, result: "Thinking...", created_at: new Date().toISOString(), type: 'text' };
     setTasks(prev => [tempTask, ...prev]);
 
     const supabase = createClient();
@@ -111,25 +107,25 @@ export default function AgentWorkstation() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-                steps: agent.steps || [], 
                 input: inputText,
                 agentId: agent.id,
                 userId: user?.id,
-                agentRole: agent.name // Pass Role to API
+                agentRole: agent.name,
+                fileData: selectedFile // SEND FILE TO API
             })
         });
         
         const data = await response.json();
         const finalResult = data.result || "No response";
 
-        // Update Task
-        const isCode = finalResult.includes('<html') || finalResult.includes('<!DOCTYPE') || finalResult.includes('import React');
+        const isCode = finalResult.includes('<html') || finalResult.includes('<!DOCTYPE');
         setTasks(prev => prev.map(t => t.id === tempId ? { ...t, result: finalResult, type: isCode ? 'code' : 'text' } : t));
         setCurrentResult(finalResult);
 
-        if (isCode) {
-            setActiveTab('preview');
-        }
+        if (isCode) setActiveTab('preview');
+        
+        // Clear file after sending
+        removeFile();
 
     } catch (e) {
         alert("Connection Error.");
@@ -137,6 +133,15 @@ export default function AgentWorkstation() {
         setRunning(false);
     }
   };
+
+  // --- 4. SUGGESTIONS ---
+  const getSuggestions = () => {
+      if (!agent) return [];
+      const role = agent.name?.toLowerCase() || "";
+      if (role.includes('dev')) return ["Analyze this Architecture Diagram", "Fix this Code Snippet", "Build UI from this Screenshot"];
+      if (role.includes('legal')) return ["Summarize this Contract", "Find Loopholes in this PDF", "Draft NDA based on this doc"];
+      return ["Summarize this document", "Analyze this image", "Extract data from this file"];
+  }
 
   if (loading) return <div className="h-screen flex items-center justify-center font-bold gap-2"><Loader2 className="animate-spin"/> Loading Workstation...</div>;
   if (!agent) return <div className="h-screen flex items-center justify-center">Agent not found.</div>;
@@ -148,7 +153,6 @@ export default function AgentWorkstation() {
       <div className="w-full md:w-[320px] bg-white border-r border-gray-200 flex flex-col h-auto md:h-screen z-20">
          <div className="p-6 border-b border-gray-100">
              <Link href="/" className="flex items-center gap-2 text-gray-500 hover:text-black mb-6 font-bold text-sm"><ArrowLeft size={16}/> Back to HQ</Link>
-             
              <div className="flex items-center gap-4">
                 <div className="w-16 h-16 bg-black text-white rounded-xl flex items-center justify-center shadow-lg">
                     {getIcon(agent.steps?.[0]?.icon || agent.icon || 'Zap')}
@@ -163,23 +167,19 @@ export default function AgentWorkstation() {
              </div>
          </div>
 
-         {/* CAPABILITIES (FIXED) */}
+         {/* CAPABILITIES */}
          <div className="p-6 bg-yellow-50/50 border-b border-yellow-100">
              <h3 className="text-xs font-bold text-yellow-700 uppercase tracking-widest mb-3">Capabilities</h3>
              <div className="flex flex-wrap gap-2">
                  {getSuggestions().map((suggestion, i) => (
-                     <button 
-                        key={i} 
-                        onClick={() => handleRun(suggestion)} // Click to run immediately
-                        className="text-xs bg-white border border-yellow-200 text-yellow-800 px-3 py-1.5 rounded-lg hover:bg-yellow-400 hover:text-black hover:border-black transition font-medium text-left"
-                     >
+                     <button key={i} onClick={() => setTaskInput(suggestion)} className="text-xs bg-white border border-yellow-200 text-yellow-800 px-3 py-1.5 rounded-lg hover:bg-yellow-400 hover:text-black transition font-medium text-left">
                          + {suggestion}
                      </button>
                  ))}
              </div>
          </div>
 
-         {/* HISTORY LIST */}
+         {/* HISTORY */}
          <div className="flex-1 overflow-y-auto p-4">
              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 px-2">Work History</h3>
              <div className="space-y-2">
@@ -194,7 +194,6 @@ export default function AgentWorkstation() {
                          </div>
                      </div>
                  ))}
-                 {tasks.length === 0 && <div className="text-xs text-gray-400 italic px-2">No history yet. Assign a task.</div>}
              </div>
          </div>
       </div>
@@ -205,10 +204,10 @@ export default function AgentWorkstation() {
          <div className="bg-white border-b border-gray-200 px-6 pt-4 flex items-end justify-between">
              <div className="flex gap-6">
                  <button onClick={() => setActiveTab('terminal')} className={`pb-4 text-sm font-bold flex items-center gap-2 border-b-2 transition ${activeTab === 'terminal' ? 'border-black text-black' : 'border-transparent text-gray-400 hover:text-black'}`}>
-                    <Terminal size={16}/> Output Log
+                    <Terminal size={16}/> Log
                  </button>
                  <button onClick={() => setActiveTab('preview')} className={`pb-4 text-sm font-bold flex items-center gap-2 border-b-2 transition ${activeTab === 'preview' ? 'border-black text-black' : 'border-transparent text-gray-400 hover:text-black'}`}>
-                    <Layout size={16}/> Live Preview
+                    <Layout size={16}/> Preview
                  </button>
              </div>
          </div>
@@ -228,7 +227,6 @@ export default function AgentWorkstation() {
                      <div ref={logsEndRef} />
                  </div>
              )}
-
              {activeTab === 'preview' && (
                  <div className="w-full h-full bg-white">
                      {currentResult.includes('<html') || currentResult.includes('<!DOCTYPE') ? (
@@ -236,23 +234,50 @@ export default function AgentWorkstation() {
                      ) : (
                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
                              <Layout size={48} className="mb-4"/>
-                             <div>Visual preview not available for this task.</div>
+                             <div>Visual preview not available.</div>
                          </div>
                      )}
                  </div>
              )}
          </div>
 
-         {/* INPUT */}
+         {/* INPUT AREA */}
          <div className="bg-white border-t border-gray-200 p-6 z-30">
+             
+             {/* Attached File Preview */}
+             {selectedFile && (
+                 <div className="mb-2 inline-flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-xs font-bold border border-gray-300">
+                     <Paperclip size={12}/> {selectedFile.name}
+                     <button onClick={removeFile} className="hover:text-red-500"><X size={12}/></button>
+                 </div>
+             )}
+
              <div className="relative">
+                 {/* Hidden File Input */}
+                 <input 
+                    type="file" 
+                    ref={fileInputRef}
+                    onChange={handleFileSelect}
+                    className="hidden"
+                    accept="image/*,.pdf,.txt,.js,.py,.html,.css,.json,.md" // Accept images, docs, and code
+                 />
+
+                 {/* Paperclip Button */}
+                 <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-black transition p-2"
+                    title="Attach File"
+                 >
+                    <Paperclip size={20} />
+                 </button>
+
                  <input 
                     type="text" 
                     value={taskInput}
                     onChange={(e) => setTaskInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleRun()}
-                    placeholder="Describe your task..."
-                    className="w-full pl-6 pr-32 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:bg-white text-lg transition shadow-sm"
+                    placeholder={selectedFile ? "What should I do with this file?" : "Describe your task..."}
+                    className="w-full pl-12 pr-32 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:bg-white text-lg transition shadow-sm"
                  />
                  <button 
                     onClick={() => handleRun()}
