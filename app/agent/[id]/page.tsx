@@ -28,6 +28,7 @@ export default function AgentWorkstation() {
   const [currentResult, setCurrentResult] = useState(""); 
 
   // --- 1. FETCH DATA ---
+  // --- 1. FETCH DATA ---
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,6 +37,8 @@ export default function AgentWorkstation() {
           
           if (!user) { router.push("/login"); return; }
 
+          console.log("Fetching Agent:", params.id);
+
           // Get Agent Details
           const { data: agentData, error: agentError } = await supabase
             .from('agents')
@@ -43,22 +46,23 @@ export default function AgentWorkstation() {
             .eq('id', params.id)
             .single();
           
-          if (agentError || !agentData) {
-            console.error("Agent Error:", agentError);
-            // alert("Agent not found."); 
-            // router.push("/"); // Optional: redirect if not found
-            return;
-          }
-          setAgent(agentData);
+          if (agentError) console.error("Agent Fetch Error:", agentError);
+          if (agentData) setAgent(agentData);
 
           // Get Work History
-          const { data: taskData } = await supabase
+          console.log("Fetching History for Agent:", params.id);
+          const { data: taskData, error: taskError } = await supabase
             .from('tasks')
             .select('*')
-            .eq('agent_id', params.id)
+            .eq('agent_id', params.id) // Ensure this matches the column name in Supabase
             .order('created_at', { ascending: false });
 
-          if (taskData) setTasks(taskData);
+          if (taskError) {
+              console.error("History Fetch Error:", taskError);
+          } else {
+              console.log("Found Tasks:", taskData?.length);
+              setTasks(taskData || []);
+          }
           
       } catch (e) {
           console.error("Crash:", e);
