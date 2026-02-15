@@ -6,7 +6,8 @@ import { Oswald, Inter } from "next/font/google";
 import { 
   ArrowRight, Briefcase, Megaphone, PenTool, Target, Plus, Zap, Trash2, 
   Play, MessageSquare, Globe, Mail, Clock, Database, Twitter, 
-  Settings as SettingsIcon, LogOut, Send, Code, ShieldCheck, DollarSign, User as UserIcon 
+  Settings as SettingsIcon, LogOut, Send, Code, ShieldCheck, DollarSign, User as UserIcon,
+  Users, PieChart, Camera, Lock, Clipboard, Video, CheckCircle, Smartphone, Search
 } from "lucide-react";
 import { createClient } from './utils/supabase/client';
 import { User } from '@supabase/supabase-js';
@@ -20,7 +21,6 @@ export default function Home() {
   const [myAgents, setMyAgents] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // --- 1. LOAD DATA ---
   useEffect(() => {
     const init = async () => {
       const supabase = createClient();
@@ -29,19 +29,10 @@ export default function Home() {
 
       if (user) {
         setLoading(true);
-        // Fetch Agents
-        const { data: agents } = await supabase
-          .from('agents')
-          .select('*')
-          .order('created_at', { ascending: false });
+        const { data: agents } = await supabase.from('agents').select('*').order('created_at', { ascending: false });
         if (agents) setMyAgents(agents);
 
-        // Fetch Profile
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
+        const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).single();
         if (profileData) setProfile(profileData);
         setLoading(false);
       }
@@ -49,37 +40,32 @@ export default function Home() {
     init();
   }, []);
 
-  // --- 2. SIGN OUT ---
   const handleSignOut = async () => {
       const supabase = createClient();
       await supabase.auth.signOut();
       window.location.reload(); 
   }
 
-  // --- 3. DELETE AGENT ---
   const handleDelete = async (id: string) => {
       if(!confirm("Permanently delete this agent?")) return;
       const supabase = createClient();
       const { error } = await supabase.from('agents').delete().eq('id', id);
-      if (error) {
-          alert("Error: " + error.message);
-      } else {
-          setMyAgents(prev => prev.filter(a => a.id !== id));
-      }
+      if (error) { alert("Error: " + error.message); } 
+      else { setMyAgents(prev => prev.filter(a => a.id !== id)); }
   }
 
   return (
     <div className={`min-h-screen bg-white text-black selection:bg-yellow-400 selection:text-black ${inter.className}`}>
       
       {/* NAVBAR */}
-      <nav className="flex items-center justify-between px-6 md:px-12 py-5 sticky top-0 bg-white/95 backdrop-blur-sm z-50 border-b border-black/5">
+      <nav className="flex items-center justify-between px-6 md:px-12 py-5 sticky top-0 bg-white/95 backdrop-blur-sm z-50 border-b-4 border-black">
         <div className={`text-2xl md:text-3xl tracking-tighter uppercase italic ${oswald.className} flex items-center gap-2`}>
           <div className="bg-black text-white w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-lg text-lg md:text-xl not-italic font-bold">P</div>
           Pixorva
         </div>
         
         <div className="hidden md:flex gap-8 text-sm font-bold uppercase tracking-wide">
-          <Link href="/employees" className="hover:text-yellow-600 transition">AI Employees</Link>
+          <Link href="/employees" className="hover:text-yellow-600 transition">Marketplace</Link>
           <Link href="#" className="hover:text-yellow-600 transition">Pricing</Link>
           <Link href="/studio" className="hover:text-yellow-600 transition">Studio</Link>
         </div>
@@ -96,13 +82,13 @@ export default function Home() {
           ) : (
              <Link href="/login" className="hidden md:block font-bold text-sm hover:text-yellow-600 transition">Log in</Link>
           )}
-          <Link href={user ? "/studio" : "/login"} className="bg-black text-white border-2 border-black px-4 md:px-6 py-2 rounded-lg text-xs md:text-sm font-bold uppercase hover:bg-yellow-400 hover:text-black hover:border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[2px] hover:shadow-none whitespace-nowrap">
-            {user ? "Open Studio" : "Get Started"}
+          <Link href={user ? "/employees" : "/login"} className="bg-black text-white border-2 border-black px-4 md:px-6 py-2 rounded-lg text-xs md:text-sm font-bold uppercase hover:bg-yellow-400 hover:text-black hover:border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[2px] hover:shadow-none whitespace-nowrap">
+            {user ? "Hire Staff" : "Get Started"}
           </Link>
         </div>
       </nav>
 
-      {/* HERO SECTION */}
+      {/* HERO / DASHBOARD */}
       <main className="max-w-7xl mx-auto px-6 pt-20 pb-24 text-center">
         
         <div className="inline-block bg-yellow-100 border-2 border-black px-4 py-1 rounded-full text-[10px] md:text-xs font-black uppercase mb-8 transform -rotate-2 hover:rotate-0 transition-transform cursor-default">
@@ -118,36 +104,54 @@ export default function Home() {
 
         <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-12 font-medium">
           {user 
-            ? "Your agents are running 24/7. Check their status below or build a new one."
+            ? "Your digital workforce is running 24/7. Assign tasks below."
             : <span>Get an AI Team who runs your inbox, socials, SEO, lead generation, calls, and support. <span className="text-black font-bold"> No sick days. No drama.</span></span>
           }
         </p>
 
+        {/* MAIN BUTTONS */}
         <div className="flex justify-center gap-4">
-            <Link href={user ? "/studio" : "/login"}>
+            <Link href={user ? "/employees" : "/login"}>
                 <button className="bg-yellow-400 text-black border-4 border-black px-10 py-5 rounded-xl text-xl font-black uppercase tracking-wide hover:bg-yellow-300 transition-all shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none flex items-center gap-3">
-                {user ? "Build New Agent" : "Get Started"} <ArrowRight strokeWidth={3} />
+                {user ? "Hire New Staff" : "Browse Marketplace"} <ArrowRight strokeWidth={3} />
                 </button>
             </Link>
+            {user && (
+                 <Link href="/studio">
+                    <button className="bg-white text-black border-4 border-black px-10 py-5 rounded-xl text-xl font-black uppercase tracking-wide hover:bg-gray-50 transition-all hover:translate-y-1">
+                    Build Custom
+                    </button>
+                 </Link>
+            )}
         </div>
         
-        {/* AGENT GRID SECTION */}
+        {/* --- DYNAMIC AGENT GRID --- */}
         <div className="mt-32">
           {user ? (
-             /* --- LOGGED IN VIEW: REAL AGENTS --- */
              <div className="text-left">
                  <div className="flex flex-col md:flex-row justify-between items-end mb-10 px-4 border-b-4 border-black pb-4">
-                    <h2 className={`text-4xl md:text-6xl uppercase ${oswald.className}`}>My Active Agents</h2>
+                    <h2 className={`text-4xl md:text-6xl uppercase ${oswald.className}`}>My Active Team</h2>
                     <span className="font-bold text-gray-500">{myAgents.length} Running</span>
                  </div>
 
                  {loading ? (
                     <div className="text-center py-20 font-bold text-gray-400">Syncing with Mainframe...</div>
                  ) : myAgents.length === 0 ? (
-                    <div className="text-center py-20 border-4 border-dashed border-gray-300 rounded-3xl">
-                        <h3 className="text-2xl font-bold text-gray-400">No agents hired yet.</h3>
-                        <Link href="/employees" className="text-black underline font-bold mt-2 inline-block">Go to Marketplace</Link>
+                    
+                    /* --- EMPTY STATE PROMPT TO MARKETPLACE --- */
+                    <div className="text-center py-24 border-4 border-dashed border-gray-300 rounded-3xl bg-gray-50 flex flex-col items-center">
+                        <div className="bg-white p-4 rounded-full border-2 border-gray-200 mb-4">
+                            <Users size={48} className="text-gray-400" />
+                        </div>
+                        <h3 className="text-3xl font-bold text-gray-800 mb-2">Your office is empty!</h3>
+                        <p className="text-gray-500 mb-8 max-w-md">You haven't hired anyone yet. Visit the Marketplace to hire Devon, Ruby, Lawson, and more.</p>
+                        <Link href="/employees">
+                            <button className="bg-black text-white px-8 py-4 rounded-xl font-bold uppercase hover:bg-yellow-400 hover:text-black transition flex items-center gap-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]">
+                                <Plus size={20} /> Go to Marketplace
+                            </button>
+                        </Link>
                     </div>
+
                  ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {myAgents.map((agent) => (
@@ -161,13 +165,14 @@ export default function Home() {
                                             <Trash2 size={18}/>
                                         </button>
                                     </div>
-                                    <h3 className="text-2xl font-black uppercase leading-none mb-2">{agent.name}</h3>
+                                    <h3 className="text-2xl font-black uppercase leading-none mb-1">{agent.name.split('(')[0]}</h3>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-3">{agent.name.split('(')[1]?.replace(')', '') || 'Custom Agent'}</p>
                                     
                                     <div className="flex flex-wrap gap-2">
-                                        <span className="text-[10px] font-bold bg-blue-100 text-blue-800 px-2 py-1 rounded border border-blue-200 uppercase flex items-center gap-1">
-                                            <Clock size={10} /> {agent.schedule || 'Manual'}
+                                        <span className="text-[10px] font-bold bg-green-100 text-green-800 px-2 py-1 rounded border border-green-200 uppercase flex items-center gap-1">
+                                            Online
                                         </span>
-                                        <span className="text-[10px] font-bold bg-gray-100 px-2 py-1 rounded border border-gray-200 uppercase">{agent.steps?.length || 0} Steps</span>
+                                        <span className="text-[10px] font-bold bg-gray-100 px-2 py-1 rounded border border-gray-200 uppercase">{agent.steps?.length || 0} Skills</span>
                                     </div>
                                 </div>
 
@@ -185,12 +190,11 @@ export default function Home() {
                  )}
              </div>
           ) : (
-             /* --- LOGGED OUT VIEW: DEMO AGENTS --- */
-             /* THIS IS WHAT WAS MISSING! */
+            /* --- LOGGED OUT VIEW --- */
             <>
               <div className="flex flex-col md:flex-row justify-between items-end mb-10 px-4 text-left md:text-center">
                 <h2 className={`text-4xl md:text-6xl uppercase ${oswald.className}`}>Meet Your Team</h2>
-                <Link href="/employees" className="font-bold underline decoration-4 decoration-yellow-400 hover:text-yellow-600 mt-4 md:mt-0">View all Agents</Link>
+                <Link href="/employees" className="font-bold underline decoration-4 decoration-yellow-400 hover:text-yellow-600 mt-4 md:mt-0">View Marketplace</Link>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
@@ -210,8 +214,8 @@ export default function Home() {
         <div className={`absolute top-0 left-0 right-0 text-[20vw] opacity-5 font-black leading-none select-none ${oswald.className}`}>PIXORVA</div>
         <div className="relative z-10 px-4">
             <h2 className={`text-4xl md:text-7xl uppercase mb-8 md:mb-10 ${oswald.className}`}>Ready to Scale?</h2>
-            <Link href={user ? "/studio" : "/login"}>
-                <button className="bg-yellow-400 text-black border-none px-10 py-4 md:px-12 md:py-5 rounded-2xl font-black uppercase hover:bg-white transition text-lg md:text-xl shadow-[0px_0px_20px_rgba(250,204,21,0.5)] w-full md:w-auto">Start Free Trial</button>
+            <Link href={user ? "/employees" : "/login"}>
+                <button className="bg-yellow-400 text-black border-none px-10 py-4 md:px-12 md:py-5 rounded-2xl font-black uppercase hover:bg-white transition text-lg md:text-xl shadow-[0px_0px_20px_rgba(250,204,21,0.5)] w-full md:w-auto">Start Hiring (Free)</button>
             </Link>
             <p className="text-gray-500 mt-10 md:mt-12 text-xs md:text-sm font-mono tracking-widest">© 2026 PIXORVA INC. // SYSTEM OPERATIONAL</p>
         </div>
@@ -240,6 +244,15 @@ function getIcon(name: string) {
       case "PenTool": return <PenTool size={24} />;
       case "Target": return <Target size={24} />;
       case "Briefcase": return <Briefcase size={24} />;
+      case "Users": return <Users size={24} />;
+      case "PieChart": return <PieChart size={24} />;
+      case "Camera": return <Camera size={24} />;
+      case "Lock": return <Lock size={24} />;
+      case "Clipboard": return <Clipboard size={24} />;
+      case "Video": return <Video size={24} />;
+      case "CheckCircle": return <CheckCircle size={24} />;
+      case "Smartphone": return <Smartphone size={24} />;
+      case "Search": return <Search size={24} />;
       default: return <Zap size={24} />;
     }
 }

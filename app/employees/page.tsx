@@ -10,105 +10,120 @@ import { useRouter } from 'next/navigation';
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
 
-// --- THE MEGA ROSTER (20 AGENTS) ---
+// --- THE MEGA ROSTER (INDIAN PRICING & REASONABLE RATES) ---
 const EMPLOYEES = [
   // ENGINEERING
   {
-    id: "dev-1", category: "Engineering", name: "Devon", role: "React Developer", icon: "Code", price: "$49/mo",
+    id: "dev-1", category: "Engineering", name: "Devon", role: "React Developer", icon: "Code", price: "₹999/mo",
     desc: "Builds UI components, fixes React hooks, and sets up Next.js projects.",
     skills: ["React", "Next.js", "Tailwind"],
+    color: "bg-blue-100",
     steps: [{ type: "trigger", name: "Spec", icon: "MessageSquare" }, { type: "action", name: "Write Code", icon: "Code" }]
   },
   {
-    id: "dev-2", category: "Engineering", name: "Ruby", role: "Backend Architect", icon: "Database", price: "$59/mo",
+    id: "dev-2", category: "Engineering", name: "Ruby", role: "Backend Architect", icon: "Database", price: "₹1,299/mo",
     desc: "Designs SQL schemas, writes API endpoints, and optimizes queries.",
     skills: ["Postgres", "Node.js", "SQL"],
+    color: "bg-blue-200",
     steps: [{ type: "trigger", name: "Schema Request", icon: "Database" }, { type: "action", name: "Generate SQL", icon: "Code" }]
   },
   {
-    id: "dev-3", category: "Engineering", name: "Quinn", role: "QA Tester", icon: "CheckCircle", price: "$39/mo",
+    id: "dev-3", category: "Engineering", name: "Quinn", role: "QA Tester", icon: "CheckCircle", price: "₹799/mo",
     desc: "Writes unit tests and finds edge cases in your logic.",
     skills: ["Jest", "Cypress", "Debugging"],
+    color: "bg-blue-50",
     steps: [{ type: "trigger", name: "Code Snippet", icon: "Code" }, { type: "action", name: "Write Tests", icon: "Check" }]
   },
   {
-    id: "dev-4", category: "Engineering", name: "Cy", role: "Security Analyst", icon: "Lock", price: "$89/mo",
+    id: "dev-4", category: "Engineering", name: "Cy", role: "Security Analyst", icon: "Lock", price: "₹1,499/mo",
     desc: "Audits code for vulnerabilities and writes security policies.",
     skills: ["Security", "Auditing", "Compliance"],
+    color: "bg-blue-100",
     steps: [{ type: "trigger", name: "Codebase", icon: "Lock" }, { type: "action", name: "Audit Report", icon: "ShieldCheck" }]
   },
 
   // MARKETING
   {
-    id: "mkt-1", category: "Marketing", name: "Marcus", role: "Growth Hacker", icon: "Megaphone", price: "$49/mo",
+    id: "mkt-1", category: "Marketing", name: "Marcus", role: "Growth Hacker", icon: "Megaphone", price: "₹899/mo",
     desc: "Writes viral threads, LinkedIn hooks, and ad copy.",
     skills: ["Viral Hooks", "Copywriting", "Twitter"],
+    color: "bg-green-100",
     steps: [{ type: "trigger", name: "Topic", icon: "Zap" }, { type: "action", name: "Write Thread", icon: "Twitter" }]
   },
   {
-    id: "mkt-2", category: "Marketing", name: "Stella", role: "Social Media Mgr", icon: "Camera", price: "$39/mo",
+    id: "mkt-2", category: "Marketing", name: "Stella", role: "Social Media Mgr", icon: "Camera", price: "₹699/mo",
     desc: "Creates Instagram captions and TikTok scripts.",
     skills: ["Instagram", "TikTok", "Visuals"],
+    color: "bg-green-200",
     steps: [{ type: "trigger", name: "Image/Idea", icon: "Camera" }, { type: "action", name: "Write Caption", icon: "PenTool" }]
   },
   {
-    id: "mkt-3", category: "Marketing", name: "Gordon", role: "SEO Blog Writer", icon: "PenTool", price: "$45/mo",
+    id: "mkt-3", category: "Marketing", name: "Gordon", role: "SEO Blog Writer", icon: "PenTool", price: "₹799/mo",
     desc: "Writes ranking articles with perfect SEO structure.",
     skills: ["SEO", "Blogging", "Keywords"],
+    color: "bg-green-50",
     steps: [{ type: "trigger", name: "Keyword", icon: "Search" }, { type: "action", name: "Write Article", icon: "PenTool" }]
   },
   {
-    id: "mkt-4", category: "Marketing", name: "Vic", role: "Video Scripter", icon: "Video", price: "$55/mo",
+    id: "mkt-4", category: "Marketing", name: "Vic", role: "Video Scripter", icon: "Video", price: "₹899/mo",
     desc: "Turns blog posts into engaging YouTube scripts.",
     skills: ["YouTube", "Scripting", "Storytelling"],
+    color: "bg-green-100",
     steps: [{ type: "trigger", name: "Topic", icon: "Video" }, { type: "action", name: "Write Script", icon: "PenTool" }]
   },
 
   // SALES
   {
-    id: "sales-1", category: "Sales", name: "Sarah", role: "SDR / Outreach", icon: "DollarSign", price: "$59/mo",
+    id: "sales-1", category: "Sales", name: "Sarah", role: "SDR / Outreach", icon: "DollarSign", price: "₹999/mo",
     desc: "Finds leads and writes personalized cold emails.",
     skills: ["Cold Email", "Lead Gen", "Sales"],
+    color: "bg-red-100",
     steps: [{ type: "trigger", name: "Company", icon: "Search" }, { type: "action", name: "Draft Email", icon: "Mail" }]
   },
   {
-    id: "sales-2", category: "Sales", name: "Larry", role: "Lead Enricher", icon: "Target", price: "$49/mo",
+    id: "sales-2", category: "Sales", name: "Larry", role: "Lead Enricher", icon: "Target", price: "₹899/mo",
     desc: "Finds emails, LinkedIn profiles, and company data.",
     skills: ["Data Mining", "Enrichment", "Research"],
+    color: "bg-red-200",
     steps: [{ type: "trigger", name: "Name", icon: "Search" }, { type: "action", name: "Find Info", icon: "Database" }]
   },
 
   // OPERATIONS & HR
   {
-    id: "ops-1", category: "HR", name: "Holly", role: "HR Manager", icon: "Users", price: "$69/mo",
+    id: "ops-1", category: "HR", name: "Holly", role: "HR Manager", icon: "Users", price: "₹1,199/mo",
     desc: "Drafts job descriptions, screens resumes, and writes policies.",
     skills: ["Hiring", "Policy", "Culture"],
+    color: "bg-yellow-100",
     steps: [{ type: "trigger", name: "Requirement", icon: "Users" }, { type: "action", name: "Draft Doc", icon: "Clipboard" }]
   },
   {
-    id: "ops-2", category: "Finance", name: "Finn", role: "Finance Analyst", icon: "PieChart", price: "$79/mo",
+    id: "ops-2", category: "Finance", name: "Finn", role: "Finance Analyst", icon: "PieChart", price: "₹1,499/mo",
     desc: "Analyzes P&L statements and drafts tax summaries.",
     skills: ["Excel", "Finance", "Accounting"],
+    color: "bg-yellow-200",
     steps: [{ type: "trigger", name: "Data", icon: "PieChart" }, { type: "action", name: "Analyze", icon: "Check" }]
   },
   {
-    id: "ops-3", category: "Legal", name: "Lawson", role: "Legal Assistant", icon: "ShieldCheck", price: "$99/mo",
+    id: "ops-3", category: "Legal", name: "Lawson", role: "Legal Assistant", icon: "ShieldCheck", price: "₹1,999/mo",
     desc: "Drafts NDAs, contracts, and reviews terms.",
     skills: ["Contracts", "Law", "Compliance"],
+    color: "bg-yellow-100",
     steps: [{ type: "trigger", name: "Request", icon: "ShieldCheck" }, { type: "action", name: "Draft Contract", icon: "PenTool" }]
   },
   {
-    id: "ops-4", category: "Ops", name: "Pat", role: "Product Manager", icon: "Clipboard", price: "$65/mo",
+    id: "ops-4", category: "Ops", name: "Pat", role: "Product Manager", icon: "Clipboard", price: "₹1,099/mo",
     desc: "Writes user stories, specs, and roadmap items.",
     skills: ["Agile", "Specs", "Roadmap"],
+    color: "bg-yellow-50",
     steps: [{ type: "trigger", name: "Feature Idea", icon: "Zap" }, { type: "action", name: "Write Spec", icon: "Clipboard" }]
   },
   
   // SUPPORT
   {
-    id: "sup-1", category: "Support", name: "Sam", role: "Customer Support", icon: "Smartphone", price: "$29/mo",
+    id: "sup-1", category: "Support", name: "Sam", role: "Customer Support", icon: "Smartphone", price: "₹499/mo",
     desc: "Drafts empathetic replies to angry customer emails.",
     skills: ["Support", "Empathy", "Conflict"],
+    color: "bg-orange-100",
     steps: [{ type: "trigger", name: "Complaint", icon: "Mail" }, { type: "action", name: "Draft Reply", icon: "MessageSquare" }]
   },
 ];
@@ -130,17 +145,16 @@ export default function EmployeesPage() {
             return;
         }
 
-        // --- THE FIX: Ensure we save clean data ---
         const { error } = await supabase.from('agents').insert({
             user_id: user.id,
             name: `${employee.name} (${employee.role})`, 
             steps: employee.steps,
-            schedule: 'Manual'
+            schedule: 'Manual',
+            icon: employee.icon // Save icon for dashboard
         });
 
         if (error) throw error;
 
-        // Small delay to make it feel real
         setTimeout(() => {
             alert(`${employee.name} has joined your team!`);
             router.push("/");
@@ -157,27 +171,27 @@ export default function EmployeesPage() {
     : EMPLOYEES.filter(e => e.category === filter);
 
   return (
-    <div className={`min-h-screen bg-gray-50 text-black ${inter.className}`}>
+    <div className={`min-h-screen bg-white text-black ${inter.className}`}>
       
       {/* HEADER */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
+      <div className="bg-white border-b-4 border-black sticky top-0 z-20">
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-4">
-                  <Link href="/" className="p-2 hover:bg-gray-100 rounded-full transition"><ArrowLeft size={20}/></Link>
-                  <h1 className={`text-2xl uppercase ${oswald.className}`}>Marketplace</h1>
+                  <Link href="/" className="bg-black text-white p-2 rounded hover:bg-yellow-400 hover:text-black transition border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:shadow-none hover:translate-y-1"><ArrowLeft size={20}/></Link>
+                  <h1 className={`text-3xl md:text-4xl uppercase ${oswald.className} tracking-tighter`}>Marketplace</h1>
               </div>
-              <div className="hidden md:block text-sm font-bold text-gray-500">
-                  {EMPLOYEES.length} Professionals Available
+              <div className="hidden md:block text-sm font-bold bg-yellow-100 border-2 border-black px-3 py-1 rounded shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                  {EMPLOYEES.length} PROS AVAILABLE
               </div>
           </div>
           
           {/* CATEGORY TABS */}
-          <div className="max-w-7xl mx-auto px-6 flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
+          <div className="max-w-7xl mx-auto px-6 flex gap-3 overflow-x-auto pb-6 pt-2 scrollbar-hide">
             {["All", "Engineering", "Marketing", "Sales", "HR", "Finance", "Legal", "Support"].map((cat) => (
                 <button 
                     key={cat} 
                     onClick={() => setFilter(cat)}
-                    className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition ${filter === cat ? 'bg-black text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'}`}
+                    className={`px-5 py-2 rounded border-2 border-black text-xs font-bold uppercase whitespace-nowrap transition shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none ${filter === cat ? 'bg-black text-white' : 'bg-white hover:bg-yellow-400'}`}
                 >
                     {cat}
                 </button>
@@ -187,42 +201,45 @@ export default function EmployeesPage() {
 
       {/* CONTENT */}
       <main className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             
             {filteredEmployees.map((emp) => (
-                <div key={emp.id} className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-xl hover:border-black transition-all group flex flex-col justify-between h-full">
+                <div key={emp.id} className="group relative bg-white border-4 border-black rounded-xl p-6 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-y-1 flex flex-col justify-between h-full">
+                    
+                    {/* CARD CONTENT */}
                     <div>
-                        <div className="flex justify-between items-start mb-4">
-                            <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center text-black group-hover:bg-yellow-400 transition-colors border border-gray-100">
+                        <div className="flex justify-between items-start mb-6">
+                            <div className={`w-14 h-14 ${emp.color} border-2 border-black rounded-lg flex items-center justify-center text-black`}>
                                 {getIcon(emp.icon)}
                             </div>
-                            <span className="bg-gray-100 text-gray-500 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide">
+                            <span className="bg-black text-white px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide border border-black">
                                 {emp.category}
                             </span>
                         </div>
 
-                        <h3 className="text-xl font-bold leading-tight">{emp.name}</h3>
-                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">{emp.role}</p>
+                        <h3 className={`text-2xl uppercase mb-1 leading-none ${oswald.className}`}>{emp.name}</h3>
+                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">{emp.role}</p>
                         
-                        <p className="text-gray-600 text-xs leading-relaxed mb-4 min-h-[40px]">
+                        <p className="text-sm font-medium text-gray-800 leading-relaxed mb-6 min-h-[60px] border-l-4 border-gray-200 pl-3">
                             {emp.desc}
                         </p>
 
-                        <div className="flex flex-wrap gap-1.5 mb-6">
+                        <div className="flex flex-wrap gap-2 mb-8">
                             {emp.skills.map((skill, i) => (
-                                <span key={i} className="text-[10px] font-bold border border-gray-100 px-1.5 py-0.5 rounded bg-gray-50 text-gray-600">
+                                <span key={i} className="text-[10px] font-black border-2 border-black px-2 py-1 rounded bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                                     {skill}
                                 </span>
                             ))}
                         </div>
                     </div>
 
+                    {/* HIRE BUTTON */}
                     <button 
                         onClick={() => handleHire(emp)}
                         disabled={hiring === emp.id}
-                        className="w-full bg-black text-white py-3 rounded-lg font-bold text-xs uppercase tracking-wide hover:bg-green-500 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+                        className="w-full bg-yellow-400 text-black border-4 border-black py-3 rounded-lg font-black text-sm uppercase tracking-wide hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none"
                     >
-                        {hiring === emp.id ? "Onboarding..." : <>Hire {emp.price} <Plus size={14} strokeWidth={3} /></>}
+                        {hiring === emp.id ? "Onboarding..." : <>Hire For {emp.price} <Plus size={16} strokeWidth={4} /></>}
                     </button>
                 </div>
             ))}
@@ -235,20 +252,22 @@ export default function EmployeesPage() {
 // Icon Helper
 function getIcon(name: string) {
     switch(name) {
-        case "Code": return <Code size={24} />;
-        case "Megaphone": return <Megaphone size={24} />;
-        case "DollarSign": return <DollarSign size={24} />;
-        case "ShieldCheck": return <ShieldCheck size={24} />;
-        case "Users": return <Users size={24} />;
-        case "PieChart": return <PieChart size={24} />;
-        case "Camera": return <Camera size={24} />;
-        case "Database": return <Database size={24} />;
-        case "Lock": return <Lock size={24} />;
-        case "Clipboard": return <Clipboard size={24} />;
-        case "Video": return <Video size={24} />;
-        case "Target": return <Target size={24} />;
-        case "CheckCircle": return <CheckCircle size={24} />;
-        case "Smartphone": return <Smartphone size={24} />;
-        default: return <Briefcase size={24} />;
+        case "Code": return <Code size={28} strokeWidth={2.5} />;
+        case "Megaphone": return <Megaphone size={28} strokeWidth={2.5} />;
+        case "DollarSign": return <DollarSign size={28} strokeWidth={2.5} />;
+        case "ShieldCheck": return <ShieldCheck size={28} strokeWidth={2.5} />;
+        case "Users": return <Users size={28} strokeWidth={2.5} />;
+        case "PieChart": return <PieChart size={28} strokeWidth={2.5} />;
+        case "Camera": return <Camera size={28} strokeWidth={2.5} />;
+        case "Database": return <Database size={28} strokeWidth={2.5} />;
+        case "Lock": return <Lock size={28} strokeWidth={2.5} />;
+        case "Clipboard": return <Clipboard size={28} strokeWidth={2.5} />;
+        case "Video": return <Video size={28} strokeWidth={2.5} />;
+        case "Target": return <Target size={28} strokeWidth={2.5} />;
+        case "CheckCircle": return <CheckCircle size={28} strokeWidth={2.5} />;
+        case "Smartphone": return <Smartphone size={28} strokeWidth={2.5} />;
+        case "PenTool": return <PenTool size={28} strokeWidth={2.5} />;
+        case "Search": return <Search size={28} strokeWidth={2.5} />;
+        default: return <Briefcase size={28} strokeWidth={2.5} />;
     }
 }
