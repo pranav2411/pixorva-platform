@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { Oswald, Inter } from "next/font/google";
+import { useSearchParams, useRouter } from "next/navigation";
 import { 
   ArrowRight, Briefcase, Megaphone, PenTool, Target, Plus, Zap, Trash2, 
   Play, MessageSquare, Globe, Mail, Clock, Database, Twitter, 
@@ -16,30 +17,77 @@ const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  return (
+    <Suspense fallback={<div className="h-screen flex items-center justify-center font-bold">Loading HQ...</div>}>
+      <DashboardContent />
+    </Suspense>
+  );
+}
+
+function DashboardContent() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<any>(null);
   const [myAgents, setMyAgents] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
+  // --- 1. LOAD DATA & HANDLE PAYMENT SUCCESS ---
   useEffect(() => {
     const init = async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
 
+      // A. CHECK FOR STRIPE SUCCESS
+      const success = searchParams.get('success');
+      const newAgentId = searchParams.get('agent_id');
+      const newAgentName = searchParams.get('agent_name');
+
+      if (success && newAgentName && user) {
+          // Check if we already added it to avoid duplicates (idempotency)
+          const { data: existing } = await supabase.from('agents').select('*').eq('name', newAgentName).eq('user_id', user.id).single();
+          
+          if (!existing) {
+              await supabase.from('agents').insert({
+                  user_id: user.id,
+                  name: newAgentName,
+                  steps: [],
+                  schedule: 'Manual',
+                  icon: 'Bot' // Default icon, can be updated later
+              });
+              
+              // Clean URL so a refresh doesn't re-trigger
+              window.history.replaceState(null, '', '/');
+              alert("Payment Successful! Your new agent has been hired.");
+          }
+      }
+
+      // B. FETCH DASHBOARD DATA
       if (user) {
         setLoading(true);
-        const { data: agents } = await supabase.from('agents').select('*').order('created_at', { ascending: false });
+        // Fetch Agents
+        const { data: agents } = await supabase
+          .from('agents')
+          .select('*')
+          .order('created_at', { ascending: false });
         if (agents) setMyAgents(agents);
 
-        const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+        // Fetch Profile
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
         if (profileData) setProfile(profileData);
         setLoading(false);
       }
     };
     init();
-  }, []);
+  }, [searchParams]);
 
+  // --- 2. ACTIONS ---
   const handleSignOut = async () => {
       const supabase = createClient();
       await supabase.auth.signOut();
@@ -50,8 +98,11 @@ export default function Home() {
       if(!confirm("Permanently delete this agent?")) return;
       const supabase = createClient();
       const { error } = await supabase.from('agents').delete().eq('id', id);
-      if (error) { alert("Error: " + error.message); } 
-      else { setMyAgents(prev => prev.filter(a => a.id !== id)); }
+      if (error) {
+          alert("Error: " + error.message);
+      } else {
+          setMyAgents(prev => prev.filter(a => a.id !== id));
+      }
   }
 
   return (
@@ -88,7 +139,7 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* HERO / DASHBOARD */}
+      {/* HERO SECTION */}
       <main className="max-w-7xl mx-auto px-6 pt-20 pb-24 text-center">
         
         <div className="inline-block bg-yellow-100 border-2 border-black px-4 py-1 rounded-full text-[10px] md:text-xs font-black uppercase mb-8 transform -rotate-2 hover:rotate-0 transition-transform cursor-default">
@@ -104,12 +155,11 @@ export default function Home() {
 
         <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-12 font-medium">
           {user 
-            ? "Your digital workforce is running 24/7. Assign tasks below."
+            ? "Your agents are running 24/7. Check their status below or build a new one."
             : <span>Get an AI Team who runs your inbox, socials, SEO, lead generation, calls, and support. <span className="text-black font-bold"> No sick days. No drama.</span></span>
           }
         </p>
 
-        {/* MAIN BUTTONS */}
         <div className="flex justify-center gap-4">
             <Link href={user ? "/employees" : "/login"}>
                 <button className="bg-yellow-400 text-black border-4 border-black px-10 py-5 rounded-xl text-xl font-black uppercase tracking-wide hover:bg-yellow-300 transition-all shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none flex items-center gap-3">
@@ -125,20 +175,19 @@ export default function Home() {
             )}
         </div>
         
-        {/* --- DYNAMIC AGENT GRID --- */}
+        {/* AGENT GRID SECTION */}
         <div className="mt-32">
           {user ? (
+             /* --- LOGGED IN VIEW: REAL AGENTS --- */
              <div className="text-left">
                  <div className="flex flex-col md:flex-row justify-between items-end mb-10 px-4 border-b-4 border-black pb-4">
-                    <h2 className={`text-4xl md:text-6xl uppercase ${oswald.className}`}>My Active Team</h2>
+                    <h2 className={`text-4xl md:text-6xl uppercase ${oswald.className}`}>My Active Agents</h2>
                     <span className="font-bold text-gray-500">{myAgents.length} Running</span>
                  </div>
 
                  {loading ? (
                     <div className="text-center py-20 font-bold text-gray-400">Syncing with Mainframe...</div>
                  ) : myAgents.length === 0 ? (
-                    
-                    /* --- EMPTY STATE PROMPT TO MARKETPLACE --- */
                     <div className="text-center py-24 border-4 border-dashed border-gray-300 rounded-3xl bg-gray-50 flex flex-col items-center">
                         <div className="bg-white p-4 rounded-full border-2 border-gray-200 mb-4">
                             <Users size={48} className="text-gray-400" />
@@ -151,7 +200,6 @@ export default function Home() {
                             </button>
                         </Link>
                     </div>
-
                  ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {myAgents.map((agent) => (
@@ -190,7 +238,7 @@ export default function Home() {
                  )}
              </div>
           ) : (
-            /* --- LOGGED OUT VIEW --- */
+             /* --- LOGGED OUT VIEW: DEMO AGENTS --- */
             <>
               <div className="flex flex-col md:flex-row justify-between items-end mb-10 px-4 text-left md:text-center">
                 <h2 className={`text-4xl md:text-6xl uppercase ${oswald.className}`}>Meet Your Team</h2>
