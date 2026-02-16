@@ -4,9 +4,10 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Oswald, Inter } from "next/font/google";
 import { 
-  ArrowLeft, Play, Clock, Terminal, Code, Megaphone, ShieldCheck, 
-  DollarSign, User as UserIcon, Layout, History, FileText, Zap, Loader2,
-  Users, PieChart, Camera, Database, Lock, Clipboard, Video, Target, CheckCircle, Smartphone, Paperclip, X
+  ArrowLeft, Play, Terminal, Code, Megaphone, ShieldCheck, 
+  DollarSign, User as UserIcon, Layout, FileText, Zap, Loader2,
+  Users, PieChart, Camera, Database, Lock, Clipboard, Video, Target, 
+  CheckCircle, Smartphone, Paperclip, X, Download
 } from "lucide-react";
 import { createClient } from '../../utils/supabase/client';
 import Link from "next/link";
@@ -68,7 +69,6 @@ export default function AgentWorkstation() {
       const reader = new FileReader();
       reader.onloadend = () => {
           const base64String = reader.result as string;
-          // Clean base64 string (remove "data:image/png;base64,")
           const base64Data = base64String.split(',')[1]; 
           
           setSelectedFile({
@@ -92,7 +92,6 @@ export default function AgentWorkstation() {
     setActiveTab('terminal'); 
     setTaskInput(""); 
     
-    // Optimistic Update
     const tempId = Date.now().toString();
     const displayInput = selectedFile ? `[Attachment: ${selectedFile.name}] ${inputText}` : inputText;
     
@@ -111,20 +110,18 @@ export default function AgentWorkstation() {
                 agentId: agent.id,
                 userId: user?.id,
                 agentRole: agent.name,
-                fileData: selectedFile // SEND FILE TO API
+                fileData: selectedFile 
             })
         });
         
         const data = await response.json();
         const finalResult = data.result || "No response";
 
-        const isCode = finalResult.includes('<html') || finalResult.includes('<!DOCTYPE');
+        const isCode = finalResult.includes('<html') || finalResult.includes('<!DOCTYPE') || finalResult.includes('import React');
         setTasks(prev => prev.map(t => t.id === tempId ? { ...t, result: finalResult, type: isCode ? 'code' : 'text' } : t));
         setCurrentResult(finalResult);
 
         if (isCode) setActiveTab('preview');
-        
-        // Clear file after sending
         removeFile();
 
     } catch (e) {
@@ -134,13 +131,126 @@ export default function AgentWorkstation() {
     }
   };
 
-  // --- 4. SUGGESTIONS ---
+  // --- 4. UNIVERSAL SMART DOWNLOADER 🧠 ---
+  // --- 4. UNIVERSAL SMART DOWNLOADER (FIXED) 🧠 ---
+  const handleDownload = () => {
+      if (!currentResult) return;
+
+      let content = currentResult;
+      let filename = "agent-output.txt";
+      let mimeType = "text/plain";
+
+      // --- DETECTION LOGIC ---
+
+      // 1. WEB & UI
+      if (content.includes('<!DOCTYPE html') || content.includes('<html')) {
+          filename = "index.html";
+          mimeType = "text/html";
+          content = content.replace(/```html/g, "").replace(/```/g, "");
+      } 
+      else if (content.includes('import React') || content.includes('export default function')) {
+          filename = "Component.jsx";
+          mimeType = "text/javascript";
+          content = content.replace(/```jsx/g, "").replace(/```javascript/g, "").replace(/```/g, "");
+      }
+      else if (content.includes('{') && content.includes('}') && content.includes(':') && !content.includes('function')) {
+          try {
+              JSON.parse(content); 
+              filename = "data.json";
+              mimeType = "application/json";
+              content = content.replace(/```json/g, "").replace(/```/g, "");
+          } catch (e) { /* Not JSON */ }
+      }
+      else if (content.includes('body {') || content.includes('margin:')) {
+          filename = "styles.css";
+          mimeType = "text/css";
+          content = content.replace(/```css/g, "").replace(/```/g, "");
+      }
+
+      // 2. BACKEND & SCRIPTS
+      else if (content.includes('def ') && content.includes('import ')) {
+          filename = "script.py";
+          mimeType = "text/x-python";
+          content = content.replace(/```python/g, "").replace(/```/g, "");
+      }
+      else if (content.includes('public class') && content.includes('static void main')) {
+          filename = "Main.java";
+          mimeType = "text/x-java-source";
+          content = content.replace(/```java/g, "").replace(/```/g, "");
+      }
+      // --- FIX IS HERE: Escaped the ++ symbols ---
+      else if (content.includes('#include <iostream>')) {
+          filename = "main.cpp";
+          mimeType = "text/plain"; 
+          // FIX: Use \+\+ to escape the plus signs
+          content = content.replace(/```cpp/g, "").replace(/```c\+\+/g, "").replace(/```/g, "");
+      }
+      else if (content.includes('package main') && content.includes('func main')) {
+          filename = "main.go";
+          mimeType = "text/plain"; 
+          content = content.replace(/```go/g, "").replace(/```/g, "");
+      }
+      else if (content.includes('fn main()')) {
+          filename = "main.rs";
+          mimeType = "text/plain"; 
+          content = content.replace(/```rust/g, "").replace(/```/g, "");
+      }
+
+      // 3. DATABASE
+      else if (content.includes('CREATE TABLE') || content.includes('SELECT') || content.includes('INSERT INTO')) {
+          filename = "query.sql";
+          mimeType = "application/sql";
+          content = content.replace(/```sql/g, "").replace(/```/g, "");
+      }
+
+      // 4. DATA TABLES (Excel/CSV)
+      else if (content.includes('|') && content.includes('---')) {
+          filename = "data.csv";
+          mimeType = "text/csv";
+          const lines = content.split('\n');
+          const csvLines = lines
+            .filter(line => line.trim().startsWith('|') && !line.includes('---'))
+            .map(line => {
+                return line.split('|')
+                    .slice(1, -1)
+                    .map(cell => `"${cell.trim()}"`)
+                    .join(',');
+            });
+          content = csvLines.join('\n');
+      }
+
+      // 5. DEFAULT
+      else {
+          filename = "document.md";
+          mimeType = "text/markdown";
+      }
+
+      // --- TRIGGER DOWNLOAD ---
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+  };
+
+  // --- 5. SUGGESTIONS ---
   const getSuggestions = () => {
       if (!agent) return [];
       const role = agent.name?.toLowerCase() || "";
-      if (role.includes('dev')) return ["Analyze this Architecture Diagram", "Fix this Code Snippet", "Build UI from this Screenshot"];
-      if (role.includes('legal')) return ["Summarize this Contract", "Find Loopholes in this PDF", "Draft NDA based on this doc"];
-      return ["Summarize this document", "Analyze this image", "Extract data from this file"];
+      if (role.includes('backend') || role.includes('architect')) {
+        return ["Design SQL Schema", "Write Node.js API", "Explain this DB Error"];
+      }
+      if (role.includes('react') || role.includes('frontend')) {
+        return ["Build Landing Page", "Create React Component", "Fix CSS Bug"];
+      }
+      if (role.includes('legal')) {
+        return ["Draft NDA Contract", "Review Terms", "Summarize PDF"];
+      }
+      return ["Summarize this", "Write an Email", "Analyze Data"];
   }
 
   if (loading) return <div className="h-screen flex items-center justify-center font-bold gap-2"><Loader2 className="animate-spin"/> Loading Workstation...</div>;
@@ -200,7 +310,7 @@ export default function AgentWorkstation() {
 
       {/* WORKSPACE */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden bg-gray-100 relative">
-         {/* TABS */}
+         {/* TABS & DOWNLOAD BAR */}
          <div className="bg-white border-b border-gray-200 px-6 pt-4 flex items-end justify-between">
              <div className="flex gap-6">
                  <button onClick={() => setActiveTab('terminal')} className={`pb-4 text-sm font-bold flex items-center gap-2 border-b-2 transition ${activeTab === 'terminal' ? 'border-black text-black' : 'border-transparent text-gray-400 hover:text-black'}`}>
@@ -210,6 +320,16 @@ export default function AgentWorkstation() {
                     <Layout size={16}/> Preview
                  </button>
              </div>
+             
+             {/* THE SMART DOWNLOAD BUTTON */}
+             {currentResult && (
+                 <button 
+                    onClick={handleDownload}
+                    className="mb-3 bg-black text-white px-4 py-2 rounded-lg text-xs font-bold uppercase flex items-center gap-2 hover:bg-yellow-400 hover:text-black transition shadow-md"
+                 >
+                     <Download size={16}/> Download Output
+                 </button>
+             )}
          </div>
 
          {/* DISPLAY */}
@@ -234,7 +354,7 @@ export default function AgentWorkstation() {
                      ) : (
                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
                              <Layout size={48} className="mb-4"/>
-                             <div>Visual preview not available.</div>
+                             <div>Visual preview not available for this format.</div>
                          </div>
                      )}
                  </div>
@@ -259,7 +379,7 @@ export default function AgentWorkstation() {
                     ref={fileInputRef}
                     onChange={handleFileSelect}
                     className="hidden"
-                    accept="image/*,.pdf,.txt,.js,.py,.html,.css,.json,.md" // Accept images, docs, and code
+                    accept="image/*,.pdf,.txt,.js,.py,.html,.css,.json,.md"
                  />
 
                  {/* Paperclip Button */}
