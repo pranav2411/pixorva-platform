@@ -8,12 +8,15 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { to, subject, html } = body;
 
-    // ⚠️ IMPORTANT: On the Free Plan, Resend ONLY sends to your own email.
-    // We force this here so your test works immediately.
-    // Once you add a domain in Resend.com, you can remove this line.
+    // --- UNLOCKED VERSION ---
+    // We are now using the REAL 'to' address you typed.
+    // ⚠️ WARNING: On Resend Free Plan, this email (to) MUST be 
+    // the same email you used to sign up for Resend. 
+    // If you try to send to anyone else, it will fail.
+    
     const data = await resend.emails.send({
       from: 'Pixorva Agent <onboarding@resend.dev>',
-      to: 'delivered@resend.dev', // This sends to the email you signed up with
+      to: to, // <--- CHANGED FROM 'delivered@resend.dev' TO 'to'
       subject: subject,
       html: html,
     });
