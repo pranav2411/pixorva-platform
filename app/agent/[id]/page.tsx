@@ -7,7 +7,7 @@ import {
   ArrowLeft, Play, Terminal, Code, Megaphone, ShieldCheck, 
   DollarSign, User as UserIcon, Layout, FileText, Zap, Loader2,
   Users, PieChart, Camera, Database, Lock, Clipboard, Video, Target, 
-  CheckCircle, Smartphone, Paperclip, X, Download
+  CheckCircle, Smartphone, Paperclip, X, Download, Mail, Send
 } from "lucide-react";
 import { createClient } from '../../utils/supabase/client';
 import Link from "next/link";
@@ -24,11 +24,12 @@ export default function AgentWorkstation() {
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState(false);
   const [taskInput, setTaskInput] = useState("");
-  const [activeTab, setActiveTab] = useState<'terminal' | 'preview' | 'history'>('terminal');
+  const [activeTab, setActiveTab] = useState<'terminal' | 'preview'>('terminal');
   const [currentResult, setCurrentResult] = useState(""); 
   
-  // --- FILE UPLOAD STATE ---
+  // --- FILE & ACTION STATE ---
   const [selectedFile, setSelectedFile] = useState<{ name: string, type: string, base64: string } | null>(null);
+  const [pendingAction, setPendingAction] = useState<any>(null); // For Approval Card
   const fileInputRef = useRef<HTMLInputElement>(null);
   const logsEndRef = useRef<HTMLDivElement>(null);
 
@@ -61,34 +62,11 @@ export default function AgentWorkstation() {
     fetchData();
   }, [params.id, router]);
 
-  // --- 2. HANDLE FILE UPLOAD ---
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-          const base64String = reader.result as string;
-          const base64Data = base64String.split(',')[1]; 
-          
-          setSelectedFile({
-              name: file.name,
-              type: file.type,
-              base64: base64Data
-          });
-      };
-      reader.readAsDataURL(file);
-  };
-
-  const removeFile = () => {
-      setSelectedFile(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-  };
-
-  // --- 3. RUN AGENT ---
+  // --- 2. RUN AGENT ---
   const handleRun = async (inputText: string = taskInput) => {
     if (!inputText.trim() && !selectedFile) return;
     setRunning(true);
+    setPendingAction(null); // Clear previous actions
     setActiveTab('terminal'); 
     setTaskInput(""); 
     
@@ -117,6 +95,16 @@ export default function AgentWorkstation() {
         const data = await response.json();
         const finalResult = data.result || "No response";
 
+        // --- NEW: CHECK FOR ACTION JSON ---
+        try {
+            const parsedAction = JSON.parse(finalResult);
+            if (parsedAction.tool === "email") {
+                setPendingAction(parsedAction); // Trigger the Approval Card
+            }
+        } catch (e) {
+            // Not JSON, ignore
+        }
+
         const isCode = finalResult.includes('<html') || finalResult.includes('<!DOCTYPE') || finalResult.includes('import React');
         setTasks(prev => prev.map(t => t.id === tempId ? { ...t, result: finalResult, type: isCode ? 'code' : 'text' } : t));
         setCurrentResult(finalResult);
@@ -131,7 +119,35 @@ export default function AgentWorkstation() {
     }
   };
 
-  // --- 4. UNIVERSAL SMART DOWNLOADER 🧠 ---
+  // --- 3. EXECUTE ACTION (THE HAND) ---
+  const executeAction = async () => {
+      if (!pendingAction) return;
+      
+      if (confirm(`Authorize agent to send email to ${pendingAction.to}?`)) {
+          // Visual Feedback
+          const btn = document.getElementById('approve-btn');
+          if(btn) btn.innerText = "Sending...";
+
+          const response = await fetch('/api/send-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ 
+                  to: pendingAction.to,
+                  subject: pendingAction.subject,
+                  html: pendingAction.body
+              })
+          });
+          const res = await response.json();
+          if (res.success) {
+              alert("✅ Email Sent Successfully!");
+              setPendingAction(null); // Close card
+          } else {
+              alert("❌ Failed: " + res.error);
+              if(btn) btn.innerText = "Try Again";
+          }
+      }
+  };
+
   // --- 4. UNIVERSAL SMART DOWNLOADER (FIXED) 🧠 ---
   const handleDownload = () => {
       if (!currentResult) return;
@@ -178,11 +194,10 @@ export default function AgentWorkstation() {
           mimeType = "text/x-java-source";
           content = content.replace(/```java/g, "").replace(/```/g, "");
       }
-      // --- FIX IS HERE: Escaped the ++ symbols ---
+      // FIX: Escaped ++ for C++
       else if (content.includes('#include <iostream>')) {
           filename = "main.cpp";
           mimeType = "text/plain"; 
-          // FIX: Use \+\+ to escape the plus signs
           content = content.replace(/```cpp/g, "").replace(/```c\+\+/g, "").replace(/```/g, "");
       }
       else if (content.includes('package main') && content.includes('func main')) {
@@ -237,20 +252,101 @@ export default function AgentWorkstation() {
       URL.revokeObjectURL(url);
   };
 
-  // --- 5. SUGGESTIONS ---
+  // --- 5. RENDER CONTENT SWITCHER ---
+  const renderContent = () => {
+      // A. SHOW ACTION APPROVAL CARD
+      if (pendingAction) {
+          return (
+              <div className="flex flex-col items-center justify-center h-full p-8 bg-gray-100">
+                  <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-md w-full animate-in zoom-in-95">
+                      <div className="flex items-center gap-3 mb-4 border-b-2 border-gray-100 pb-3">
+                          <div className="bg-yellow-400 p-2 rounded-lg border-2 border-black"><Mail size={24}/></div>
+                          <div>
+                              <h3 className="font-black uppercase text-lg">Action Required</h3>
+                              <p className="text-xs text-gray-500 font-bold uppercase">Agent wants to send an email</p>
+                          </div>
+                      </div>
+                      
+                      <div className="space-y-4 mb-6">
+                          <div>
+                              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">To:</span>
+                              <div className="font-mono text-sm font-bold bg-gray-50 p-2 rounded border border-gray-200">{pendingAction.to}</div>
+                          </div>
+                          <div>
+                              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Subject:</span>
+                              <div className="font-mono text-sm font-medium bg-gray-50 p-2 rounded border border-gray-200">{pendingAction.subject}</div>
+                          </div>
+                          <div>
+                              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Body:</span>
+                              <div className="bg-gray-50 p-3 rounded border border-gray-200 text-xs text-gray-600 max-h-32 overflow-y-auto" dangerouslySetInnerHTML={{ __html: pendingAction.body }} />
+                          </div>
+                      </div>
+
+                      <button id="approve-btn" onClick={executeAction} className="w-full bg-black text-white py-3 rounded-lg font-bold uppercase hover:bg-green-600 transition flex items-center justify-center gap-2 mb-2">
+                          <Send size={16} /> Approve & Send
+                      </button>
+                      <button onClick={() => setPendingAction(null)} className="w-full text-gray-400 text-xs font-bold uppercase hover:text-red-500 py-2">
+                          Deny Request
+                      </button>
+                  </div>
+              </div>
+          )
+      }
+
+      // B. TERMINAL VIEW
+      if (activeTab === 'terminal') {
+          return (
+             <div className="p-8 font-mono text-sm whitespace-pre-wrap">
+                 {currentResult ? (
+                     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 animate-in fade-in">{currentResult}</div>
+                 ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-gray-400 opacity-50">
+                        <Zap size={48} className="mb-4"/>
+                        <div>Select a capability or type a command.</div>
+                    </div>
+                 )}
+                 <div ref={logsEndRef} />
+             </div>
+          );
+      }
+      
+      // C. PREVIEW VIEW
+      if (activeTab === 'preview') {
+          return (
+             <div className="w-full h-full bg-white">
+                 {currentResult.includes('<html') || currentResult.includes('<!DOCTYPE') ? (
+                     <iframe srcDoc={currentResult} className="w-full h-full border-none" sandbox="allow-scripts" />
+                 ) : (
+                     <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                         <Layout size={48} className="mb-4"/>
+                         <div>Visual preview not available.</div>
+                     </div>
+                 )}
+             </div>
+          );
+      }
+  };
+
+  // --- 6. HELPERS ---
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onloadend = () => {
+          const base64String = reader.result as string;
+          setSelectedFile({ name: file.name, type: file.type, base64: base64String.split(',')[1] });
+      };
+      reader.readAsDataURL(file);
+  };
+  const removeFile = () => { setSelectedFile(null); if (fileInputRef.current) fileInputRef.current.value = ""; };
+
   const getSuggestions = () => {
       if (!agent) return [];
       const role = agent.name?.toLowerCase() || "";
-      if (role.includes('backend') || role.includes('architect')) {
-        return ["Design SQL Schema", "Write Node.js API", "Explain this DB Error"];
-      }
-      if (role.includes('react') || role.includes('frontend')) {
-        return ["Build Landing Page", "Create React Component", "Fix CSS Bug"];
-      }
-      if (role.includes('legal')) {
-        return ["Draft NDA Contract", "Review Terms", "Summarize PDF"];
-      }
-      return ["Summarize this", "Write an Email", "Analyze Data"];
+      if (role.includes('backend')) return ["Design SQL Schema", "Write Node.js API"];
+      if (role.includes('react')) return ["Build Landing Page", "Create React Component"];
+      if (role.includes('marketing')) return ["Write Email Campaign", "Draft Tweet Thread"];
+      return ["Write an Email", "Analyze Data", "Summarize File"];
   }
 
   if (loading) return <div className="h-screen flex items-center justify-center font-bold gap-2"><Loader2 className="animate-spin"/> Loading Workstation...</div>;
@@ -294,7 +390,7 @@ export default function AgentWorkstation() {
              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 px-2">Work History</h3>
              <div className="space-y-2">
                  {tasks.map((t) => (
-                     <div key={t.id} onClick={() => { setCurrentResult(t.result); setActiveTab(t.type === 'code' ? 'preview' : 'terminal'); }} className="p-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-xl cursor-pointer transition group">
+                     <div key={t.id} onClick={() => { setCurrentResult(t.result); setActiveTab(t.type === 'code' ? 'preview' : 'terminal'); setPendingAction(null); }} className="p-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-xl cursor-pointer transition group">
                          <div className="font-bold text-xs truncate mb-1 text-gray-800">{t.input}</div>
                          <div className="flex justify-between items-center text-[10px] text-gray-400">
                              <span>{new Date(t.created_at).toLocaleTimeString()}</span>
@@ -322,7 +418,7 @@ export default function AgentWorkstation() {
              </div>
              
              {/* THE SMART DOWNLOAD BUTTON */}
-             {currentResult && (
+             {currentResult && !pendingAction && (
                  <button 
                     onClick={handleDownload}
                     className="mb-3 bg-black text-white px-4 py-2 rounded-lg text-xs font-bold uppercase flex items-center gap-2 hover:bg-yellow-400 hover:text-black transition shadow-md"
@@ -332,78 +428,33 @@ export default function AgentWorkstation() {
              )}
          </div>
 
-         {/* DISPLAY */}
+         {/* DISPLAY CONTENT (Action Card or Logs) */}
          <div className="flex-1 overflow-auto relative">
-             {activeTab === 'terminal' && (
-                 <div className="p-8 font-mono text-sm whitespace-pre-wrap">
-                     {currentResult ? (
-                         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 animate-in fade-in">{currentResult}</div>
-                     ) : (
-                        <div className="flex flex-col items-center justify-center h-full text-gray-400 opacity-50">
-                            <Zap size={48} className="mb-4"/>
-                            <div>Select a capability or type a command.</div>
-                        </div>
-                     )}
-                     <div ref={logsEndRef} />
-                 </div>
-             )}
-             {activeTab === 'preview' && (
-                 <div className="w-full h-full bg-white">
-                     {currentResult.includes('<html') || currentResult.includes('<!DOCTYPE') ? (
-                         <iframe srcDoc={currentResult} className="w-full h-full border-none" sandbox="allow-scripts" />
-                     ) : (
-                         <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                             <Layout size={48} className="mb-4"/>
-                             <div>Visual preview not available for this format.</div>
-                         </div>
-                     )}
-                 </div>
-             )}
+             {renderContent()}
          </div>
 
          {/* INPUT AREA */}
          <div className="bg-white border-t border-gray-200 p-6 z-30">
-             
-             {/* Attached File Preview */}
              {selectedFile && (
                  <div className="mb-2 inline-flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-xs font-bold border border-gray-300">
                      <Paperclip size={12}/> {selectedFile.name}
                      <button onClick={removeFile} className="hover:text-red-500"><X size={12}/></button>
                  </div>
              )}
-
              <div className="relative">
-                 {/* Hidden File Input */}
-                 <input 
-                    type="file" 
-                    ref={fileInputRef}
-                    onChange={handleFileSelect}
-                    className="hidden"
-                    accept="image/*,.pdf,.txt,.js,.py,.html,.css,.json,.md"
-                 />
-
-                 {/* Paperclip Button */}
-                 <button 
-                    onClick={() => fileInputRef.current?.click()}
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-black transition p-2"
-                    title="Attach File"
-                 >
+                 <input type="file" ref={fileInputRef} onChange={handleFileSelect} className="hidden" accept="image/*,.pdf,.txt,.js,.py,.html,.css,.json,.md" />
+                 <button onClick={() => fileInputRef.current?.click()} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-black transition p-2" title="Attach File">
                     <Paperclip size={20} />
                  </button>
-
                  <input 
                     type="text" 
                     value={taskInput}
                     onChange={(e) => setTaskInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleRun()}
-                    placeholder={selectedFile ? "What should I do with this file?" : "Describe your task..."}
+                    placeholder={selectedFile ? "What should I do with this file?" : "Describe your task (e.g. 'Send email to...')"}
                     className="w-full pl-12 pr-32 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:bg-white text-lg transition shadow-sm"
                  />
-                 <button 
-                    onClick={() => handleRun()}
-                    disabled={running}
-                    className="absolute right-2 top-2 bottom-2 bg-black text-white px-6 rounded-lg font-bold uppercase tracking-wide hover:bg-yellow-400 hover:text-black transition flex items-center gap-2 disabled:opacity-50"
-                 >
+                 <button onClick={() => handleRun()} disabled={running} className="absolute right-2 top-2 bottom-2 bg-black text-white px-6 rounded-lg font-bold uppercase tracking-wide hover:bg-yellow-400 hover:text-black transition flex items-center gap-2 disabled:opacity-50">
                     {running ? "..." : <><Play size={16} fill="white" className="text-current"/> Run</>}
                  </button>
              </div>
