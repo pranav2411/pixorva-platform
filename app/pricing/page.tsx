@@ -1,21 +1,93 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Oswald, Inter } from "next/font/google";
 import { Check, X, Zap, ArrowLeft, Crown, Shield, Rocket } from "lucide-react";
 import Link from "next/link";
+import Script from "next/script";
+import { useRouter } from "next/navigation";
+import { createClient } from "../utils/supabase/client"; // Ensure path is correct
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
 
 export default function PricingPage() {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  // --- RAZORPAY HANDLER ---
+  const handleSubscription = async (planId: string, price: number, planName: string) => {
+    setLoading(true);
+    const supabase = createClient();
+
+    try {
+        // 1. Check Auth
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            router.push("/login");
+            return;
+        }
+
+        // 2. Create Subscription
+        const res = await fetch('/api/checkout/razorpay', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                planId: planId, // Pass the Razorpay Plan ID
+                agentId: 'BUNDLE_ALL', // Special ID for full access
+            }),
+        });
+        
+        const data = await res.json();
+        if (!data.sub_id) throw new Error("Payment init failed");
+
+        // 3. Open Modal
+        const options = {
+            key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+            subscription_id: data.sub_id,
+            name: "Pixorva PRO",
+            description: `Subscribe to ${planName}`,
+            handler: async function (response: any) {
+                // Verify
+                const verifyRes = await fetch('/api/checkout/verify', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_subscription_id: response.razorpay_subscription_id,
+                        razorpay_signature: response.razorpay_signature,
+                    }),
+                });
+                const verifyData = await verifyRes.json();
+                
+                if (verifyData.success) {
+                    router.push("/studio?welcome=pro");
+                } else {
+                    alert("Payment failed.");
+                }
+            },
+            theme: { color: "#FFC800" },
+        };
+
+        const rzp = new (window as any).Razorpay(options);
+        rzp.open();
+
+    } catch (error: any) {
+        alert("Error: " + error.message);
+    } finally {
+        setLoading(false);
+    }
+  };
+
   return (
     <div className={`min-h-screen bg-white text-black ${inter.className}`}>
       
+      {/* LOAD SCRIPT */}
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
+
       {/* NAVBAR */}
       <nav className="flex items-center justify-between px-6 md:px-12 py-5 border-b-4 border-black sticky top-0 bg-white z-50">
-        <Link href="/" className="flex items-center gap-2">
-            <div className="bg-black text-white w-8 h-8 flex items-center justify-center rounded text-lg font-bold">P</div>
+        <Link href="/" className="flex items-center gap-2 group">
+            <div className="bg-black text-white w-8 h-8 flex items-center justify-center rounded text-lg font-bold group-hover:bg-yellow-400 group-hover:text-black transition">P</div>
             <span className={`text-2xl uppercase italic ${oswald.className}`}>Pixorva</span>
         </Link>
         <Link href="/trial">
@@ -80,11 +152,14 @@ export default function PricingPage() {
                       <li className="flex items-center justify-center gap-2"><Zap size={18} fill="black"/> Skills: 20+ Experts</li>
                       <li className="flex items-center justify-center gap-2"><Zap size={18} fill="black"/> Drama: Zero. None.</li>
                   </ul>
-                  <Link href="/trial" className="w-full">
-                    <button className="mt-8 w-full bg-black text-white py-3 rounded-lg font-bold uppercase hover:bg-white hover:text-black hover:border-2 hover:border-black transition">
-                        Join the Revolution
-                    </button>
-                  </Link>
+                  {/* HERO BUTTON LINKED TO PRO PLAN */}
+                  <button 
+                    onClick={() => handleSubscription("plan_YOUR_GROWTH_PLAN_ID", 4999, "Growth Pro")}
+                    disabled={loading}
+                    className="mt-8 w-full bg-black text-white py-3 rounded-lg font-bold uppercase hover:bg-white hover:text-black hover:border-2 hover:border-black transition border-2 border-black"
+                  >
+                      {loading ? "Processing..." : "Join the Revolution"}
+                  </button>
               </div>
 
           </div>
@@ -125,10 +200,16 @@ export default function PricingPage() {
                       <li className="flex gap-2"><Check size={16}/> "Flash" Speed (Fast)</li>
                       <li className="flex gap-2"><Check size={16}/> Save History</li>
                   </ul>
-                  <button className="w-full bg-yellow-400 text-black border-2 border-yellow-400 py-3 rounded-lg font-bold uppercase hover:bg-white hover:border-white transition">Get Growth Pro</button>
+                  <button 
+                    onClick={() => handleSubscription("plan_SHVxHacNk3IXiH", 4999, "Growth Pro")}
+                    disabled={loading}
+                    className="w-full bg-yellow-400 text-black border-2 border-yellow-400 py-3 rounded-lg font-bold uppercase hover:bg-white hover:border-white transition"
+                  >
+                    {loading ? "Processing..." : "Get Growth Pro"}
+                  </button>
               </div>
 
-              {/* AGENCY */}
+              {/* ENTERPRISE */}
               <div className="border-4 border-black rounded-2xl p-8 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition hover:-translate-y-1 bg-white">
                   <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mb-4 border-2 border-black"><Crown size={24}/></div>
                   <h3 className={`text-2xl uppercase ${oswald.className}`}>Enterprise</h3>
@@ -140,7 +221,9 @@ export default function PricingPage() {
                       <li className="flex gap-2"><Check size={16}/> API Access</li>
                       <li className="flex gap-2"><Check size={16}/> Dedicated Support</li>
                   </ul>
-                  <button className="w-full border-2 border-black py-3 rounded-lg font-bold uppercase hover:bg-black hover:text-white transition">Contact Sales</button>
+                  <a href="mailto:sales@pixorva.com">
+                    <button className="w-full border-2 border-black py-3 rounded-lg font-bold uppercase hover:bg-black hover:text-white transition">Contact Sales</button>
+                  </a>
               </div>
 
           </div>
