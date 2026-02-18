@@ -4,42 +4,38 @@ import React, { useState } from "react";
 import { Oswald, Inter } from "next/font/google";
 import { ArrowLeft, Plus, Check, Briefcase, Code, Megaphone, PenTool, Search, ShieldCheck, DollarSign, User, Users, PieChart, Camera, Database, Lock, Clipboard, Video, Target, CheckCircle, Smartphone } from "lucide-react";
 import Link from "next/link";
+import { createClient } from '../utils/supabase/client';
 import { useRouter } from 'next/navigation';
-import Script from 'next/script'; // Required for Razorpay
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
 
-// --- THE MEGA ROSTER (UPDATED WITH RAZORPAY FIELDS) ---
+// --- THE MEGA ROSTER (INDIAN PRICING & REASONABLE RATES) ---
 const EMPLOYEES = [
   // ENGINEERING
   {
-    id: "dev-1", category: "Engineering", name: "Devon", role: "React Developer", icon: "Code", 
-    price: "₹999/mo", priceNum: 999, planId: "plan_SHVk7Glb5xfNYS", // <--- PASTE YOUR RAZORPAY PLAN ID HERE
+    id: "dev-1", category: "Engineering", name: "Devon", role: "React Developer", icon: "Code", price: "₹999/mo",
     desc: "Builds UI components, fixes React hooks, and sets up Next.js projects.",
     skills: ["React", "Next.js", "Tailwind"],
     color: "bg-blue-100",
     steps: [{ type: "trigger", name: "Spec", icon: "MessageSquare" }, { type: "action", name: "Write Code", icon: "Code" }]
   },
   {
-    id: "dev-2", category: "Engineering", name: "Ruby", role: "Backend Architect", icon: "Database", 
-    price: "₹1,299/mo", priceNum: 1299, planId: "plan_NVhC...",
+    id: "dev-2", category: "Engineering", name: "Ruby", role: "Backend Architect", icon: "Database", price: "₹1,299/mo",
     desc: "Designs SQL schemas, writes API endpoints, and optimizes queries.",
     skills: ["Postgres", "Node.js", "SQL"],
     color: "bg-blue-200",
     steps: [{ type: "trigger", name: "Schema Request", icon: "Database" }, { type: "action", name: "Generate SQL", icon: "Code" }]
   },
   {
-    id: "dev-3", category: "Engineering", name: "Quinn", role: "QA Tester", icon: "CheckCircle", 
-    price: "₹799/mo", priceNum: 799, planId: "plan_NVhC...",
+    id: "dev-3", category: "Engineering", name: "Quinn", role: "QA Tester", icon: "CheckCircle", price: "₹799/mo",
     desc: "Writes unit tests and finds edge cases in your logic.",
     skills: ["Jest", "Cypress", "Debugging"],
     color: "bg-blue-50",
     steps: [{ type: "trigger", name: "Code Snippet", icon: "Code" }, { type: "action", name: "Write Tests", icon: "Check" }]
   },
   {
-    id: "dev-4", category: "Engineering", name: "Cy", role: "Security Analyst", icon: "Lock", 
-    price: "₹1,499/mo", priceNum: 1499, planId: "plan_NVhC...",
+    id: "dev-4", category: "Engineering", name: "Cy", role: "Security Analyst", icon: "Lock", price: "₹1,499/mo",
     desc: "Audits code for vulnerabilities and writes security policies.",
     skills: ["Security", "Auditing", "Compliance"],
     color: "bg-blue-100",
@@ -48,32 +44,28 @@ const EMPLOYEES = [
 
   // MARKETING
   {
-    id: "mkt-1", category: "Marketing", name: "Marcus", role: "Growth Hacker", icon: "Megaphone", 
-    price: "₹899/mo", priceNum: 899, planId: "plan_NVhC...",
+    id: "mkt-1", category: "Marketing", name: "Marcus", role: "Growth Hacker", icon: "Megaphone", price: "₹899/mo",
     desc: "Writes viral threads, LinkedIn hooks, and ad copy.",
     skills: ["Viral Hooks", "Copywriting", "Twitter"],
     color: "bg-green-100",
     steps: [{ type: "trigger", name: "Topic", icon: "Zap" }, { type: "action", name: "Write Thread", icon: "Twitter" }]
   },
   {
-    id: "mkt-2", category: "Marketing", name: "Stella", role: "Social Media Mgr", icon: "Camera", 
-    price: "₹699/mo", priceNum: 699, planId: "plan_NVhC...",
+    id: "mkt-2", category: "Marketing", name: "Stella", role: "Social Media Mgr", icon: "Camera", price: "₹699/mo",
     desc: "Creates Instagram captions and TikTok scripts.",
     skills: ["Instagram", "TikTok", "Visuals"],
     color: "bg-green-200",
     steps: [{ type: "trigger", name: "Image/Idea", icon: "Camera" }, { type: "action", name: "Write Caption", icon: "PenTool" }]
   },
   {
-    id: "mkt-3", category: "Marketing", name: "Gordon", role: "SEO Blog Writer", icon: "PenTool", 
-    price: "₹799/mo", priceNum: 799, planId: "plan_NVhC...",
+    id: "mkt-3", category: "Marketing", name: "Gordon", role: "SEO Blog Writer", icon: "PenTool", price: "₹799/mo",
     desc: "Writes ranking articles with perfect SEO structure.",
     skills: ["SEO", "Blogging", "Keywords"],
     color: "bg-green-50",
     steps: [{ type: "trigger", name: "Keyword", icon: "Search" }, { type: "action", name: "Write Article", icon: "PenTool" }]
   },
   {
-    id: "mkt-4", category: "Marketing", name: "Vic", role: "Video Scripter", icon: "Video", 
-    price: "₹899/mo", priceNum: 899, planId: "plan_NVhC...",
+    id: "mkt-4", category: "Marketing", name: "Vic", role: "Video Scripter", icon: "Video", price: "₹899/mo",
     desc: "Turns blog posts into engaging YouTube scripts.",
     skills: ["YouTube", "Scripting", "Storytelling"],
     color: "bg-green-100",
@@ -82,50 +74,44 @@ const EMPLOYEES = [
 
   // SALES
   {
-    id: "sales-1", category: "Sales", name: "Sarah", role: "SDR / Outreach", icon: "DollarSign", 
-    price: "₹999/mo", priceNum: 999, planId: "plan_NVhC...",
+    id: "sales-1", category: "Sales", name: "Sarah", role: "SDR / Outreach", icon: "DollarSign", price: "₹999/mo",
     desc: "Finds leads and writes personalized cold emails.",
     skills: ["Cold Email", "Lead Gen", "Sales"],
     color: "bg-red-100",
     steps: [{ type: "trigger", name: "Company", icon: "Search" }, { type: "action", name: "Draft Email", icon: "Mail" }]
   },
   {
-    id: "sales-2", category: "Sales", name: "Larry", role: "Lead Enricher", icon: "Target", 
-    price: "₹899/mo", priceNum: 899, planId: "plan_NVhC...",
+    id: "sales-2", category: "Sales", name: "Larry", role: "Lead Enricher", icon: "Target", price: "₹899/mo",
     desc: "Finds emails, LinkedIn profiles, and company data.",
     skills: ["Data Mining", "Enrichment", "Research"],
     color: "bg-red-200",
     steps: [{ type: "trigger", name: "Name", icon: "Search" }, { type: "action", name: "Find Info", icon: "Database" }]
   },
 
-  // HR & OPS
+  // OPERATIONS & HR
   {
-    id: "ops-1", category: "HR", name: "Holly", role: "HR Manager", icon: "Users", 
-    price: "₹1,199/mo", priceNum: 1199, planId: "plan_NVhC...",
+    id: "ops-1", category: "HR", name: "Holly", role: "HR Manager", icon: "Users", price: "₹1,199/mo",
     desc: "Drafts job descriptions, screens resumes, and writes policies.",
     skills: ["Hiring", "Policy", "Culture"],
     color: "bg-yellow-100",
     steps: [{ type: "trigger", name: "Requirement", icon: "Users" }, { type: "action", name: "Draft Doc", icon: "Clipboard" }]
   },
   {
-    id: "ops-2", category: "Finance", name: "Finn", role: "Finance Analyst", icon: "PieChart", 
-    price: "₹1,499/mo", priceNum: 1499, planId: "plan_NVhC...",
+    id: "ops-2", category: "Finance", name: "Finn", role: "Finance Analyst", icon: "PieChart", price: "₹1,499/mo",
     desc: "Analyzes P&L statements and drafts tax summaries.",
     skills: ["Excel", "Finance", "Accounting"],
     color: "bg-yellow-200",
     steps: [{ type: "trigger", name: "Data", icon: "PieChart" }, { type: "action", name: "Analyze", icon: "Check" }]
   },
   {
-    id: "ops-3", category: "Legal", name: "Lawson", role: "Legal Assistant", icon: "ShieldCheck", 
-    price: "₹1,999/mo", priceNum: 1999, planId: "plan_NVhC...",
+    id: "ops-3", category: "Legal", name: "Lawson", role: "Legal Assistant", icon: "ShieldCheck", price: "₹1,999/mo",
     desc: "Drafts NDAs, contracts, and reviews terms.",
     skills: ["Contracts", "Law", "Compliance"],
     color: "bg-yellow-100",
     steps: [{ type: "trigger", name: "Request", icon: "ShieldCheck" }, { type: "action", name: "Draft Contract", icon: "PenTool" }]
   },
   {
-    id: "ops-4", category: "Ops", name: "Pat", role: "Product Manager", icon: "Clipboard", 
-    price: "₹1,099/mo", priceNum: 1099, planId: "plan_NVhC...",
+    id: "ops-4", category: "Ops", name: "Pat", role: "Product Manager", icon: "Clipboard", price: "₹1,099/mo",
     desc: "Writes user stories, specs, and roadmap items.",
     skills: ["Agile", "Specs", "Roadmap"],
     color: "bg-yellow-50",
@@ -134,8 +120,7 @@ const EMPLOYEES = [
   
   // SUPPORT
   {
-    id: "sup-1", category: "Support", name: "Sam", role: "Customer Support", icon: "Smartphone", 
-    price: "₹499/mo", priceNum: 499, planId: "plan_NVhC...",
+    id: "sup-1", category: "Support", name: "Sam", role: "Customer Support", icon: "Smartphone", price: "₹499/mo",
     desc: "Drafts empathetic replies to angry customer emails.",
     skills: ["Support", "Empathy", "Conflict"],
     color: "bg-orange-100",
@@ -148,71 +133,36 @@ export default function EmployeesPage() {
   const [filter, setFilter] = useState("All");
   const router = useRouter();
 
-  // --- RAZORPAY HANDLER ---
   const handleHire = async (employee: any) => {
     setHiring(employee.id);
+    const supabase = createClient();
 
     try {
-        // 1. Create Subscription on Server
-        const res = await fetch('/api/checkout/razorpay', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            planId: employee.planId, 
-            agentId: employee.id 
-          }),
-        });
-        
-        const data = await res.json();
-        
-        if (data.error || !data.sub_id) {
-           throw new Error(data.error || "Failed to init payment");
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            alert("Please log in to hire employees.");
+            router.push("/login");
+            return;
         }
 
-        // 2. Open Razorpay Modal
-        const options = {
-          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-          subscription_id: data.sub_id,
-          name: "Pixorva Marketplace",
-          description: `Hire ${employee.name}`,
-          image: "https://your-logo-url.com/logo.png", // Add your logo here
-          
-          handler: async function (response: any) {
-            // 3. Verify Payment
-            const verifyRes = await fetch('/api/checkout/verify', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_subscription_id: response.razorpay_subscription_id,
-                razorpay_signature: response.razorpay_signature,
-              }),
-            });
-            
-            const verifyData = await verifyRes.json();
-            
-            if (verifyData.success) {
-               alert(`${employee.name} is now on your team! Redirecting to Studio...`);
-               // Redirect to Studio to start using the agent
-               router.push(`/studio?agent=${employee.id}&welcome=true`);
-            } else {
-               alert("Payment verification failed. Please contact support.");
-            }
-          },
-          theme: { color: "#FFC800" }, // Matches your styling
-        };
+        const { error } = await supabase.from('agents').insert({
+            user_id: user.id,
+            name: `${employee.name} (${employee.role})`, 
+            steps: employee.steps,
+            schedule: 'Manual',
+            icon: employee.icon // Save icon for dashboard
+        });
 
-        const rzp = new (window as any).Razorpay(options);
-        rzp.open();
+        if (error) throw error;
+
+        setTimeout(() => {
+            alert(`${employee.name} has joined your team!`);
+            router.push("/");
+        }, 500);
 
     } catch (e: any) {
-        if(e.message === "Unauthorized") {
-             router.push("/login");
-        } else {
-             alert("Hiring failed: " + e.message);
-        }
-    } finally {
-        setHiring(null); // Stop loading spinner if error or modal opens
+        alert("Hiring failed: " + e.message);
+        setHiring(null);
     }
   };
 
@@ -223,9 +173,6 @@ export default function EmployeesPage() {
   return (
     <div className={`min-h-screen bg-white text-black ${inter.className}`}>
       
-      {/* LOAD RAZORPAY SCRIPT */}
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
-
       {/* HEADER */}
       <div className="bg-white border-b-4 border-black sticky top-0 z-20">
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -290,9 +237,9 @@ export default function EmployeesPage() {
                     <button 
                         onClick={() => handleHire(emp)}
                         disabled={hiring === emp.id}
-                        className="w-full bg-yellow-400 text-black border-4 border-black py-3 rounded-lg font-black text-sm uppercase tracking-wide hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none disabled:opacity-50"
+                        className="w-full bg-yellow-400 text-black border-4 border-black py-3 rounded-lg font-black text-sm uppercase tracking-wide hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none"
                     >
-                        {hiring === emp.id ? "Processing..." : <>Hire For {emp.price} <Plus size={16} strokeWidth={4} /></>}
+                        {hiring === emp.id ? "Onboarding..." : <>Hire For {emp.price} <Plus size={16} strokeWidth={4} /></>}
                     </button>
                 </div>
             ))}
