@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Oswald, Inter } from "next/font/google";
 import { 
   ArrowRight, Briefcase, Megaphone, PenTool, Target, Plus, Zap, Trash2, 
@@ -60,8 +61,14 @@ export default function Home() {
       {/* NAVBAR */}
       <nav className="flex items-center justify-between px-6 md:px-12 py-5 sticky top-0 bg-white/95 backdrop-blur-sm z-50 border-b-4 border-black">
         <div className={`text-2xl md:text-3xl tracking-tighter uppercase italic ${oswald.className} flex items-center gap-2`}>
-          <div className="bg-black text-white w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-lg text-lg md:text-xl not-italic font-bold">P</div>
-          Pixorva
+          <Image
+            src="/favicon.ico"
+            alt="Pixorva Logo"
+            width={36}
+            height={36}
+            className="w-8 h-8 md:w-9 md:h-9 rounded-lg"
+          />
+        Pixorva
         </div>
         
         <div className="hidden md:flex gap-8 text-sm font-bold uppercase tracking-wide">
