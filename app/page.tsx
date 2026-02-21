@@ -1,17 +1,16 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Oswald, Inter } from "next/font/google";
-import { 
-  ArrowRight, Briefcase, Megaphone, PenTool, Target, Plus, Zap, Trash2, 
-  Play, MessageSquare, Globe, Mail, Clock, Database, Twitter, 
-  Settings as SettingsIcon, LogOut, Send, Code, ShieldCheck, DollarSign, User as UserIcon,
-  Users, PieChart, Camera, Lock, Clipboard, Video, CheckCircle, Smartphone, Search
+import {
+  ArrowRight, Briefcase, Megaphone, PenTool, Target, Plus, Zap, Trash2, Play,
+  MessageSquare, Globe, Mail, Clock, Database, Twitter, Settings as SettingsIcon,
+  LogOut, Send, Code, ShieldCheck, DollarSign, User as UserIcon, Users, PieChart,
+  Camera, Lock, Clipboard, Video, CheckCircle, Smartphone, Search, Menu, X
 } from "lucide-react";
-import { createClient } from './utils/supabase/client';
-import { User } from '@supabase/supabase-js';
+import { createClient } from "./utils/supabase/client";
+import { User } from "@supabase/supabase-js";
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -21,19 +20,25 @@ export default function Home() {
   const [profile, setProfile] = useState<any>(null);
   const [myAgents, setMyAgents] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const init = async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
-
       if (user) {
         setLoading(true);
-        const { data: agents } = await supabase.from('agents').select('*').order('created_at', { ascending: false });
+        const { data: agents } = await supabase
+          .from("agents")
+          .select("*")
+          .order("created_at", { ascending: false });
         if (agents) setMyAgents(agents);
-
-        const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+        const { data: profileData } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
+          .single();
         if (profileData) setProfile(profileData);
         setLoading(false);
       }
@@ -42,254 +47,345 @@ export default function Home() {
   }, []);
 
   const handleSignOut = async () => {
-      const supabase = createClient();
-      await supabase.auth.signOut();
-      window.location.reload(); 
-  }
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    window.location.reload();
+  };
 
   const handleDelete = async (id: string) => {
-      if(!confirm("Permanently delete this agent?")) return;
-      const supabase = createClient();
-      const { error } = await supabase.from('agents').delete().eq('id', id);
-      if (error) { alert("Error: " + error.message); } 
-      else { setMyAgents(prev => prev.filter(a => a.id !== id)); }
-  }
+    if (!confirm("Permanently delete this agent?")) return;
+    const supabase = createClient();
+    const { error } = await supabase.from("agents").delete().eq("id", id);
+    if (error) {
+      alert("Error: " + error.message);
+    } else {
+      setMyAgents((prev) => prev.filter((a) => a.id !== id));
+    }
+  };
 
   return (
-    <div className={`min-h-screen bg-white text-black selection:bg-yellow-400 selection:text-black ${inter.className}`}>
-      
-      {/* NAVBAR */}
-      <nav className="flex items-center justify-between px-6 md:px-12 py-5 sticky top-0 bg-white/95 backdrop-blur-sm z-50 border-b-4 border-black">
-        <div className={`text-2xl md:text-3xl tracking-tighter uppercase italic ${oswald.className} flex items-center gap-2`}>
-          <Image
-            src="/favicon.ico"
-            alt="Pixorva Logo"
-            width={36}
-            height={36}
-            className="w-8 h-8 md:w-9 md:h-9 rounded-lg"
-          />
-        Pixorva
-        </div>
-        
-        <div className="hidden md:flex gap-8 text-sm font-bold uppercase tracking-wide">
-          <Link href="/employees" className="hover:text-yellow-600 transition">Marketplace</Link>
-          <Link href="/pricing" className="hover:text-yellow-600 transition">Pricing</Link>
-          <Link href="/studio" className="hover:text-yellow-600 transition">Studio</Link>
+    <div className={`${inter.className} min-h-screen bg-black text-white`}>
+      {/* ── NAVBAR ── */}
+      <nav className="sticky top-0 z-50 border-b border-white/10 bg-black/80 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+          {/* Logo */}
+          <Link href="/" className={`${oswald.className} text-xl sm:text-2xl tracking-widest text-white`}>
+            Pixorva
+          </Link>
+
+          {/* Desktop nav links */}
+          <div className="hidden items-center gap-6 md:flex">
+            <Link href="/marketplace" className="text-sm text-gray-400 transition hover:text-white">
+              Marketplace
+            </Link>
+            <Link href="/pricing" className="text-sm text-gray-400 transition hover:text-white">
+              Pricing
+            </Link>
+            <Link href="/studio" className="text-sm text-gray-400 transition hover:text-white">
+              Studio
+            </Link>
+          </div>
+
+          {/* Desktop right side */}
+          <div className="hidden items-center gap-3 md:flex">
+            {user ? (
+              <>
+                <span className="text-sm text-gray-300">
+                  {profile?.full_name || user.email?.split("@")[0]}
+                </span>
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center gap-1 rounded border border-white/20 px-3 py-1.5 text-xs text-gray-400 transition hover:border-white/50 hover:text-white"
+                >
+                  <LogOut size={12} />
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <Link href="/login" className="text-sm text-gray-400 transition hover:text-white">
+                Log in
+              </Link>
+            )}
+            <Link
+              href={user ? "/marketplace" : "/get-started"}
+              className="rounded bg-white px-4 py-2 text-sm font-semibold text-black transition hover:bg-gray-200"
+            >
+              {user ? "Hire Staff" : "Get Started"}
+            </Link>
+          </div>
+
+          {/* Mobile hamburger */}
+          <button
+            className="rounded p-2 text-gray-400 transition hover:text-white md:hidden"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
 
-        <div className="flex items-center gap-4">
-          {user ? (
-             <div className="flex items-center gap-3">
-                 <Link href="/settings" className="hidden md:flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-black transition">
-                    <SettingsIcon size={14} />
-                    {profile?.full_name || user.email?.split('@')[0]}
-                 </Link>
-                 <button onClick={handleSignOut} className="text-xs font-bold text-gray-400 hover:text-red-500 ml-2"><LogOut size={16}/></button>
-             </div>
-          ) : (
-             <Link href="/login" className="hidden md:block font-bold text-sm hover:text-yellow-600 transition">Log in</Link>
-          )}
-          <Link href={user ? "/employees" : "/login"} className="bg-black text-white border-2 border-black px-4 md:px-6 py-2 rounded-lg text-xs md:text-sm font-bold uppercase hover:bg-yellow-400 hover:text-black hover:border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[2px] hover:shadow-none whitespace-nowrap">
-            {user ? "Hire Staff" : "Get Started"}
-          </Link>
-        </div>
+        {/* Mobile drawer */}
+        {mobileMenuOpen && (
+          <div className="border-t border-white/10 bg-black/95 px-4 pb-4 pt-2 md:hidden">
+            <div className="flex flex-col gap-3">
+              <Link href="/marketplace" className="py-2 text-sm text-gray-400" onClick={() => setMobileMenuOpen(false)}>Marketplace</Link>
+              <Link href="/pricing" className="py-2 text-sm text-gray-400" onClick={() => setMobileMenuOpen(false)}>Pricing</Link>
+              <Link href="/studio" className="py-2 text-sm text-gray-400" onClick={() => setMobileMenuOpen(false)}>Studio</Link>
+              <hr className="border-white/10" />
+              {user ? (
+                <>
+                  <span className="py-1 text-sm text-gray-300">{profile?.full_name || user.email?.split("@")[0]}</span>
+                  <button onClick={handleSignOut} className="flex items-center gap-2 py-2 text-sm text-red-400">
+                    <LogOut size={14} /> Sign Out
+                  </button>
+                </>
+              ) : (
+                <Link href="/login" className="py-2 text-sm text-gray-400" onClick={() => setMobileMenuOpen(false)}>Log in</Link>
+              )}
+              <Link
+                href={user ? "/marketplace" : "/get-started"}
+                className="mt-1 rounded bg-white py-2.5 text-center text-sm font-semibold text-black"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {user ? "Hire Staff" : "Get Started"}
+              </Link>
+            </div>
+          </div>
+        )}
       </nav>
 
-      {/* HERO / DASHBOARD */}
-      <main className="max-w-7xl mx-auto px-6 pt-20 pb-24 text-center">
-        
-        <div className="inline-block bg-yellow-100 border-2 border-black px-4 py-1 rounded-full text-[10px] md:text-xs font-black uppercase mb-8 transform -rotate-2 hover:rotate-0 transition-transform cursor-default">
-          {user ? `Welcome Back, ${profile?.full_name?.split(' ')[0] || 'Boss'}` : "The Future of Work is Here"}
+      {/* ── HERO / DASHBOARD ── */}
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
+        {/* Headline */}
+        <div className="mb-8 max-w-3xl sm:mb-10">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-gray-500">
+            {user ? `Welcome Back, ${profile?.full_name?.split(" ")[0] || "Boss"}` : "The Future of Work is Here"}
+          </p>
+          <h1 className={`${oswald.className} text-4xl leading-none tracking-tight sm:text-5xl lg:text-7xl`}>
+            {user ? "Manage Your" : "Hire your next"}{" "}
+            <span className="text-white/30">{user ? "Workforce." : "AI Employee."}</span>
+          </h1>
+          <p className="mt-4 max-w-xl text-sm leading-relaxed text-gray-400 sm:text-base">
+            {user
+              ? "Your digital workforce is running 24/7. Assign tasks below."
+              : "Get an AI Team who runs your inbox, socials, SEO, lead generation, calls, and support. No sick days. No drama."}
+          </p>
         </div>
-        
-        <h1 className={`text-6xl md:text-9xl uppercase leading-[0.9] mb-8 ${oswald.className}`}>
-          {user ? "Manage Your" : "Hire your next"} <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-orange-600">
-             {user ? "Workforce." : "AI Employee."}
-          </span>
-        </h1>
 
-        <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-12 font-medium">
-          {user 
-            ? "Your digital workforce is running 24/7. Assign tasks below."
-            : <span>Get an AI Team who runs your inbox, socials, SEO, lead generation, calls, and support. <span className="text-black font-bold"> No sick days. No drama.</span></span>
-          }
-        </p>
-
-        {/* MAIN BUTTONS */}
-        <div className="flex justify-center gap-4">
-            <Link href={user ? "/employees" : "/login"}>
-                <button className="bg-yellow-400 text-black border-4 border-black px-10 py-5 rounded-xl text-xl font-black uppercase tracking-wide hover:bg-yellow-300 transition-all shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none flex items-center gap-3">
-                {user ? "Hire New Staff" : "Browse Marketplace"} <ArrowRight strokeWidth={3} />
-                </button>
+        {/* CTA buttons */}
+        <div className="mb-12 flex flex-wrap gap-3 sm:mb-16">
+          <Link
+            href={user ? "/marketplace" : "/marketplace"}
+            className="flex items-center gap-2 rounded bg-white px-5 py-3 text-sm font-semibold text-black transition hover:bg-gray-100 sm:px-6"
+          >
+            {user ? "Hire New Staff" : "Browse Marketplace"}
+            <ArrowRight size={16} />
+          </Link>
+          {user && (
+            <Link
+              href="/studio"
+              className="flex items-center gap-2 rounded border border-white/20 px-5 py-3 text-sm font-semibold text-white transition hover:border-white/50 sm:px-6"
+            >
+              <Plus size={16} />
+              Build Custom
             </Link>
-            {user && (
-                 <Link href="/studio">
-                    <button className="bg-white text-black border-4 border-black px-10 py-5 rounded-xl text-xl font-black uppercase tracking-wide hover:bg-gray-50 transition-all hover:translate-y-1">
-                    Build Custom
-                    </button>
-                 </Link>
-            )}
-        </div>
-        
-        {/* --- DYNAMIC AGENT GRID --- */}
-        <div className="mt-32">
-          {user ? (
-             <div className="text-left">
-                 <div className="flex flex-col md:flex-row justify-between items-end mb-10 px-4 border-b-4 border-black pb-4">
-                    <h2 className={`text-4xl md:text-6xl uppercase ${oswald.className}`}>My Active Team</h2>
-                    <span className="font-bold text-gray-500">{myAgents.length} Running</span>
-                 </div>
-
-                 {loading ? (
-                    <div className="text-center py-20 font-bold text-gray-400">Syncing with Mainframe...</div>
-                 ) : myAgents.length === 0 ? (
-                    
-                    /* --- EMPTY STATE PROMPT TO MARKETPLACE --- */
-                    <div className="text-center py-24 border-4 border-dashed border-gray-300 rounded-3xl bg-gray-50 flex flex-col items-center">
-                        <div className="bg-white p-4 rounded-full border-2 border-gray-200 mb-4">
-                            <Users size={48} className="text-gray-400" />
-                        </div>
-                        <h3 className="text-3xl font-bold text-gray-800 mb-2">Your office is empty!</h3>
-                        <p className="text-gray-500 mb-8 max-w-md">You haven't hired anyone yet. Visit the Marketplace to hire Devon, Ruby, Lawson, and more.</p>
-                        <Link href="/employees">
-                            <button className="bg-black text-white px-8 py-4 rounded-xl font-bold uppercase hover:bg-yellow-400 hover:text-black transition flex items-center gap-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]">
-                                <Plus size={20} /> Go to Marketplace
-                            </button>
-                        </Link>
-                    </div>
-
-                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {myAgents.map((agent) => (
-                             <div key={agent.id} className="group relative h-[300px] border-4 border-black bg-white rounded-2xl p-6 flex flex-col justify-between hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-y-1">
-                                <div>
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div className="w-12 h-12 bg-black text-white rounded-lg flex items-center justify-center border-2 border-black">
-                                            {getIcon(agent.steps?.[0]?.icon || agent.icon || "Zap")}
-                                        </div>
-                                        <button onClick={() => handleDelete(agent.id)} className="text-gray-300 hover:text-red-600 transition p-1">
-                                            <Trash2 size={18}/>
-                                        </button>
-                                    </div>
-                                    <h3 className="text-2xl font-black uppercase leading-none mb-1">{agent.name.split('(')[0]}</h3>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-3">{agent.name.split('(')[1]?.replace(')', '') || 'Custom Agent'}</p>
-                                    
-                                    <div className="flex flex-wrap gap-2">
-                                        <span className="text-[10px] font-bold bg-green-100 text-green-800 px-2 py-1 rounded border border-green-200 uppercase flex items-center gap-1">
-                                            Online
-                                        </span>
-                                        <span className="text-[10px] font-bold bg-gray-100 px-2 py-1 rounded border border-gray-200 uppercase">{agent.steps?.length || 0} Skills</span>
-                                    </div>
-                                </div>
-
-                                <div className="flex gap-2">
-                                    <Link href={`/agent/${agent.id}`} className="flex-1">
-                                        <button className="w-full bg-black text-white py-3 rounded-lg font-bold text-xs uppercase hover:bg-yellow-400 hover:text-black transition flex items-center justify-center gap-2">
-                                            Open Workstation <ArrowRight size={14}/>
-                                        </button>
-                                    </Link>
-                                </div>
-                            </div>
-                        ))}
-                         <CustomAgentCard />
-                    </div>
-                 )}
-             </div>
-          ) : (
-            /* --- LOGGED OUT VIEW --- */
-            <>
-              <div className="flex flex-col md:flex-row justify-between items-end mb-10 px-4 text-left md:text-center">
-                <h2 className={`text-4xl md:text-6xl uppercase ${oswald.className}`}>Meet Your Team</h2>
-                <Link href="/employees" className="font-bold underline decoration-4 decoration-yellow-400 hover:text-yellow-600 mt-4 md:mt-0">View Marketplace</Link>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                <AgentCard name="EVA" role="Exec. Assistant" color="bg-orange-500" icon={<Briefcase size={64} className="text-white" />} desc="Manages your calendar & inbox." />
-                <AgentCard name="SONNY" role="Social Media" color="bg-green-500" icon={<Megaphone size={64} className="text-white" />} desc="Writes & posts viral content." />
-                <AgentCard name="PENNY" role="SEO Writer" color="bg-blue-600" icon={<PenTool size={64} className="text-white" />} desc="Ranks your blog #1 on Google." />
-                <AgentCard name="STAN" role="Lead Gen" color="bg-red-600" icon={<Target size={64} className="text-white" />} desc="Finds & closes new clients." />
-                <CustomAgentCard />
-              </div>
-            </>
           )}
         </div>
-      </main>
 
-      {/* FOOTER */}
-      <footer className="relative z-10 bg-black text-white py-16 md:py-24 text-center overflow-hidden">
-        <div className={`absolute top-0 left-0 right-0 text-[20vw] opacity-5 font-black leading-none select-none ${oswald.className}`}>PIXORVA</div>
-        <div className="relative z-10 px-4">
-            <h2 className={`text-4xl md:text-7xl uppercase mb-8 md:mb-10 ${oswald.className}`}>Ready to Scale?</h2>
-            <Link href={user ? "/employees" : "/login"}>
-                <button className="bg-yellow-400 text-black border-none px-10 py-4 md:px-12 md:py-5 rounded-2xl font-black uppercase hover:bg-white transition text-lg md:text-xl shadow-[0px_0px_20px_rgba(250,204,21,0.5)] w-full md:w-auto">Start Hiring (Free)</button>
-            </Link>
-            <p className="text-gray-500 mt-10 md:mt-12 text-xs md:text-sm font-mono tracking-widest">© 2026 PIXORVA INC. // SYSTEM OPERATIONAL</p>
+        {/* ── DYNAMIC AGENT GRID ── */}
+        {user ? (
+          <div>
+            {/* Section header */}
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className={`${oswald.className} text-xl tracking-wide sm:text-2xl`}>
+                My Active Team
+              </h2>
+              <span className="flex items-center gap-1.5 rounded-full border border-green-500/30 bg-green-500/10 px-3 py-1 text-xs text-green-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-green-400" />
+                {myAgents.length} Running
+              </span>
+            </div>
+
+            {loading ? (
+              <div className="flex items-center justify-center py-20 text-sm text-gray-500">
+                Syncing with Mainframe...
+              </div>
+            ) : myAgents.length === 0 ? (
+              /* Empty state */
+              <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed border-white/10 px-6 py-16 text-center">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5">
+                  <Users size={20} className="text-gray-500" />
+                </div>
+                <div>
+                  <p className="font-semibold text-white">Your office is empty!</p>
+                  <p className="mt-1 text-sm text-gray-500">
+                    You haven&apos;t hired anyone yet. Visit the Marketplace to hire Devon, Ruby, Lawson, and more.
+                  </p>
+                </div>
+                <Link
+                  href="/marketplace"
+                  className="flex items-center gap-2 rounded bg-white px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-gray-100"
+                >
+                  Go to Marketplace <ArrowRight size={14} />
+                </Link>
+              </div>
+            ) : (
+              /* Agent grid — 1 col mobile, 2 sm, 3 lg */
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {myAgents.map((agent) => (
+                  <div
+                    key={agent.id}
+                    className="group relative flex flex-col gap-3 rounded-xl border border-white/10 bg-white/5 p-5 transition hover:border-white/20 hover:bg-white/8"
+                  >
+                    {/* Top row */}
+                    <div className="flex items-start justify-between">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 text-white">
+                        {getIcon(agent.steps?.[0]?.icon || agent.icon || "Zap")}
+                      </div>
+                      <button
+                        onClick={() => handleDelete(agent.id)}
+                        className="rounded p-1 text-gray-600 transition hover:text-red-500"
+                        aria-label="Delete agent"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+
+                    {/* Name */}
+                    <div>
+                      <p className="font-semibold leading-tight text-white">
+                        {agent.name.split("(")[0].trim()}
+                      </p>
+                      <p className="mt-0.5 text-xs text-gray-500">
+                        {agent.name.split("(")[1]?.replace(")", "") || "Custom Agent"}
+                      </p>
+                    </div>
+
+                    {/* Status + skills */}
+                    <div className="flex items-center gap-3 text-xs text-gray-500">
+                      <span className="flex items-center gap-1 text-green-400">
+                        <span className="h-1.5 w-1.5 rounded-full bg-green-400" /> Online
+                      </span>
+                      <span>{agent.steps?.length || 0} Skills</span>
+                    </div>
+
+                    {/* CTA */}
+                    <Link
+                      href={`/agent/${agent.id}`}
+                      className="mt-auto flex items-center gap-1 text-xs font-semibold text-white/60 transition hover:text-white"
+                    >
+                      Open Workstation <ArrowRight size={12} />
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          /* ── LOGGED OUT VIEW ── */
+          <div>
+            <div className="mb-8 flex items-center justify-between">
+              <h2 className={`${oswald.className} text-xl tracking-wide sm:text-2xl`}>
+                Meet Your Team
+              </h2>
+              <Link href="/marketplace" className="text-xs text-gray-500 underline-offset-2 hover:underline">
+                View Marketplace
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <AgentCard name="Devon" role="Executive Assistant" color="blue" icon={<Briefcase size={20} />} desc="Manages your calendar & inbox." />
+              <AgentCard name="Ruby" role="Social Media Manager" color="pink" icon={<Megaphone size={20} />} desc="Writes & posts viral content." />
+              <AgentCard name="Lawson" role="SEO Specialist" color="green" icon={<PenTool size={20} />} desc="Ranks your blog #1 on Google." />
+              <AgentCard name="Aria" role="Sales Development Rep" color="orange" icon={<Target size={20} />} desc="Finds & closes new clients." />
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer className="mt-auto border-t border-white/10 px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
+            <span className={`${oswald.className} text-lg tracking-widest text-white`}>PIXORVA</span>
+            <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-6">
+              <p className="text-xs text-gray-600">Ready to Scale?</p>
+              <Link
+                href="/get-started"
+                className="rounded bg-white px-4 py-2 text-xs font-semibold text-black transition hover:bg-gray-200"
+              >
+                Start Hiring (Free)
+              </Link>
+            </div>
+          </div>
+          <p className="mt-6 text-center text-xs text-gray-700">
+            © 2026 PIXORVA INC. // SYSTEM OPERATIONAL
+          </p>
         </div>
       </footer>
     </div>
   );
 }
 
-// HELPERS
+// ── HELPERS ──
+
 function getIcon(name: string) {
-    switch (name) {
-      case "Code": return <Code size={24} />;
-      case "Megaphone": return <Megaphone size={24} />;
-      case "DollarSign": return <DollarSign size={24} />;
-      case "ShieldCheck": return <ShieldCheck size={24} />;
-      case "User": return <UserIcon size={24} />;
-      case "Zap": return <Zap size={24} />;
-      case "Mail": return <Mail size={24} />;
-      case "Send": return <Send size={24} />;
-      case "MessageSquare": return <MessageSquare size={24} />;
-      case "Play": return <Play size={24} />;
-      case "Globe": return <Globe size={24} />;
-      case "Clock": return <Clock size={24} />;
-      case "Database": return <Database size={24} />;
-      case "Twitter": return <Twitter size={24} />;
-      case "PenTool": return <PenTool size={24} />;
-      case "Target": return <Target size={24} />;
-      case "Briefcase": return <Briefcase size={24} />;
-      case "Users": return <Users size={24} />;
-      case "PieChart": return <PieChart size={24} />;
-      case "Camera": return <Camera size={24} />;
-      case "Lock": return <Lock size={24} />;
-      case "Clipboard": return <Clipboard size={24} />;
-      case "Video": return <Video size={24} />;
-      case "CheckCircle": return <CheckCircle size={24} />;
-      case "Smartphone": return <Smartphone size={24} />;
-      case "Search": return <Search size={24} />;
-      default: return <Zap size={24} />;
-    }
+  const cls = "w-4 h-4";
+  switch (name) {
+    case "Code": return <Code className={cls} />;
+    case "Megaphone": return <Megaphone className={cls} />;
+    case "DollarSign": return <DollarSign className={cls} />;
+    case "ShieldCheck": return <ShieldCheck className={cls} />;
+    case "User": return <UserIcon className={cls} />;
+    case "Mail": return <Mail className={cls} />;
+    case "Send": return <Send className={cls} />;
+    case "MessageSquare": return <MessageSquare className={cls} />;
+    case "Play": return <Play className={cls} />;
+    case "Globe": return <Globe className={cls} />;
+    case "Clock": return <Clock className={cls} />;
+    case "Database": return <Database className={cls} />;
+    case "Twitter": return <Twitter className={cls} />;
+    case "PenTool": return <PenTool className={cls} />;
+    case "Target": return <Target className={cls} />;
+    case "Briefcase": return <Briefcase className={cls} />;
+    case "Users": return <Users className={cls} />;
+    case "PieChart": return <PieChart className={cls} />;
+    case "Camera": return <Camera className={cls} />;
+    case "Lock": return <Lock className={cls} />;
+    case "Clipboard": return <Clipboard className={cls} />;
+    case "Video": return <Video className={cls} />;
+    case "CheckCircle": return <CheckCircle className={cls} />;
+    case "Smartphone": return <Smartphone className={cls} />;
+    case "Search": return <Search className={cls} />;
+    default: return <Zap className={cls} />;
+  }
 }
 
-function CustomAgentCard() {
+function AgentCard({ name, role, color, icon, desc }: {
+  name: string; role: string; color: string; icon: React.ReactNode; desc: string;
+}) {
+  const colorMap: Record<string, string> = {
+    blue: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+    pink: "bg-pink-500/10 text-pink-400 border-pink-500/20",
+    green: "bg-green-500/10 text-green-400 border-green-500/20",
+    orange: "bg-orange-500/10 text-orange-400 border-orange-500/20",
+  };
+
   return (
-    <Link href="/studio">
-      <div className="group relative cursor-pointer h-full min-h-[300px]">
-        <div className="h-full rounded-2xl border-4 border-black bg-black flex flex-col items-center justify-center shadow-[8px_8px_0px_0px_rgba(100,100,100,1)] transition-all group-hover:translate-y-1 group-hover:shadow-none relative overflow-hidden">
-          <div className="w-16 h-16 rounded-full border-2 border-white/30 flex items-center justify-center mb-4 text-white"><Plus size={32} /></div>
-          <span className="text-white font-black uppercase tracking-widest text-lg z-10">Build Custom</span>
-          <span className="text-gray-500 text-xs font-bold uppercase tracking-wide mt-1 z-10">In the Studio</span>
-        </div>
+    <div className="group flex flex-col gap-3 rounded-xl border border-white/10 bg-white/5 p-5 transition hover:border-white/20">
+      <div className={`flex h-10 w-10 items-center justify-center rounded-lg border ${colorMap[color] || "bg-white/10 text-white border-white/10"}`}>
+        {icon}
       </div>
-    </Link>
+      <div>
+        <p className="font-semibold text-white">{name}</p>
+        <p className="text-xs text-gray-500">{role}</p>
+      </div>
+      <p className="text-sm leading-relaxed text-gray-400">{desc}</p>
+      <Link
+        href="/marketplace"
+        className="mt-auto flex items-center gap-1 text-xs font-semibold text-white/40 transition hover:text-white"
+      >
+        Hire {name} <ArrowRight size={12} />
+      </Link>
+    </div>
   );
-}
-
-function AgentCard({ name, role, color, icon, desc }: any) {
-    return (
-      <div className="group relative cursor-pointer">
-        <div className={`h-64 rounded-2xl border-4 border-black ${color} flex items-center justify-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all group-hover:translate-y-1 group-hover:shadow-none overflow-hidden relative`}>
-          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle,_black_1px,_transparent_1px)] bg-[length:10px_10px]"></div>
-          <span className="relative z-10 transform transition-transform group-hover:scale-110 duration-300">{icon}</span>
-          <div className="absolute bottom-4 left-4 bg-white border-2 border-black px-3 py-1 rounded-md font-black uppercase text-sm transform -rotate-2 group-hover:rotate-0 transition">{name}</div>
-        </div>
-        <div className="mt-4 text-left px-2">
-          <h3 className="text-xl font-black uppercase leading-none">{role}</h3>
-          <p className="text-sm font-medium text-gray-500 mt-1">{desc}</p>
-        </div>
-      </div>
-    );
 }
