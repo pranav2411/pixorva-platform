@@ -4,6 +4,8 @@ import React from "react";
 import { Oswald, Inter } from "next/font/google";
 import { Check, X, Zap, ArrowLeft, Crown, Shield, Rocket } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
+
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -15,8 +17,14 @@ export default function PricingPage() {
       {/* NAVBAR */}
       <nav className="flex items-center justify-between px-6 md:px-12 py-5 border-b-4 border-black sticky top-0 bg-white z-50">
         <Link href="/" className="flex items-center gap-2">
-            <div className="bg-black text-white w-8 h-8 flex items-center justify-center rounded text-lg font-bold">P</div>
-            <span className={`text-2xl uppercase italic ${oswald.className}`}>Pixorva</span>
+            <Image
+                src="/favicon.ico"
+                alt="Pixorva Logo"
+                width={32}
+                height={32}
+                className="w-8 h-8 rounded"
+            />
+        <span className={`text-2xl uppercase italic ${oswald.className}`}>Pixorva</span>
         </Link>
         <Link href="/trial">
             <button className="bg-yellow-400 text-black border-2 border-black px-4 py-2 rounded font-bold uppercase hover:bg-black hover:text-white transition shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none">
