@@ -263,7 +263,7 @@ export default function Home() {
 
                  ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {myAgents.map((agent) => (
+                        {myAgents.filter(a => a.name !== "Governance Control Tower").map((agent) => (
                              <div key={agent.id} className="group relative h-[300px] border-4 border-black bg-white rounded-2xl p-6 flex flex-col justify-between hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-y-1">
                                 <div>
                                     <div className="flex justify-between items-start mb-4">

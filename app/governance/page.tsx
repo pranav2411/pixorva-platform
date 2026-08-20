@@ -161,6 +161,19 @@ guardrails:
         }
         setUser(currentUser);
 
+        // Check if user has purchased Governance Control Tower
+        const { data: govAgent } = await supabase
+            .from('agents')
+            .select('id')
+            .eq('user_id', currentUser.id)
+            .eq('name', 'Governance Control Tower')
+            .maybeSingle();
+
+        if (!govAgent) {
+            router.push("/governance/info");
+            return;
+        }
+
         // Load User-Specific State from LocalStorage
         const storedWl = localStorage.getItem(`gov_workloads_${currentUser.id}`);
         if (storedWl) setWorkloads(JSON.parse(storedWl));
