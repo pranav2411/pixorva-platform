@@ -36,7 +36,7 @@ export default function TabTitleManager() {
 
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        document.title = "⬅ Come back to Pixorva!";
+        document.title = "Come back to Pixorva!";
       } else {
         document.title = normalTitle;
       }
