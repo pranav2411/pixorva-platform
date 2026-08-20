@@ -1,11 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { createClient } from '@supabase/supabase-js';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 // --- HELPER: WEB SEARCH ---
 async function searchWeb(query: string) {
@@ -34,6 +30,28 @@ async function searchWeb(query: string) {
 
 export async function POST(req: Request) {
   try {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+          cookies: {
+            getAll() {
+              return cookieStore.getAll();
+            },
+            setAll(cookiesToSet) {
+              try {
+                cookiesToSet.forEach(({ name, value, options }) =>
+                  cookieStore.set(name, value, options)
+                );
+              } catch {
+                // Ignore if called from Server Component context
+              }
+            },
+          },
+        }
+    );
+
     const { input, agentId, userId, agentRole, fileData } = await req.json();
 
     // --- 1. GET HISTORY ---
