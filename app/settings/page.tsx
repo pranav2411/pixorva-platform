@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '../utils/supabase/client';
 import { Oswald, Inter } from "next/font/google";
-import { ArrowLeft, Save, User as UserIcon, Loader2, Zap } from "lucide-react";
+import { ArrowLeft, Save, User as UserIcon, Loader2, Zap, X, Trash2 } from "lucide-react";
 import Link from 'next/link';
 import { showToast } from '../utils/Toast';
 
@@ -19,6 +19,8 @@ export default function SettingsPage() {
   const [plan, setPlan] = useState('free');
   const [subscriptionAgents, setSubscriptionAgents] = useState<any[]>([]);
   const [paidAgents, setPaidAgents] = useState<any[]>([]);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
 
   // 1. Load User Data
   useEffect(() => {
@@ -77,6 +79,38 @@ export default function SettingsPage() {
          showToast("Profile updated successfully!", "success");
       }
      setSaving(false);
+  };
+
+  const handleCancelSubscription = async () => {
+    setCancelling(true);
+    const supabase = createClient();
+    try {
+        // 1. Downgrade plan to 'free' in profiles
+        const { error: profileError } = await supabase
+            .from('profiles')
+            .update({ plan: 'free' })
+            .eq('id', userId);
+
+        if (profileError) throw profileError;
+
+        // 2. Deactivate/delete plan slot agents (is_paid_individually = false)
+        const { error: agentsError } = await supabase
+            .from('agents')
+            .delete()
+            .eq('user_id', userId)
+            .eq('is_paid_individually', false);
+
+        if (agentsError) throw agentsError;
+
+        showToast("Subscription cancelled successfully.", "success");
+        setPlan('free');
+        setSubscriptionAgents([]);
+        setShowCancelModal(false);
+    } catch (e: any) {
+        showToast("Failed to cancel subscription: " + e.message, "error");
+    } finally {
+        setCancelling(false);
+    }
   };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -219,10 +253,68 @@ export default function SettingsPage() {
                         </Link>
                     </div>
                 )}
+
+                {/* Cancel Option (Only for active plan users) */}
+                {(plan === 'growth_pro' || plan === 'enterprise') && (
+                    <div className="flex justify-end pt-6 border-t-2 border-black border-dashed mt-6">
+                        <button
+                            onClick={() => setShowCancelModal(true)}
+                            className="bg-red-500 hover:bg-black text-white hover:text-white px-6 py-3 rounded-xl border-2 border-black font-bold uppercase text-xs tracking-wider transition shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-1"
+                        >
+                            Cancel Subscription
+                        </button>
+                    </div>
+                )}
             </div>
          </div>
 
-      </main>
+      {/* CUSTOM NEOBRUTALIST CANCEL SUBSCRIPTION MODAL */}
+      {showCancelModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+            <div className="bg-white border-4 border-black p-8 rounded-3xl max-w-md w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] animate-in zoom-in-95 duration-200 text-center relative">
+                <button 
+                  disabled={cancelling}
+                  onClick={() => setShowCancelModal(false)} 
+                  className="absolute right-4 top-4 text-gray-400 hover:text-black transition"
+                >
+                    <X size={24} />
+                </button>
+
+                <div className="mb-6 flex justify-center">
+                    <div className="bg-red-100 p-4 rounded-2xl border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-red-600">
+                        <Trash2 size={36} />
+                    </div>
+                </div>
+
+                <h3 className={`text-3xl uppercase mb-3 ${oswald.className}`}>
+                    Cancel Subscription?
+                </h3>
+
+                <p className="text-sm font-semibold text-gray-600 mb-8 leading-relaxed">
+                    Are you sure you want to cancel your subscription? You will lose access to your plan slots and all your agents under the plan will be deactivated. This cannot be undone.
+                </p>
+
+                <div className="flex flex-col gap-3">
+                    <button 
+                      disabled={cancelling}
+                      onClick={handleCancelSubscription}
+                      className="w-full bg-red-500 text-white hover:bg-black py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                        {cancelling ? <Loader2 className="animate-spin" size={16} /> : 'Yes, Cancel Subscription'}
+                    </button>
+                    <button 
+                      disabled={cancelling}
+                      onClick={() => setShowCancelModal(false)}
+                      className="w-full bg-white text-gray-500 hover:text-black py-2 font-bold uppercase text-xs tracking-wider transition"
+                    >
+                        Keep My Plan
+                    </button>
+                </div>
+            </div>
+        </div>
+      )}
+
+       </main>
     </div>
   );
 }
