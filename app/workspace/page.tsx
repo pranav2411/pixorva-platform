@@ -248,7 +248,7 @@ export default function WorkspacePage() {
           lastResponse = data.result;
           const agentMsg = {
             sender: agent.name.split('(')[0].trim(),
-            icon: agent.icon || "🤖",
+            icon: agent.icon || "Zap",
             text: data.result,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           };
@@ -320,18 +320,18 @@ export default function WorkspacePage() {
             </div>
           </div>
           <div className="bg-yellow-400 text-black border-2 border-black px-3 py-1.5 rounded font-black text-xs uppercase tracking-wide shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
-            🏢 Active Office Session
+            Active Office Session
           </div>
         </div>
       </nav>
 
       {/* WORKSPACE LAYOUT CONTAINER */}
       <main className="flex-grow p-6 overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 border-4 border-black rounded-3xl overflow-hidden bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] h-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 border-4 border-black rounded-3xl overflow-hidden bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] h-[620px] lg:h-[calc(100vh-160px)]">
           
           {/* SIDEBAR NAVIGATION PANEL (3 COLS) */}
-          <div className="lg:col-span-3 bg-gray-50 border-b-4 lg:border-b-0 lg:border-r-4 border-black p-6 flex flex-col justify-between h-full overflow-y-auto">
-            <div className="space-y-6">
+          <div className="lg:col-span-3 bg-gray-50 border-b-4 lg:border-b-0 lg:border-r-4 border-black p-6 flex flex-col justify-between h-full overflow-hidden">
+            <div className="flex-grow overflow-y-auto space-y-6 pr-1">
               <div>
                 <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Workspace Hub</span>
                 <div className="space-y-2">
@@ -339,26 +339,26 @@ export default function WorkspacePage() {
                     onClick={() => setActiveTab("office")}
                     className={`w-full text-left p-3 rounded-xl border-2 border-black font-black uppercase text-xs transition ${activeTab === 'office' ? 'bg-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]' : 'bg-white hover:bg-yellow-50 text-black'}`}
                   >
-                    🏠 Hired Office
+                    Hired Office
                   </button>
                   <button 
                     onClick={() => setActiveTab("channels")}
                     className={`w-full text-left p-3 rounded-xl border-2 border-black font-black uppercase text-xs transition ${activeTab === 'channels' ? 'bg-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]' : 'bg-white hover:bg-yellow-50 text-black'}`}
                   >
-                    💬 Active Channels
+                    Active Channels
                   </button>
                   <button 
                     onClick={() => setActiveTab("vault")}
                     className={`w-full text-left p-3 rounded-xl border-2 border-black font-black uppercase text-xs transition ${activeTab === 'vault' ? 'bg-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]' : 'bg-white hover:bg-yellow-50 text-black'}`}
                   >
-                    📂 File Vault
+                    File Vault
                   </button>
                 </div>
               </div>
 
               {activeTab === "channels" && (
-                <div>
-                  <div className="flex justify-between items-center mb-2">
+                <div className="flex flex-col flex-grow overflow-hidden">
+                  <div className="flex justify-between items-center mb-2 flex-shrink-0">
                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Channels</span>
                     <button onClick={() => setShowAddChannel(!showAddChannel)} className="bg-black text-white text-[9px] font-black uppercase px-2 py-0.5 rounded border border-black hover:bg-yellow-400 hover:text-black">
                       + New
@@ -366,7 +366,7 @@ export default function WorkspacePage() {
                   </div>
 
                   {showAddChannel && (
-                    <form onSubmit={handleAddChannelSubmit} className="bg-yellow-50 border-2 border-black p-3 rounded-xl mb-3 space-y-2 text-black">
+                    <form onSubmit={handleAddChannelSubmit} className="bg-yellow-50 border-2 border-black p-3 rounded-xl mb-3 space-y-2 text-black flex-shrink-0">
                       <input 
                         type="text" 
                         required 
@@ -379,7 +379,7 @@ export default function WorkspacePage() {
                     </form>
                   )}
 
-                  <div className="space-y-1 max-h-48 overflow-y-auto">
+                  <div className="space-y-1 overflow-y-auto pr-1 flex-grow max-h-[220px]">
                     {channels.map((ch) => (
                       <button 
                         key={ch.id}
@@ -394,12 +394,12 @@ export default function WorkspacePage() {
               )}
             </div>
 
-            <div className="pt-6 border-t-2 border-gray-200 flex flex-col gap-3">
+            <div className="pt-6 border-t-2 border-gray-200 flex flex-col gap-3 flex-shrink-0">
               <Link href="/governance" className="w-full text-center bg-black text-white hover:bg-yellow-400 hover:text-black transition py-2.5 rounded-xl border-2 border-black text-xs font-black uppercase shadow-[3px_3px_0px_0px_rgba(0,0,0,0.15)]">
-                🛡️ Control Tower
+                Control Tower
               </Link>
               <Link href="/billing" className="w-full text-center bg-white text-black hover:bg-gray-100 transition py-2.5 rounded-xl border-2 border-black text-xs font-black uppercase">
-                💳 Manage Salaries
+                Manage Salaries
               </Link>
             </div>
           </div>
@@ -415,7 +415,7 @@ export default function WorkspacePage() {
                   <span className="font-bold text-gray-500 text-xs">{myAgents.filter(a => a.name !== "Governance Control Tower").length} Online</span>
                 </div>
 
-                <div className="flex-grow overflow-y-auto pr-2 pb-6 max-h-[calc(100vh-280px)]">
+                <div className="flex-grow overflow-y-auto pr-2 pb-6">
                   {myAgents.filter(a => a.name !== "Governance Control Tower").length === 0 ? (
                     <div className="text-center py-20 border-4 border-dashed border-gray-300 rounded-3xl bg-gray-50 flex flex-col items-center">
                       <Users size={36} className="text-gray-400 mb-3" />
@@ -499,7 +499,7 @@ export default function WorkspacePage() {
                       onClick={() => setVaultToggle(!vaultToggle)}
                       className={`px-3 py-2 border-2 border-black rounded-lg text-[9px] font-black uppercase transition whitespace-nowrap ${vaultToggle ? 'bg-green-400 text-black border-black' : 'bg-gray-100 text-gray-400'}`}
                     >
-                      📂 RAG Vault: {vaultToggle ? 'ON' : 'OFF'}
+                      RAG Vault: {vaultToggle ? 'ON' : 'OFF'}
                     </button>
 
                     <input 
@@ -572,7 +572,7 @@ export default function WorkspacePage() {
                   </button>
                 </div>
 
-                <div className="flex-grow overflow-y-auto pr-2 pb-6 max-h-[calc(100vh-280px)]">
+                <div className="flex-grow overflow-y-auto pr-2 pb-6">
                   {showAddFile ? (
                     <form onSubmit={handleAddFileSubmit} className="bg-yellow-50 border-2 border-black p-5 rounded-2xl mb-6 space-y-3 max-w-xl text-black">
                       <h4 className="text-xs font-black uppercase text-yellow-800">Upload Knowledge Document</h4>
