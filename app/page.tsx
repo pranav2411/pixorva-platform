@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Oswald, Inter } from "next/font/google";
 import { 
   ArrowRight, Briefcase, Megaphone, PenTool, Target, Plus, Zap, Trash2, 
@@ -32,6 +33,7 @@ interface Agent {
 }
 
 export default function Home() {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [myAgents, setMyAgents] = useState<Agent[]>([]);
@@ -104,7 +106,9 @@ export default function Home() {
               console.error("Failed to update plan:", updateError.message);
               alert("Payment succeeded, but we had trouble updating your plan. Please contact support.");
             } else {
-              alert(`🎉 Success! You have upgraded to the ${plan === 'growth_pro' ? 'Growth Pro' : 'Enterprise'} plan!`);
+              alert(`🎉 Success! You have upgraded to the ${plan === 'growth_pro' ? 'Growth Pro' : 'Enterprise'} plan! Redirecting you to the Marketplace to select your agents.`);
+              router.push("/employees");
+              return;
             }
           } catch (err) {
             console.error("Error upgrading plan:", err);
