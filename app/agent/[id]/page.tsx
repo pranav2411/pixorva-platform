@@ -33,6 +33,11 @@ export default function AgentWorkstation() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const logsEndRef = useRef<HTMLDivElement>(null);
 
+  // --- TRIAL STATE ---
+  const [isTrial, setIsTrial] = useState(false);
+  const [trialExpired, setTrialExpired] = useState(false);
+  const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null);
+
   // --- 1. FETCH DATA ---
   useEffect(() => {
     const fetchData = async () => {
@@ -53,6 +58,21 @@ export default function AgentWorkstation() {
             .limit(50); 
 
           if (taskData) setTasks(taskData);
+
+          // Check trial state
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('trial_agent_id, trial_ends_at')
+            .eq('id', user.id)
+            .single();
+
+          if (profile) {
+              const isAgentTrial = profile.trial_agent_id === params.id;
+              setIsTrial(isAgentTrial);
+              const expired = isAgentTrial && profile.trial_ends_at && new Date() > new Date(profile.trial_ends_at);
+              setTrialExpired(!!expired);
+              setTrialEndsAt(profile.trial_ends_at || null);
+          }
       } catch (e) {
           console.error("Error loading workstation:", e);
       } finally {
@@ -61,6 +81,70 @@ export default function AgentWorkstation() {
     };
     fetchData();
   }, [params.id, router]);
+
+  const getTrialBannerText = () => {
+    if (!trialEndsAt) return "";
+    const msLeft = new Date(trialEndsAt).getTime() - Date.now();
+    const hoursLeft = Math.max(0, Math.floor(msLeft / (1000 * 60 * 60)));
+    const daysLeft = Math.floor(hoursLeft / 24);
+    
+    if (daysLeft > 0) {
+      return `⏳ Free Trial Active: ${daysLeft} day${daysLeft > 1 ? 's' : ''} left`;
+    }
+    return `⏳ Free Trial Active: ${hoursLeft} hour${hoursLeft !== 1 ? 's' : ''} left`;
+  };
+
+  const handlePurchase = async () => {
+    setLoading(true);
+    const supabase = createClient();
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) { router.push("/login"); return; }
+        if (!agent) return;
+
+        let price = "₹999/mo"; // Default
+        const lowerName = agent.name.toLowerCase();
+        if (lowerName.includes("devon")) price = "₹999/mo";
+        else if (lowerName.includes("ruby")) price = "₹1,299/mo";
+        else if (lowerName.includes("quinn")) price = "₹799/mo";
+        else if (lowerName.includes("cy")) price = "₹1,499/mo";
+        else if (lowerName.includes("marcus")) price = "₹899/mo";
+        else if (lowerName.includes("stella")) price = "₹699/mo";
+        else if (lowerName.includes("gordon")) price = "₹799/mo";
+        else if (lowerName.includes("vic")) price = "₹899/mo";
+        else if (lowerName.includes("sarah")) price = "₹999/mo";
+        else if (lowerName.includes("larry")) price = "₹899/mo";
+        else if (lowerName.includes("holly")) price = "₹1,199/mo";
+        else if (lowerName.includes("finn")) price = "₹1,499/mo";
+        else if (lowerName.includes("lawson")) price = "₹1,999/mo";
+        else if (lowerName.includes("pat")) price = "₹1,099/mo";
+        else if (lowerName.includes("sam")) price = "₹499/mo";
+        
+        const parsedAmount = parseInt(price.replace(/[^\d]/g, ""), 10) * 100;
+
+        const response = await fetch('/api/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userId: user.id,
+                agentName: agent.name,
+                icon: agent.icon,
+                steps: agent.steps,
+                amount: parsedAmount
+            })
+        });
+
+        const data = await response.json();
+        if (data.url) {
+            window.location.href = data.url;
+        } else {
+            throw new Error(data.error || "Failed to create checkout session");
+        }
+    } catch (err: unknown) {
+        alert("Failed to initiate purchase: " + (err as Error).message);
+        setLoading(false);
+    }
+  };
 
   // --- 2. RUN AGENT ---
   const handleRun = async (inputText: string = taskInput) => {
@@ -428,37 +512,65 @@ export default function AgentWorkstation() {
              )}
          </div>
 
-         {/* DISPLAY CONTENT (Action Card or Logs) */}
-         <div className="flex-1 overflow-auto relative">
-             {renderContent()}
-         </div>
-
-         {/* INPUT AREA */}
-         <div className="bg-white border-t border-gray-200 p-6 z-30">
-             {selectedFile && (
-                 <div className="mb-2 inline-flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-xs font-bold border border-gray-300">
-                     <Paperclip size={12}/> {selectedFile.name}
-                     <button onClick={removeFile} className="hover:text-red-500"><X size={12}/></button>
-                 </div>
-             )}
-             <div className="relative">
-                 <input type="file" ref={fileInputRef} onChange={handleFileSelect} className="hidden" accept="image/*,.pdf,.txt,.js,.py,.html,.css,.json,.md" />
-                 <button onClick={() => fileInputRef.current?.click()} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-black transition p-2" title="Attach File">
-                    <Paperclip size={20} />
-                 </button>
-                 <input 
-                    type="text" 
-                    value={taskInput}
-                    onChange={(e) => setTaskInput(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleRun()}
-                    placeholder={selectedFile ? "What should I do with this file?" : "Describe your task (e.g. 'Send email to...')"}
-                    className="w-full pl-12 pr-32 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:bg-white text-lg transition shadow-sm"
-                 />
-                 <button onClick={() => handleRun()} disabled={running} className="absolute right-2 top-2 bottom-2 bg-black text-white px-6 rounded-lg font-bold uppercase tracking-wide hover:bg-yellow-400 hover:text-black transition flex items-center gap-2 disabled:opacity-50">
-                    {running ? "..." : <><Play size={16} fill="white" className="text-current"/> Run</>}
+         {isTrial && !trialExpired && (
+             <div className="bg-yellow-100 border-b border-yellow-200 px-6 py-3 text-xs font-bold text-yellow-800 flex justify-between items-center z-10 animate-in slide-in-from-top">
+                 <span>{getTrialBannerText()}</span>
+                 <button onClick={handlePurchase} className="bg-black text-white hover:bg-yellow-400 hover:text-black transition-all px-3 py-1.5 rounded font-black uppercase text-[10px] border border-black shadow">
+                     Hire Permanent
                  </button>
              </div>
-         </div>
+         )}
+ 
+          {/* DISPLAY CONTENT (Action Card or Logs) */}
+          <div className="flex-1 overflow-auto relative">
+              {renderContent()}
+          </div>
+ 
+          {/* INPUT AREA */}
+          {trialExpired ? (
+              <div className="bg-yellow-50 border-t-4 border-yellow-400 p-6 z-30 flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div>
+                      <h4 className="text-lg font-black uppercase text-black flex items-center gap-2">
+                          🔒 Workstation Locked
+                      </h4>
+                      <p className="text-sm font-semibold text-gray-600 mt-1">
+                          Your 3-day free trial for this agent has expired. Upgrade now to unlock and keep working.
+                      </p>
+                  </div>
+                  <button 
+                    onClick={handlePurchase} 
+                    className="bg-black text-white hover:bg-yellow-400 hover:text-black transition px-6 py-3 rounded-xl font-bold uppercase text-sm border-2 border-black tracking-wide shrink-0 shadow-lg"
+                  >
+                      Upgrade to Hired
+                  </button>
+              </div>
+          ) : (
+              <div className="bg-white border-t border-gray-200 p-6 z-30">
+                  {selectedFile && (
+                      <div className="mb-2 inline-flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-xs font-bold border border-gray-300">
+                          <Paperclip size={12}/> {selectedFile.name}
+                          <button onClick={removeFile} className="hover:text-red-500"><X size={12}/></button>
+                      </div>
+                  )}
+                  <div className="relative">
+                      <input type="file" ref={fileInputRef} onChange={handleFileSelect} className="hidden" accept="image/*,.pdf,.txt,.js,.py,.html,.css,.json,.md" />
+                      <button onClick={() => fileInputRef.current?.click()} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-black transition p-2" title="Attach File">
+                         <Paperclip size={20} />
+                      </button>
+                      <input 
+                         type="text" 
+                         value={taskInput}
+                         onChange={(e) => setTaskInput(e.target.value)}
+                         onKeyDown={(e) => e.key === 'Enter' && handleRun()}
+                         placeholder={selectedFile ? "What should I do with this file?" : "Describe your task (e.g. 'Send email to...')"}
+                         className="w-full pl-12 pr-32 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:bg-white text-lg transition shadow-sm"
+                      />
+                      <button onClick={() => handleRun()} disabled={running} className="absolute right-2 top-2 bottom-2 bg-black text-white px-6 rounded-lg font-bold uppercase tracking-wide hover:bg-yellow-400 hover:text-black transition flex items-center gap-2 disabled:opacity-50">
+                         {running ? "..." : <><Play size={16} fill="white" className="text-current"/> Run</>}
+                      </button>
+                  </div>
+              </div>
+          )}
       </div>
     </div>
   );

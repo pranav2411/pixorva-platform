@@ -158,6 +158,50 @@ export default function EmployeesPage() {
             return;
         }
 
+        // Check if user is eligible for hiring with their Free Trial
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('trial_started_at, trial_ends_at, trial_agent_id')
+            .eq('id', user.id)
+            .single();
+
+        const isTrialActive = profile?.trial_ends_at && new Date() < new Date(profile.trial_ends_at);
+        const hasChosenTrialAgent = profile?.trial_agent_id !== null;
+
+        if (isTrialActive && !hasChosenTrialAgent) {
+            const confirmTrial = confirm(`Would you like to use your one-time 3-day Free Trial to hire ${employee.name} for free?`);
+            if (confirmTrial) {
+                // Provision the agent directly in Supabase
+                const { data: newAgent, error: agentError } = await supabase
+                    .from('agents')
+                    .insert({
+                        user_id: user.id,
+                        name: `${employee.name} (${employee.role})`,
+                        steps: employee.steps,
+                        schedule: 'Manual',
+                        icon: employee.icon
+                    })
+                    .select('id')
+                    .single();
+
+                if (agentError) throw agentError;
+
+                // Save this agent ID as the chosen trial agent
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .update({
+                        trial_agent_id: newAgent.id
+                    })
+                    .eq('id', user.id);
+
+                if (profileError) throw profileError;
+
+                alert(`🎉 Success! ${employee.name} has joined your team for your 3-day free trial.`);
+                router.push("/");
+                return;
+            }
+        }
+
         // Parse price (e.g. "₹999/mo" -> 99900 paise)
         const parsedAmount = parseInt(employee.price.replace(/[^\d]/g, ""), 10) * 100;
 

@@ -63,12 +63,30 @@ export async function POST(req: Request) {
         if (searchResults) searchContext = `\n\n[SEARCH RESULTS]:\n${searchResults}\n`;
     }
 
-    // --- 3. GET CUSTOM INSTRUCTIONS ---
+    // --- 3. GET CUSTOM INSTRUCTIONS & CHECK TRIAL LOCK ---
     let customInstructions = "";
     if (agentId) {
         const { data: agentData } = await supabase.from('agents').select('instructions, goal').eq('id', agentId).single();
         if (agentData) {
             customInstructions = agentData.instructions || agentData.goal || "";
+        }
+
+        if (userId) {
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('trial_agent_id, trial_ends_at')
+                .eq('id', userId)
+                .single();
+
+            if (profile && profile.trial_agent_id === agentId) {
+                const isExpired = profile.trial_ends_at && new Date() > new Date(profile.trial_ends_at);
+                if (isExpired) {
+                    return NextResponse.json({ 
+                        success: false, 
+                        result: "⚠️ Your 3-day free trial for this agent has expired. Please purchase the agent to unlock it and continue using it." 
+                    });
+                }
+            }
         }
     }
 

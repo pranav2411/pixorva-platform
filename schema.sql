@@ -5,7 +5,11 @@ create extension if not exists "uuid-ossp";
 create table if not exists public.profiles (
   id uuid references auth.users on delete cascade primary key,
   full_name text,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  trial_started_at timestamp with time zone,
+  trial_ends_at timestamp with time zone,
+  trial_agent_id uuid,
+  has_used_trial boolean default false not null
 );
 
 -- Enable RLS for Profiles
