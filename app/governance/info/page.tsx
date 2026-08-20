@@ -10,6 +10,7 @@ import Link from "next/link";
 import { createClient } from "../../utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { showToast } from "../../utils/Toast";
+import { triggerRazorpayCheckout } from "../../utils/RazorpayCheckout";
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -54,35 +55,27 @@ export default function GovernanceInfoPage() {
   const handlePurchase = async () => {
     if (!user) return;
     setPurchasing(true);
-    try {
-      const response = await fetch('/api/checkout', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          agentName: "Governance Control Tower",
-          userId: user.id,
-          icon: "🛡️",
-          steps: [
-            { name: "Universal AI Proxy Gateway", description: "Relay prompts to any external LLM endpoint", icon: "Activity" },
-            { name: "Immutable Auditing Vault", description: "Audit trail log generation", icon: "FileCode" },
-            { name: "Admission Policy Gate", description: "Rate limiting and content filters", icon: "Lock" }
-          ],
-          amount: 199900 // ₹1,999 in paise
-        })
-      });
 
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        showToast("Stripe checkout failed.", "error");
+    const steps = [
+      { name: "Universal AI Proxy Gateway", description: "Relay prompts to any external LLM endpoint", icon: "Activity" },
+      { name: "Immutable Auditing Vault", description: "Audit trail log generation", icon: "FileCode" },
+      { name: "Admission Policy Gate", description: "Rate limiting and content filters", icon: "Lock" }
+    ];
+
+    await triggerRazorpayCheckout({
+      userId: user.id,
+      agentName: "Governance Control Tower",
+      icon: "🛡️",
+      steps: steps,
+      amount: 199900, // ₹1,999 in paise
+      email: user.email || "",
+      onSuccess: () => {
+        router.push("/governance");
+      },
+      onFailure: () => {
         setPurchasing(false);
       }
-    } catch (err) {
-      console.error(err);
-      showToast("Stripe server connection failed.", "error");
-      setPurchasing(false);
-    }
+    });
   };
 
   if (loading) {
