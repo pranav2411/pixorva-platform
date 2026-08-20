@@ -85,11 +85,12 @@ export default function AgentWorkstation() {
   const getTrialBannerText = () => {
     if (!trialEndsAt) return "";
     const msLeft = new Date(trialEndsAt).getTime() - Date.now();
-    const hoursLeft = Math.max(0, Math.floor(msLeft / (1000 * 60 * 60)));
-    const daysLeft = Math.floor(hoursLeft / 24);
+    const totalHoursLeft = Math.max(0, Math.floor(msLeft / (1000 * 60 * 60)));
+    const daysLeft = Math.floor(totalHoursLeft / 24);
+    const hoursLeft = totalHoursLeft % 24;
     
     if (daysLeft > 0) {
-      return `⏳ Free Trial Active: ${daysLeft} day${daysLeft > 1 ? 's' : ''} left`;
+      return `⏳ Free Trial Active: ${daysLeft} day${daysLeft > 1 ? 's' : ''} and ${hoursLeft} hour${hoursLeft !== 1 ? 's' : ''} left`;
     }
     return `⏳ Free Trial Active: ${hoursLeft} hour${hoursLeft !== 1 ? 's' : ''} left`;
   };
