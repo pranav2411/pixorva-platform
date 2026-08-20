@@ -111,13 +111,14 @@ export default function Home() {
               alert("Payment succeeded, but we had trouble updating your plan. Please contact support.");
             } else {
               alert(`🎉 Success! You have upgraded to the ${plan === 'growth_pro' ? 'Growth Pro' : 'Enterprise'} plan! Redirecting you to the Marketplace to select your agents.`);
-              router.push("/employees");
+              window.location.href = "/employees";
               return;
             }
           } catch (err) {
             console.error("Error upgrading plan:", err);
           } finally {
             window.history.replaceState({}, document.title, window.location.pathname);
+            setLoading(false);
           }
         }
 
