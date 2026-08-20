@@ -5,7 +5,8 @@ import Link from "next/link";
 import { Oswald, Inter } from "next/font/google";
 import { 
   ArrowLeft, Plus, Zap, Trash2, LogOut, Send, 
-  Users, Activity, Lock, FileCode, CheckCircle, RefreshCw, X, Folder, HelpCircle
+  Users, Activity, Lock, FileCode, CheckCircle, RefreshCw, X, Folder, HelpCircle,
+  Megaphone, DollarSign, ShieldCheck, User as UserIcon, Mail, MessageSquare, Play, Globe, Clock, Database, Twitter, PenTool, Target, Briefcase, PieChart, Camera, Clipboard, Video, Smartphone, Search
 } from "lucide-react";
 import { createClient } from '../utils/supabase/client';
 import { useRouter } from "next/navigation";
@@ -30,6 +31,38 @@ interface Channel {
   id: string;
   name: string;
   agents: string[]; // List of agent IDs
+}
+
+function getIcon(name: string) {
+  switch (name) {
+    case "Code": return <FileCode size={20} />;
+    case "Megaphone": return <Megaphone size={20} />;
+    case "DollarSign": return <DollarSign size={20} />;
+    case "ShieldCheck": return <ShieldCheck size={20} />;
+    case "User": return <UserIcon size={20} />;
+    case "Zap": return <Zap size={20} />;
+    case "Mail": return <Mail size={20} />;
+    case "Send": return <Send size={20} />;
+    case "MessageSquare": return <MessageSquare size={20} />;
+    case "Play": return <Play size={20} />;
+    case "Globe": return <Globe size={20} />;
+    case "Clock": return <Clock size={20} />;
+    case "Database": return <Database size={20} />;
+    case "Twitter": return <Twitter size={20} />;
+    case "PenTool": return <PenTool size={20} />;
+    case "Target": return <Target size={20} />;
+    case "Briefcase": return <Briefcase size={20} />;
+    case "Users": return <Users size={20} />;
+    case "PieChart": return <PieChart size={20} />;
+    case "Camera": return <Camera size={20} />;
+    case "Lock": return <Lock size={20} />;
+    case "Clipboard": return <Clipboard size={20} />;
+    case "Video": return <Video size={20} />;
+    case "CheckCircle": return <CheckCircle size={20} />;
+    case "Smartphone": return <Smartphone size={20} />;
+    case "Search": return <Search size={20} />;
+    default: return <Zap size={20} />;
+  }
 }
 
 export default function WorkspacePage() {
@@ -272,10 +305,10 @@ export default function WorkspacePage() {
   }
 
   return (
-    <div className={`min-h-screen bg-gray-50 text-black ${inter.className} pb-16`}>
+    <div className={`min-h-screen max-h-screen bg-gray-50 text-black flex flex-col justify-between overflow-hidden ${inter.className}`}>
       
       {/* HEADER */}
-      <nav className="bg-white border-b-4 border-black sticky top-0 z-20">
+      <nav className="bg-white border-b-4 border-black z-20 flex-shrink-0">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/" className="bg-black text-white p-2 rounded hover:bg-yellow-400 hover:text-black transition border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:shadow-none hover:translate-y-1">
@@ -292,12 +325,12 @@ export default function WorkspacePage() {
         </div>
       </nav>
 
-      {/* WORKSPACE LAYOUT */}
-      <main className="max-w-7xl mx-auto px-6 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 border-4 border-black rounded-3xl overflow-hidden bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] min-h-[640px]">
+      {/* WORKSPACE LAYOUT CONTAINER */}
+      <main className="flex-grow p-6 overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 border-4 border-black rounded-3xl overflow-hidden bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] h-full">
           
           {/* SIDEBAR NAVIGATION PANEL (3 COLS) */}
-          <div className="lg:col-span-3 bg-gray-50 border-b-4 lg:border-b-0 lg:border-r-4 border-black p-6 flex flex-col justify-between">
+          <div className="lg:col-span-3 bg-gray-50 border-b-4 lg:border-b-0 lg:border-r-4 border-black p-6 flex flex-col justify-between h-full overflow-y-auto">
             <div className="space-y-6">
               <div>
                 <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Workspace Hub</span>
@@ -372,17 +405,17 @@ export default function WorkspacePage() {
           </div>
 
           {/* MAIN PANELS CONTAINER (9 COLS) */}
-          <div className="lg:col-span-9 p-8 flex flex-col justify-between">
+          <div className="lg:col-span-9 p-8 flex flex-col h-full overflow-hidden">
             
             {/* TAB 1: HIRED OFFICE PANEL */}
             {activeTab === "office" && (
-              <div className="flex-grow flex flex-col justify-between">
-                <div>
-                  <div className="flex justify-between items-end mb-6 border-b-4 border-black pb-4">
-                    <h2 className={`text-4xl uppercase ${oswald.className}`}>Hired Employees</h2>
-                    <span className="font-bold text-gray-500 text-xs">{myAgents.filter(a => a.name !== "Governance Control Tower").length} Online</span>
-                  </div>
+              <div className="flex flex-col h-full overflow-hidden">
+                <div className="flex justify-between items-end mb-6 border-b-4 border-black pb-4 flex-shrink-0">
+                  <h2 className={`text-4xl uppercase ${oswald.className}`}>Hired Employees</h2>
+                  <span className="font-bold text-gray-500 text-xs">{myAgents.filter(a => a.name !== "Governance Control Tower").length} Online</span>
+                </div>
 
+                <div className="flex-grow overflow-y-auto pr-2 pb-6 max-h-[calc(100vh-280px)]">
                   {myAgents.filter(a => a.name !== "Governance Control Tower").length === 0 ? (
                     <div className="text-center py-20 border-4 border-dashed border-gray-300 rounded-3xl bg-gray-50 flex flex-col items-center">
                       <Users size={36} className="text-gray-400 mb-3" />
@@ -400,8 +433,8 @@ export default function WorkspacePage() {
                         <div key={agent.id} className="border-4 border-black bg-white rounded-2xl p-5 flex flex-col justify-between hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition">
                           <div>
                             <div className="flex justify-between items-start mb-3">
-                              <div className="w-10 h-10 bg-black text-white rounded-lg flex items-center justify-center border-2 border-black text-xl font-bold">
-                                {agent.icon || "🤖"}
+                              <div className="w-10 h-10 bg-black text-white rounded-lg flex items-center justify-center border-2 border-black">
+                                {getIcon(agent.steps?.[0]?.icon || agent.icon || "Zap")}
                               </div>
                               <button onClick={() => setDeletingAgentId(agent.id)} className="text-gray-300 hover:text-red-600 transition">
                                 <Trash2 size={16}/>
@@ -427,19 +460,19 @@ export default function WorkspacePage() {
 
             {/* TAB 2: ACTIVE COLLABORATION CHANNELS PANEL */}
             {activeTab === "channels" && (
-              <div className="flex-grow flex flex-col lg:flex-row gap-6">
+              <div className="flex-grow flex flex-col lg:flex-row gap-6 h-full overflow-hidden">
                 
                 {/* Chat window panel */}
-                <div className="flex-grow flex flex-col justify-between bg-white border-4 border-black rounded-2xl overflow-hidden shadow">
+                <div className="flex-grow flex flex-col justify-between bg-white border-4 border-black rounded-2xl overflow-hidden shadow h-full">
                   
                   {/* Header */}
-                  <div className="bg-black text-white p-4 flex justify-between items-center">
+                  <div className="bg-black text-white p-4 flex justify-between items-center flex-shrink-0">
                     <h3 className="font-black uppercase text-xs"># {activeChannel.name}</h3>
                     <span className="text-[9px] font-bold text-yellow-400 uppercase">{activeChannel.agents.length} active agents</span>
                   </div>
 
                   {/* Messages container */}
-                  <div className="p-4 flex-grow space-y-4 max-h-[360px] overflow-y-auto bg-gray-50/50">
+                  <div className="p-4 flex-grow space-y-4 overflow-y-auto bg-gray-50/50 h-[calc(100vh-420px)] lg:h-[calc(100vh-380px)]">
                     {(channelMessages[activeChannel.id] || []).map((msg, idx) => {
                       const isYou = msg.sender === "You";
                       const isSys = msg.sender === "System";
@@ -459,7 +492,7 @@ export default function WorkspacePage() {
                   </div>
 
                   {/* Chat Input panel */}
-                  <div className="p-3 bg-white border-t-4 border-black flex gap-2 items-center">
+                  <div className="p-3 bg-white border-t-4 border-black flex gap-2 items-center flex-shrink-0">
                     
                     {/* RAG Context switch */}
                     <button 
@@ -490,7 +523,7 @@ export default function WorkspacePage() {
                 </div>
 
                 {/* Checked agents in channel settings */}
-                <div className="border-4 border-black p-4 w-full lg:w-56 bg-yellow-50 rounded-2xl h-fit">
+                <div className="border-4 border-black p-4 w-full lg:w-56 bg-yellow-50 rounded-2xl h-full overflow-y-auto">
                   <h4 className="font-black text-[10px] uppercase mb-3 text-yellow-800 pb-1.5 border-b border-yellow-200">Agents in Channel</h4>
                   <div className="space-y-2">
                     {myAgents.filter(a => a.name !== "Governance Control Tower").map((agent) => {
@@ -525,21 +558,21 @@ export default function WorkspacePage() {
 
             {/* TAB 3: FILE VAULT KNOWLEDGE BASE PANEL */}
             {activeTab === "vault" && (
-              <div className="flex-grow flex flex-col justify-between">
-                <div>
-                  <div className="flex justify-between items-end mb-6 border-b-4 border-black pb-4">
-                    <div>
-                      <h2 className={`text-4xl uppercase ${oswald.className}`}>Workspace File Vault</h2>
-                      <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wide">RAG Document Storage</span>
-                    </div>
-                    <button 
-                      onClick={() => setShowAddFile(!showAddFile)}
-                      className="bg-black text-white hover:bg-yellow-400 hover:text-black transition text-xs font-bold uppercase px-3 py-1.5 rounded border border-black"
-                    >
-                      + Integrate File
-                    </button>
+              <div className="flex flex-col h-full overflow-hidden">
+                <div className="flex justify-between items-end mb-6 border-b-4 border-black pb-4 flex-shrink-0">
+                  <div>
+                    <h2 className={`text-4xl uppercase ${oswald.className}`}>Workspace File Vault</h2>
+                    <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wide">RAG Document Storage</span>
                   </div>
+                  <button 
+                    onClick={() => setShowAddFile(!showAddFile)}
+                    className="bg-black text-white hover:bg-yellow-400 hover:text-black transition text-xs font-bold uppercase px-3 py-1.5 rounded border border-black"
+                  >
+                    + Integrate File
+                  </button>
+                </div>
 
+                <div className="flex-grow overflow-y-auto pr-2 pb-6 max-h-[calc(100vh-280px)]">
                   {showAddFile ? (
                     <form onSubmit={handleAddFileSubmit} className="bg-yellow-50 border-2 border-black p-5 rounded-2xl mb-6 space-y-3 max-w-xl text-black">
                       <h4 className="text-xs font-black uppercase text-yellow-800">Upload Knowledge Document</h4>
@@ -606,8 +639,8 @@ export default function WorkspacePage() {
                       ))}
                     </div>
                   )}
-
                 </div>
+
               </div>
             )}
 

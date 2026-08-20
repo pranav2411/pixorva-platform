@@ -2,7 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import { Oswald, Inter } from "next/font/google";
-import { ArrowLeft, CreditCard, Sparkles, XCircle, Pause, Play, Trash, RefreshCw } from 'lucide-react';
+import { 
+  ArrowLeft, CreditCard, Sparkles, XCircle, Trash, RefreshCw,
+  Code, Megaphone, DollarSign, ShieldCheck, User as UserIcon, Zap, 
+  Mail, Send, MessageSquare, Play, Globe, Clock, Database, Twitter, 
+  PenTool, Target, Briefcase, Users, PieChart, Camera, Lock, Clipboard, 
+  Video, CheckCircle, Smartphone, Search
+} from 'lucide-react';
 import Link from "next/link";
 import { createClient } from "../utils/supabase/client";
 import { useRouter } from "next/navigation";
@@ -17,6 +23,38 @@ interface Subscription {
   type: "Employee Salary" | "Utility Subscription";
   price: string;
   icon: string;
+}
+
+function getIcon(name: string) {
+  switch (name) {
+    case "Code": return <Code size={20} />;
+    case "Megaphone": return <Megaphone size={20} />;
+    case "DollarSign": return <DollarSign size={20} />;
+    case "ShieldCheck": return <ShieldCheck size={20} />;
+    case "User": return <UserIcon size={20} />;
+    case "Zap": return <Zap size={20} />;
+    case "Mail": return <Mail size={20} />;
+    case "Send": return <Send size={20} />;
+    case "MessageSquare": return <MessageSquare size={20} />;
+    case "Play": return <Play size={20} />;
+    case "Globe": return <Globe size={20} />;
+    case "Clock": return <Clock size={20} />;
+    case "Database": return <Database size={20} />;
+    case "Twitter": return <Twitter size={20} />;
+    case "PenTool": return <PenTool size={20} />;
+    case "Target": return <Target size={20} />;
+    case "Briefcase": return <Briefcase size={20} />;
+    case "Users": return <Users size={20} />;
+    case "PieChart": return <PieChart size={20} />;
+    case "Camera": return <Camera size={20} />;
+    case "Lock": return <Lock size={20} />;
+    case "Clipboard": return <Clipboard size={20} />;
+    case "Video": return <Video size={20} />;
+    case "CheckCircle": return <CheckCircle size={20} />;
+    case "Smartphone": return <Smartphone size={20} />;
+    case "Search": return <Search size={20} />;
+    default: return <Zap size={20} />;
+  }
 }
 
 export default function BillingPage() {
@@ -207,15 +245,15 @@ export default function BillingPage() {
             </Link>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-4 max-h-[calc(100vh-320px)] overflow-y-auto pr-2">
             {salaries.map((sub) => (
               <div 
                 key={sub.id}
                 className="bg-white border-4 border-black p-5 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-between gap-4"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-black text-white border-2 border-black rounded-lg flex items-center justify-center text-xl font-bold">
-                    {sub.icon}
+                  <div className="w-12 h-12 bg-black text-white border-2 border-black rounded-lg flex items-center justify-center">
+                    {getIcon(sub.icon)}
                   </div>
                   <div>
                     <h4 className="font-black text-sm uppercase leading-none">{sub.name.split('(')[0]}</h4>
