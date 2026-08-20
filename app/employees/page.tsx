@@ -451,14 +451,14 @@ export default function EmployeesPage() {
                 </div>
 
                 <h3 className={`text-3xl uppercase mb-3 ${oswald.className}`}>
-                    {confirmModal.type === 'trial' ? 'Start Free Trial' : 'Limit Reached'}
+                    {confirmModal.type === 'trial' ? 'Start Free Trial' : 'Confirm Purchase'}
                 </h3>
 
                 <p className="text-sm font-semibold text-gray-600 mb-8 leading-relaxed">
                     {confirmModal.type === 'trial' ? (
                         <>Would you like to use your one-time <strong>3-day Free Trial</strong> to hire <strong>{confirmModal.employee.name}</strong> for free?</>
                     ) : (
-                        <>You have reached your limit of <strong>4 free active agents</strong> under the Growth Pro Plan.<br/><br/>Would you like to purchase <strong>{confirmModal.employee.name}</strong> individually for <strong>{confirmModal.employee.price}</strong>?</>
+                        <>Would you like to purchase <strong>{confirmModal.employee.name}</strong> individually for <strong>{confirmModal.employee.price}</strong>?</>
                     )}
                 </p>
 

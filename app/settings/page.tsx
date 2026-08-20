@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '../utils/supabase/client';
 import { Oswald, Inter } from "next/font/google";
-import { ArrowLeft, Save, User as UserIcon, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, User as UserIcon, Loader2, Zap } from "lucide-react";
 import Link from 'next/link';
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
@@ -15,6 +15,9 @@ export default function SettingsPage() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [userId, setUserId] = useState('');
+  const [plan, setPlan] = useState('free');
+  const [subscriptionAgents, setSubscriptionAgents] = useState<any[]>([]);
+  const [paidAgents, setPaidAgents] = useState<any[]>([]);
 
   // 1. Load User Data
   useEffect(() => {
@@ -29,12 +32,24 @@ export default function SettingsPage() {
         // Fetch Profile Data
         const { data, error } = await supabase
             .from('profiles')
-            .select('full_name')
+            .select('full_name, plan')
             .eq('id', user.id)
             .single();
 
         if (data) {
             setFullName(data.full_name || '');
+            setPlan(data.plan || 'free');
+        }
+
+        // Fetch Agents
+        const { data: agentsData } = await supabase
+            .from('agents')
+            .select('*')
+            .eq('user_id', user.id);
+
+        if (agentsData) {
+            setSubscriptionAgents(agentsData.filter((a: any) => !a.is_paid_individually));
+            setPaidAgents(agentsData.filter((a: any) => a.is_paid_individually));
         }
       }
       setLoading(false);
@@ -116,6 +131,93 @@ export default function SettingsPage() {
                     Save Changes
                 </button>
 
+            </div>
+         </div>
+
+         {/* Subscription & Plan Status Card */}
+         <div className="bg-white border-4 border-black rounded-3xl p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mt-10">
+            <h2 className="text-3xl font-black mb-6 uppercase flex items-center gap-3">
+                <div className="bg-yellow-400 p-2 rounded-xl border-2 border-black"><Zap size={24}/></div>
+                Plan & Subscription
+            </h2>
+
+            <div className="space-y-6">
+                <div className="flex justify-between items-center bg-gray-50 border-2 border-black p-4 rounded-xl">
+                    <div>
+                        <p className="text-xs font-bold uppercase text-gray-500">Current Plan</p>
+                        <p className={`text-2xl font-black uppercase ${oswald.className}`}>
+                            {plan === 'growth_pro' ? 'Growth Pro Plan' : plan === 'enterprise' ? 'Enterprise Plan' : 'Free Trial / Individual'}
+                        </p>
+                    </div>
+                    <span className="bg-yellow-400 text-black px-3 py-1.5 rounded-lg border-2 border-black text-xs font-black uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                        Active
+                    </span>
+                </div>
+
+                {/* Progress Bar (Only for Growth Pro Plan) */}
+                {plan === 'growth_pro' && (
+                    <div className="border-2 border-black p-6 rounded-2xl bg-white">
+                        <div className="flex justify-between items-center mb-3">
+                            <span className="text-sm font-bold uppercase text-gray-700">Free Subscription Slots Used</span>
+                            <span className="text-sm font-black uppercase text-black">
+                                {subscriptionAgents.length} / 4 Agents
+                            </span>
+                        </div>
+
+                        {/* Progress Bar Track */}
+                        <div className="w-full bg-gray-100 border-2 border-black rounded-full h-6 overflow-hidden p-0.5">
+                            <div 
+                                className="bg-yellow-400 h-full rounded-full border border-black transition-all duration-500"
+                                style={{ width: `${Math.min(100, (subscriptionAgents.length / 4) * 100)}%` }}
+                            />
+                        </div>
+
+                        {/* List of Agents under subscription */}
+                        <div className="mt-8">
+                            <h3 className="text-xs font-bold uppercase text-gray-500 mb-4">Included in your subscription:</h3>
+                            {subscriptionAgents.length === 0 ? (
+                                <p className="text-sm text-gray-400 font-medium italic">No subscription agents hired yet. Go to Marketplace to pick up to 4 agents.</p>
+                            ) : (
+                                <div className="space-y-3">
+                                    {subscriptionAgents.map((agent) => (
+                                        <div key={agent.id} className="flex justify-between items-center border border-gray-200 px-4 py-3 rounded-xl bg-gray-50">
+                                            <span className="font-bold text-gray-800">{agent.name}</span>
+                                            <span className="text-[10px] font-black uppercase bg-green-100 text-green-700 px-2.5 py-1 rounded border border-green-300">
+                                                Plan Active
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Renewal Note Callout */}
+                        <div className="mt-8 bg-yellow-50 border-2 border-black border-dashed p-4 rounded-xl flex gap-3 text-sm text-gray-700 font-medium leading-relaxed">
+                            <span className="text-xl">💡</span>
+                            <div>
+                                <strong>Important Note:</strong> You can swap or change which 4 agents are active under your plan at the time of renewal. If you need more active slots simultaneously, you can upgrade to the <strong>Enterprise Plan</strong> (Unlimited access) or purchase a second plan for 4 additional slots.
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Info for Enterprise plan */}
+                {plan === 'enterprise' && (
+                    <div className="border-2 border-black p-6 rounded-2xl bg-white text-sm text-gray-600 font-medium">
+                        🎉 You have <strong>Enterprise Plan</strong> access! You can hire as many agents from the Marketplace as you want, completely free and unlimited.
+                    </div>
+                )}
+
+                {/* Info for Free plan */}
+                {plan === 'free' && (
+                    <div className="border-2 border-black p-6 rounded-2xl bg-white text-sm text-gray-600 font-medium leading-relaxed">
+                        You are currently on the <strong>Free Tier</strong>. Hires are made either through your one-time 3-day Free Trial or as individual one-off purchases. 
+                        <br/><br/>
+                        <Link href="/pricing" className="text-black font-black underline hover:text-yellow-500">
+                            Upgrade to Growth Pro or Enterprise for bundled discounts &rarr;
+                        </Link>
+                    </div>
+                )}
             </div>
          </div>
 
