@@ -177,33 +177,24 @@ export async function POST(req: Request) {
         if (finalResult.includes('"tool": "delegate"') || finalResult.includes('"tool":"delegate"')) {
             const parsed = JSON.parse(finalResult);
             if (parsed.tool === "delegate" && parsed.agentId && parsed.task) {
+                // Check if target agent is owned/hired by this user
                 const { data: targetAgent } = await supabase
                     .from('agents')
-                    .select('name, instructions, goal')
+                    .select('*')
                     .eq('id', parsed.agentId)
-                    .single();
+                    .eq('user_id', userId)
+                    .maybeSingle();
 
                 if (targetAgent) {
-                    const targetRole = targetAgent.name || "Assistant";
-                    const targetInstructions = targetAgent.instructions || targetAgent.goal || "";
-                    const targetPrompt = `ROLE: ${targetRole}.\nCONTEXT: ${targetInstructions}\n\nUSER REQUEST: "${parsed.task}"`;
-                    
-                    const targetResult = await model.generateContent([{ text: targetPrompt }]);
-                    const targetResponse = targetResult.response.text();
-
-                    const synthesisPrompt = `
-                    You delegated a subtask to "${targetRole}" and they responded with:
-                    ---
-                    ${targetResponse}
-                    ---
-                    
-                    Now, synthesize their work and output the final, complete response to the user's original request: "${input}"
-                    (Make sure to mention in your final reply that you collaborated with ${targetRole} to achieve this).
-                    `;
-                    
-                    const finalSynthesisResult = await model.generateContent([{ text: `${systemPrompt}\n\n${synthesisPrompt}` }]);
-                    finalResult = finalSynthesisResult.response.text();
+                    parsed.hired = true;
+                    parsed.agentName = targetAgent.name;
+                } else {
+                    parsed.hired = false;
+                    // If not hired, we can try to guess target agent name or fetch template details
+                    parsed.agentName = parsed.agentName || "Specialist Agent";
                 }
+                
+                finalResult = JSON.stringify(parsed);
             }
         }
     } catch (e) {
@@ -214,7 +205,7 @@ export async function POST(req: Request) {
     if (userId && agentId) {
         // Detect if it's an action (JSON) or Code or Text
         let type = 'text';
-        if (finalResult.includes('"tool": "email"')) type = 'action';
+        if (finalResult.includes('"tool": "email"') || finalResult.includes('"tool": "delegate"')) type = 'action';
         else if (finalResult.includes('<html') || finalResult.includes('function')) type = 'code';
         
         await supabase.from('tasks').insert({

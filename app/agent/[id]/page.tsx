@@ -245,7 +245,7 @@ export default function AgentWorkstation() {
     return `⏳ Free Trial Active: ${hoursLeft} hour${hoursLeft !== 1 ? 's' : ''} left`;
   };
 
-  const handlePurchase = async () => {
+  const handlePurchase = async (targetNameInput?: any, targetIcon?: string) => {
     setLoading(true);
     const supabase = createClient();
     try {
@@ -253,8 +253,10 @@ export default function AgentWorkstation() {
         if (!user) { router.push("/login"); return; }
         if (!agent) return;
 
+        const targetName = (targetNameInput && typeof targetNameInput === 'string') ? targetNameInput : undefined;
+        const nameToBuy = targetName || agent.name;
         let price = "₹999/mo"; // Default
-        const lowerName = agent.name.toLowerCase();
+        const lowerName = nameToBuy.toLowerCase();
         if (lowerName.includes("devon")) price = "₹999/mo";
         else if (lowerName.includes("ruby")) price = "₹1,299/mo";
         else if (lowerName.includes("quinn")) price = "₹799/mo";
@@ -278,8 +280,8 @@ export default function AgentWorkstation() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 userId: user.id,
-                agentName: agent.name,
-                icon: agent.icon,
+                agentName: nameToBuy,
+                icon: targetIcon || agent.icon,
                 steps: agent.steps,
                 amount: parsedAmount
             })
@@ -334,7 +336,7 @@ export default function AgentWorkstation() {
         // --- NEW: CHECK FOR ACTION JSON ---
         try {
             const parsedAction = JSON.parse(finalResult);
-            if (parsedAction.tool === "email") {
+            if (parsedAction.tool === "email" || parsedAction.tool === "delegate") {
                 setPendingAction(parsedAction); // Trigger the Approval Card
             }
         } catch (e) {
@@ -386,6 +388,96 @@ export default function AgentWorkstation() {
       } else {
           showToast("Failed: " + res.error, "error");
           if(btn) btn.innerText = "Try Again";
+      }
+  };
+
+  const executeDelegation = async () => {
+      if (!pendingAction || pendingAction.tool !== "delegate") return;
+      const btn = document.getElementById('approve-btn');
+      if (btn) btn.innerText = "Consulting...";
+
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      try {
+          const { data: targetAgent } = await supabase
+              .from('agents')
+              .select('*')
+              .eq('id', pendingAction.agentId)
+              .eq('user_id', user?.id)
+              .maybeSingle();
+
+          if (!targetAgent) throw new Error("Hired agent details not found.");
+
+          const runResponse = await fetch('/api/run-agent', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ 
+                  input: pendingAction.task,
+                  agentId: targetAgent.id,
+                  userId: user?.id,
+                  agentRole: targetAgent.name
+              })
+          });
+          const runData = await runResponse.json();
+          const targetResponse = runData.result || "No response";
+
+          const tempId1 = Date.now().toString() + "_delegate";
+          const delegateTask = { 
+              id: tempId1, 
+              input: `[Delegated to ${targetAgent.name}]: ${pendingAction.task}`, 
+              result: targetResponse, 
+              created_at: new Date().toISOString(), 
+              type: 'text' 
+          };
+          
+          await supabase.from('tasks').insert({
+              user_id: user?.id,
+              agent_id: agent.id,
+              input: `[Delegated to ${targetAgent.name}]: ${pendingAction.task}`,
+              result: targetResponse,
+              type: 'text'
+          });
+
+          setTasks(prev => [delegateTask, ...prev]);
+
+          if (btn) btn.innerText = "Synthesizing...";
+          const synthResponse = await fetch('/api/run-agent', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ 
+                  input: `The delegated agent "${targetAgent.name}" responded with: "${targetResponse}". Now synthesize this work and output the final response to my original task.`,
+                  agentId: agent.id,
+                  userId: user?.id,
+                  agentRole: agent.name
+              })
+          });
+          const synthData = await synthResponse.json();
+          const finalSynthResult = synthData.result || "No response";
+
+          const tempId2 = Date.now().toString() + "_synth";
+          const synthTask = {
+              id: tempId2,
+              input: `Synthesized ${targetAgent.name} reply`,
+              result: finalSynthResult,
+              created_at: new Date().toISOString(),
+              type: 'text'
+          };
+          
+          await supabase.from('tasks').insert({
+              user_id: user?.id,
+              agent_id: agent.id,
+              input: `Synthesized ${targetAgent.name} reply`,
+              result: finalSynthResult,
+              type: 'text'
+          });
+
+          setTasks(prev => [synthTask, ...prev]);
+          setCurrentResult(finalSynthResult);
+          setPendingAction(null); // Close card
+      } catch (err: any) {
+          showToast("Delegation failed: " + err.message, "error");
+          if (btn) btn.innerText = "Try Again";
       }
   };
 
@@ -497,61 +589,116 @@ export default function AgentWorkstation() {
   const renderContent = () => {
       // A. SHOW ACTION APPROVAL CARD
       if (pendingAction) {
-          return (
-              <div className="flex flex-col items-center justify-center h-full p-8 bg-gray-100">
-                  <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-md w-full animate-in zoom-in-95">
-                      <div className="flex items-center gap-3 mb-4 border-b-2 border-gray-100 pb-3">
-                          <div className="bg-yellow-400 p-2 rounded-lg border-2 border-black"><Mail size={24}/></div>
-                          <div>
-                              <h3 className="font-black uppercase text-lg">Action Required</h3>
-                              <p className="text-xs text-gray-500 font-bold uppercase">Agent wants to send an email</p>
+          if (pendingAction.tool === "email") {
+              return (
+                  <div className="flex flex-col items-center justify-center h-full p-8 bg-gray-100">
+                      <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-md w-full animate-in zoom-in-95">
+                          <div className="flex items-center gap-3 mb-4 border-b-2 border-gray-100 pb-3">
+                              <div className="bg-yellow-400 p-2 rounded-lg border-2 border-black"><Mail size={24}/></div>
+                              <div>
+                                  <h3 className="font-black uppercase text-lg">Action Required</h3>
+                                  <p className="text-xs text-gray-500 font-bold uppercase">Agent wants to send an email</p>
+                              </div>
                           </div>
-                      </div>
-                      
-                      <div className="space-y-4 mb-6">
-                          <div>
-                              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">To:</span>
-                              <div className="font-mono text-sm font-bold bg-gray-50 p-2 rounded border border-gray-200">{pendingAction.to}</div>
-                          </div>
-                          <div>
-                              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Subject:</span>
-                              <div className="font-mono text-sm font-medium bg-gray-50 p-2 rounded border border-gray-200">{pendingAction.subject}</div>
+                          
+                          <div className="space-y-4 mb-6">
+                              <div>
+                                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">To:</span>
+                                  <div className="font-mono text-sm font-bold bg-gray-50 p-2 rounded border border-gray-200">{pendingAction.to}</div>
+                              </div>
+                              <div>
+                                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Subject:</span>
+                                  <div className="font-mono text-sm font-medium bg-gray-50 p-2 rounded border border-gray-200">{pendingAction.subject}</div>
+                              </div>
+
+                              {/* Placeholder Form Fields */}
+                              {Object.keys(placeholderValues).length > 0 && (
+                                  <div className="bg-yellow-50 border-2 border-black p-4 rounded-xl space-y-3">
+                                      <span className="text-[10px] font-bold text-yellow-800 uppercase tracking-widest block">Complete details before sending:</span>
+                                      {Object.keys(placeholderValues).map((placeholder) => (
+                                          <div key={placeholder}>
+                                              <label className="block text-[9px] font-black text-gray-700 uppercase mb-1 leading-none">{placeholder}</label>
+                                              <input 
+                                                  type="text" 
+                                                  value={placeholderValues[placeholder]}
+                                                  onChange={(e) => setPlaceholderValues(prev => ({ ...prev, [placeholder]: e.target.value }))}
+                                                  placeholder={`Fill in: ${placeholder.split('/')[0]}`}
+                                                  className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none focus:ring-0"
+                                              />
+                                          </div>
+                                      ))}
+                                  </div>
+                              )}
+
+                              <div>
+                                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Body:</span>
+                                  <div className="bg-gray-50 p-3 rounded border border-gray-200 text-xs text-gray-600 max-h-32 overflow-y-auto" dangerouslySetInnerHTML={{ __html: pendingAction.body }} />
+                              </div>
                           </div>
 
-                          {/* Placeholder Form Fields */}
-                          {Object.keys(placeholderValues).length > 0 && (
-                              <div className="bg-yellow-50 border-2 border-black p-4 rounded-xl space-y-3">
-                                  <span className="text-[10px] font-bold text-yellow-800 uppercase tracking-widest block">Complete details before sending:</span>
-                                  {Object.keys(placeholderValues).map((placeholder) => (
-                                      <div key={placeholder}>
-                                          <label className="block text-[9px] font-black text-gray-700 uppercase mb-1 leading-none">{placeholder}</label>
-                                          <input 
-                                              type="text" 
-                                              value={placeholderValues[placeholder]}
-                                              onChange={(e) => setPlaceholderValues(prev => ({ ...prev, [placeholder]: e.target.value }))}
-                                              placeholder={`Fill in: ${placeholder.split('/')[0]}`}
-                                              className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none focus:ring-0"
-                                          />
-                                      </div>
-                                  ))}
+                          <button id="approve-btn" onClick={executeAction} className="w-full bg-black text-white py-3 rounded-lg font-bold uppercase hover:bg-green-600 transition flex items-center justify-center gap-2 mb-2">
+                              <Send size={16} /> Approve & Send
+                          </button>
+                          <button onClick={() => setPendingAction(null)} className="w-full text-gray-400 text-xs font-bold uppercase hover:text-red-500 py-2">
+                              Deny Request
+                          </button>
+                      </div>
+                  </div>
+              )
+          }
+
+          if (pendingAction.tool === "delegate") {
+              return (
+                  <div className="flex flex-col items-center justify-center h-full p-8 bg-gray-100">
+                      <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-md w-full animate-in zoom-in-95">
+                          <div className="flex items-center gap-3 mb-4 border-b-2 border-gray-100 pb-3">
+                              <div className="bg-yellow-400 p-2 rounded-lg border-2 border-black"><Users size={24}/></div>
+                              <div>
+                                  <h3 className="font-black uppercase text-lg">Collaboration Request</h3>
+                                  <p className="text-xs text-gray-500 font-bold uppercase">Agent wants to delegate subtask</p>
+                              </div>
+                          </div>
+                          
+                          <div className="space-y-4 mb-6">
+                              <div>
+                                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Consulting Agent:</span>
+                                  <div className="font-bold text-sm bg-gray-50 p-2.5 rounded border-2 border-black">{pendingAction.agentName}</div>
+                              </div>
+                              <div>
+                                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Subtask / Query:</span>
+                                  <div className="font-mono text-xs font-semibold bg-gray-50 p-3 rounded border-2 border-black leading-relaxed max-h-36 overflow-y-auto">{pendingAction.task}</div>
+                              </div>
+                          </div>
+
+                          {pendingAction.hired ? (
+                              <button 
+                                id="approve-btn" 
+                                onClick={executeDelegation} 
+                                className="w-full bg-black text-white py-3.5 rounded-xl border-2 border-black font-black uppercase text-xs tracking-wide hover:bg-yellow-400 hover:text-black transition flex items-center justify-center gap-2 mb-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5"
+                              >
+                                  <Send size={16} /> Approve & Consult {pendingAction.agentName}
+                              </button>
+                          ) : (
+                              <div className="space-y-3">
+                                  <div className="bg-red-50 border-2 border-red-200 text-red-800 text-xs p-3.5 rounded-xl font-medium">
+                                      ⚠️ You haven't hired <strong>{pendingAction.agentName}</strong> yet. You need to purchase this agent to unlock cross-agent collaboration.
+                                  </div>
+                                  <button 
+                                    onClick={() => handlePurchase(pendingAction.agentName)} 
+                                    className="w-full bg-yellow-400 text-black py-3.5 rounded-xl border-2 border-black font-black uppercase text-xs tracking-wide hover:bg-black hover:text-white transition flex items-center justify-center gap-2 mb-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5"
+                                  >
+                                      <DollarSign size={16} /> Hire {pendingAction.agentName}
+                                  </button>
                               </div>
                           )}
-
-                          <div>
-                              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Body:</span>
-                              <div className="bg-gray-50 p-3 rounded border border-gray-200 text-xs text-gray-600 max-h-32 overflow-y-auto" dangerouslySetInnerHTML={{ __html: pendingAction.body }} />
-                          </div>
+                          
+                          <button onClick={() => setPendingAction(null)} className="w-full text-gray-400 text-xs font-bold uppercase hover:text-red-500 py-2">
+                              Deny Request (Solve Alone)
+                          </button>
                       </div>
-
-                      <button id="approve-btn" onClick={executeAction} className="w-full bg-black text-white py-3 rounded-lg font-bold uppercase hover:bg-green-600 transition flex items-center justify-center gap-2 mb-2">
-                          <Send size={16} /> Approve & Send
-                      </button>
-                      <button onClick={() => setPendingAction(null)} className="w-full text-gray-400 text-xs font-bold uppercase hover:text-red-500 py-2">
-                          Deny Request
-                      </button>
                   </div>
-              </div>
-          )
+              )
+          }
       }
 
       // B. TERMINAL VIEW (CHAT LOG)
