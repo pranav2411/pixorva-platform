@@ -150,9 +150,11 @@ export default function EmployeesPage() {
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
     employee: Employee | null;
-    type: 'trial' | 'paid_upgrade';
+    type: 'trial' | 'hire_option' | 'success';
+    successMessage?: string;
   }>({ isOpen: false, employee: null, type: 'trial' });
   const [modalLoading, setModalLoading] = useState(false);
+  const [slotCount, setSlotCount] = useState(0);
 
   const handleConfirmTrial = async () => {
     const employee = confirmModal.employee;
@@ -188,9 +190,12 @@ export default function EmployeesPage() {
 
         if (profileError) throw profileError;
 
-        alert(`🎉 Success! ${employee.name} has joined your team for your 3-day free trial.`);
-        setConfirmModal({ isOpen: false, employee: null, type: 'trial' });
-        router.push("/");
+        setConfirmModal({
+            isOpen: true,
+            employee,
+            type: 'success',
+            successMessage: `🎉 Success! ${employee.name} has joined your team for your 3-day free trial.`
+        });
     } catch (e: any) {
         alert("Activation failed: " + e.message);
     } finally {
@@ -237,6 +242,55 @@ export default function EmployeesPage() {
     }
   };
 
+  const handleConfirmPlanHire = async () => {
+    const employee = confirmModal.employee;
+    if (!employee) return;
+    setModalLoading(true);
+    const supabase = createClient();
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) { router.push("/login"); return; }
+
+        // Check count
+        const { count, error: countError } = await supabase
+            .from('agents')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', user.id)
+            .eq('is_paid_individually', false);
+
+        if (countError) throw countError;
+
+        if (count !== null && count >= 4) {
+            alert("Your 4 subscription slots are full. Please purchase individually or upgrade.");
+            return;
+        }
+
+        const { error: agentError } = await supabase
+            .from('agents')
+            .insert({
+                user_id: user.id,
+                name: `${employee.name} (${employee.role})`,
+                steps: employee.steps,
+                schedule: 'Manual',
+                icon: employee.icon,
+                is_paid_individually: false
+            });
+
+        if (agentError) throw agentError;
+        
+        setConfirmModal({
+            isOpen: true,
+            employee,
+            type: 'success',
+            successMessage: `🎉 Success! ${employee.name} has joined your team under your Growth Pro Plan.`
+        });
+    } catch (e: any) {
+        alert("Hiring failed: " + e.message);
+    } finally {
+        setModalLoading(false);
+    }
+  };
+
   const handleHire = async (employee: Employee) => {
     setHiring(employee.id);
     const supabase = createClient();
@@ -268,17 +322,25 @@ export default function EmployeesPage() {
                     name: `${employee.name} (${employee.role})`,
                     steps: employee.steps,
                     schedule: 'Manual',
-                    icon: employee.icon
+                    icon: employee.icon,
+                    is_paid_individually: false
                 });
 
             if (agentError) throw agentError;
-            alert(`🎉 Success! ${employee.name} has joined your team under your Enterprise Plan.`);
-            router.push("/");
+
+            setConfirmModal({
+                isOpen: true,
+                employee,
+                type: 'success',
+                successMessage: `🎉 Success! ${employee.name} has joined your team under your Enterprise Plan.`
+            });
+            setHiring(null);
             return;
         }
 
-        // 2. Growth Pro Plan: Limit to 4 agents for free
+        // 2. Growth Pro Plan: Show Hire Options Modal (Plan Slot vs Paid Individual)
         if (plan === 'growth_pro') {
+            // Get current active slots count
             const { count, error: countError } = await supabase
                 .from('agents')
                 .select('*', { count: 'exact', head: true })
@@ -286,29 +348,11 @@ export default function EmployeesPage() {
                 .eq('is_paid_individually', false);
 
             if (countError) throw countError;
-
-            if (count !== null && count >= 4) {
-                // Open custom modal instead of window.confirm
-                setConfirmModal({ isOpen: true, employee, type: 'paid_upgrade' });
-                setHiring(null);
-                return;
-            } else {
-                // They have < 4 agents, provision for free:
-                const { error: agentError } = await supabase
-                    .from('agents')
-                    .insert({
-                        user_id: user.id,
-                        name: `${employee.name} (${employee.role})`,
-                        steps: employee.steps,
-                        schedule: 'Manual',
-                        icon: employee.icon
-                    });
-
-                if (agentError) throw agentError;
-                alert(`🎉 Success! ${employee.name} has joined your team under your Growth Pro Plan.`);
-                router.push("/");
-                return;
-            }
+            
+            setSlotCount(count || 0);
+            setConfirmModal({ isOpen: true, employee, type: 'hire_option' });
+            setHiring(null);
+            return;
         }
 
         // 3. Free Tier (Check Trial Status)
@@ -316,7 +360,6 @@ export default function EmployeesPage() {
         const hasChosenTrialAgent = profile?.trial_agent_id !== null;
 
         if (isTrialActive && !hasChosenTrialAgent) {
-            // Open custom modal instead of window.confirm
             setConfirmModal({ isOpen: true, employee, type: 'trial' });
             setHiring(null);
             return;
@@ -436,51 +479,117 @@ export default function EmployeesPage() {
       {confirmModal.isOpen && confirmModal.employee && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
             <div className="bg-white border-4 border-black p-8 rounded-3xl max-w-md w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] animate-in zoom-in-95 duration-200 text-center relative">
-                <button 
-                  disabled={modalLoading}
-                  onClick={() => setConfirmModal({ isOpen: false, employee: null, type: 'trial' })} 
-                  className="absolute right-4 top-4 text-gray-400 hover:text-black transition disabled:opacity-50"
-                >
-                    <X size={24} />
-                </button>
+                {confirmModal.type !== 'success' && (
+                    <button 
+                      disabled={modalLoading}
+                      onClick={() => setConfirmModal({ isOpen: false, employee: null, type: 'trial' })} 
+                      className="absolute right-4 top-4 text-gray-400 hover:text-black transition disabled:opacity-50"
+                    >
+                        <X size={24} />
+                    </button>
+                )}
 
                 <div className="mb-6 flex justify-center">
-                    <div className="bg-yellow-400 p-4 rounded-2xl border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black">
-                        <Zap size={36} fill="black" />
+                    <div className={`${confirmModal.type === 'success' ? 'bg-green-400' : 'bg-yellow-400'} p-4 rounded-2xl border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black`}>
+                        {confirmModal.type === 'success' ? (
+                            <CheckCircle size={36} strokeWidth={3} className="text-black" />
+                        ) : (
+                            <Zap size={36} fill="black" />
+                        )}
                     </div>
                 </div>
 
                 <h3 className={`text-3xl uppercase mb-3 ${oswald.className}`}>
-                    {confirmModal.type === 'trial' ? 'Start Free Trial' : 'Confirm Purchase'}
+                    {confirmModal.type === 'success' 
+                        ? 'Hired Successfully!' 
+                        : confirmModal.type === 'trial' 
+                        ? 'Start Free Trial' 
+                        : 'Hire Option'}
                 </h3>
 
-                <p className="text-sm font-semibold text-gray-600 mb-8 leading-relaxed">
-                    {confirmModal.type === 'trial' ? (
+                <div className="text-sm font-semibold text-gray-600 mb-8 leading-relaxed">
+                    {confirmModal.type === 'success' ? (
+                        <p className="text-base text-gray-800 font-bold">{confirmModal.successMessage}</p>
+                    ) : confirmModal.type === 'trial' ? (
                         <>Would you like to use your one-time <strong>3-day Free Trial</strong> to hire <strong>{confirmModal.employee.name}</strong> for free?</>
                     ) : (
-                        <>Would you like to purchase <strong>{confirmModal.employee.name}</strong> individually for <strong>{confirmModal.employee.price}</strong>?</>
+                        <>
+                            Choose how you would like to hire <strong>{confirmModal.employee.name}</strong>:
+                        </>
                     )}
-                </p>
+                </div>
 
                 <div className="flex flex-col gap-3">
-                    <button 
-                      disabled={modalLoading}
-                      onClick={confirmModal.type === 'trial' ? handleConfirmTrial : handleConfirmPaidUpgrade}
-                      className="w-full bg-black text-white hover:bg-yellow-400 hover:text-black py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
-                    >
-                        {modalLoading ? (
-                            <Loader2 className="animate-spin" size={16} />
-                        ) : (
-                            confirmModal.type === 'trial' ? 'Activate Trial Agent' : 'Purchase Individually'
-                        )}
-                    </button>
-                    <button 
-                      disabled={modalLoading}
-                      onClick={() => setConfirmModal({ isOpen: false, employee: null, type: 'trial' })}
-                      className="w-full bg-white text-gray-500 hover:text-red-500 py-2 font-bold uppercase text-xs tracking-wider transition disabled:opacity-50"
-                    >
-                        Cancel
-                    </button>
+                    {confirmModal.type === 'success' ? (
+                        <button 
+                          onClick={() => {
+                              setConfirmModal({ isOpen: false, employee: null, type: 'trial' });
+                              router.push("/");
+                          }}
+                          className="w-full bg-black text-white hover:bg-yellow-400 hover:text-black py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md"
+                        >
+                            Go to Dashboard
+                        </button>
+                    ) : confirmModal.type === 'trial' ? (
+                        <>
+                            <button 
+                              disabled={modalLoading}
+                              onClick={handleConfirmTrial}
+                              className="w-full bg-black text-white hover:bg-yellow-400 hover:text-black py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                            >
+                                {modalLoading ? <Loader2 className="animate-spin" size={16} /> : 'Activate Trial Slot'}
+                            </button>
+                            <button 
+                              disabled={modalLoading}
+                              onClick={handleConfirmPaidUpgrade}
+                              className="w-full bg-yellow-400 text-black hover:bg-black hover:text-white py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                            >
+                                {modalLoading ? <Loader2 className="animate-spin" size={16} /> : `Purchase Individually (${confirmModal.employee.price})`}
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            {/* Option 1: Use Plan Slot */}
+                            <div className="w-full">
+                                <button 
+                                  disabled={modalLoading || slotCount >= 4}
+                                  onClick={handleConfirmPlanHire}
+                                  className="w-full bg-black text-white hover:bg-yellow-400 hover:text-black py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:border-gray-300"
+                                >
+                                    {modalLoading ? <Loader2 className="animate-spin" size={16} /> : 'Add to Plan (Free Slot)'}
+                                </button>
+                                <p className="text-[10px] text-gray-500 font-bold mt-1.5 uppercase">
+                                    {slotCount >= 4 
+                                        ? '❌ All 4 plan slots used. Upgrade or buy one-off.' 
+                                        : `✅ plan slots used: ${slotCount} / 4`}
+                                </p>
+                            </div>
+
+                            {/* Option 2: Purchase Individually */}
+                            <div className="w-full mt-2">
+                                <button 
+                                  disabled={modalLoading}
+                                  onClick={handleConfirmPaidUpgrade}
+                                  className="w-full bg-yellow-400 text-black hover:bg-black hover:text-white py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                                >
+                                    {modalLoading ? <Loader2 className="animate-spin" size={16} /> : `Purchase Individually (${confirmModal.employee.price})`}
+                                </button>
+                                <p className="text-[10px] text-gray-500 font-bold mt-1.5 uppercase">
+                                    Keep your plan slots open for other agents
+                                </p>
+                            </div>
+                        </>
+                    )}
+
+                    {confirmModal.type !== 'success' && (
+                        <button 
+                          disabled={modalLoading}
+                          onClick={() => setConfirmModal({ isOpen: false, employee: null, type: 'trial' })}
+                          className="w-full bg-white text-gray-500 hover:text-red-500 py-2 font-bold uppercase text-xs tracking-wider transition disabled:opacity-50 mt-2"
+                        >
+                            Cancel
+                        </button>
+                    )}
                 </div>
             </div>
         </div>
