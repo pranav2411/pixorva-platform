@@ -27,6 +27,7 @@ export default function AgentWorkstation() {
   const [taskInput, setTaskInput] = useState("");
   const [activeTab, setActiveTab] = useState<'terminal' | 'preview'>('terminal');
   const [currentResult, setCurrentResult] = useState(""); 
+  const [activeSessionIndex, setActiveSessionIndex] = useState<number | null>(null);
   
   // --- FILE & ACTION STATE ---
   const [selectedFile, setSelectedFile] = useState<{ name: string, type: string, base64: string } | null>(null);
@@ -179,6 +180,7 @@ export default function AgentWorkstation() {
     if (!inputText.trim() && !selectedFile) return;
     setRunning(true);
     setPendingAction(null); // Clear previous actions
+    setActiveSessionIndex(null); // Reset to active session view
     setActiveTab('terminal'); 
     setTaskInput(""); 
     
@@ -504,21 +506,71 @@ export default function AgentWorkstation() {
       }
   };
 
-  const getActiveChatMessages = () => {
+  const getChatSessions = () => {
       if (typeof window === 'undefined') return [];
-      const clearTime = localStorage.getItem('chat_clear_at_' + params.id);
-      let messages = [...tasks];
-      if (clearTime) {
-          messages = messages.filter(t => new Date(t.created_at) > new Date(clearTime));
+      const clearTimes = JSON.parse(localStorage.getItem('chat_sessions_' + params.id) || '[]');
+      const sortedClearTimes = [...clearTimes].sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+      
+      const sortedTasks = [...tasks].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+      
+      const groups: any[][] = [];
+      for (let i = 0; i <= sortedClearTimes.length; i++) {
+          groups.push([]);
       }
-      return messages.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+      
+      sortedTasks.forEach(task => {
+          const taskTime = new Date(task.created_at).getTime();
+          let groupIndex = 0;
+          for (let i = 0; i < sortedClearTimes.length; i++) {
+              if (taskTime > new Date(sortedClearTimes[i]).getTime()) {
+                  groupIndex = i + 1;
+              }
+          }
+          groups[groupIndex].push(task);
+      });
+
+      return groups
+          .map((groupTasks, index) => {
+              if (groupTasks.length === 0) return null;
+              
+              const firstMsg = groupTasks[0];
+              const title = firstMsg.input.length > 25 
+                  ? firstMsg.input.slice(0, 25) + '...' 
+                  : firstMsg.input;
+                  
+              const lastMsg = groupTasks[groupTasks.length - 1];
+              
+              return {
+                  index,
+                  tasks: groupTasks,
+                  title,
+                  lastUpdateTime: lastMsg.created_at
+              };
+          })
+          .filter(Boolean) as { index: number; tasks: any[]; title: string; lastUpdateTime: string }[];
+  };
+
+  const getActiveChatMessages = () => {
+      const sessions = getChatSessions();
+      if (sessions.length === 0) return [];
+      
+      if (activeSessionIndex !== null) {
+          const selected = sessions.find(s => s.index === activeSessionIndex);
+          if (selected) return selected.tasks;
+      }
+      
+      const sortedSessions = [...sessions].sort((a, b) => a.index - b.index);
+      return sortedSessions[sortedSessions.length - 1]?.tasks || [];
   };
 
   const handleNewChat = () => {
       if (typeof window !== 'undefined') {
-          localStorage.setItem('chat_clear_at_' + params.id, new Date().toISOString());
+          const sessions = JSON.parse(localStorage.getItem('chat_sessions_' + params.id) || '[]');
+          sessions.push(new Date().toISOString());
+          localStorage.setItem('chat_sessions_' + params.id, JSON.stringify(sessions));
       }
       setCurrentResult("");
+      setActiveSessionIndex(null);
       setTasks(prev => [...prev]);
       showToast("Started a new chat session.", "success");
   };
@@ -600,19 +652,34 @@ export default function AgentWorkstation() {
 
          {/* HISTORY */}
          <div className="flex-1 overflow-y-auto p-4">
-             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 px-2">Work History</h3>
+             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 px-2">Chat History</h3>
              <div className="space-y-2">
-                 {tasks.map((t) => (
-                     <div key={t.id} onClick={() => { setCurrentResult(t.result); setActiveTab(t.type === 'code' ? 'preview' : 'terminal'); setPendingAction(null); }} className="p-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-xl cursor-pointer transition group">
-                         <div className="font-bold text-xs truncate mb-1 text-gray-800">{t.input}</div>
-                         <div className="flex justify-between items-center text-[10px] text-gray-400">
-                             <span>{new Date(t.created_at).toLocaleTimeString()}</span>
-                             <span className={`uppercase font-bold ${t.result.includes('Busy') ? 'text-red-500' : 'text-green-600'}`}>
-                                 {t.result === "Thinking..." ? "Running..." : "Success"}
-                             </span>
+                 {getChatSessions().reverse().map((session) => {
+                     const isSelected = activeSessionIndex === session.index || (activeSessionIndex === null && session.index === Math.max(...getChatSessions().map(s => s.index)));
+                     return (
+                         <div 
+                             key={session.index} 
+                             onClick={() => { 
+                                 setActiveSessionIndex(session.index); 
+                                 const lastMsg = session.tasks[session.tasks.length - 1];
+                                 setCurrentResult(lastMsg?.result || "");
+                                 setActiveTab(lastMsg?.type === 'code' ? 'preview' : 'terminal');
+                                 setPendingAction(null); 
+                             }} 
+                             className={`p-3 border-2 rounded-xl cursor-pointer transition flex flex-col justify-between hover:border-black ${isSelected ? 'bg-yellow-50 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'bg-white border-gray-200'}`}
+                         >
+                             <div className="font-bold text-xs truncate mb-1 text-gray-800 uppercase tracking-wide">
+                                 {session.title}
+                             </div>
+                             <div className="flex justify-between items-center text-[9px] text-gray-400 font-bold uppercase mt-1">
+                                 <span>{new Date(session.lastUpdateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                 <span className="text-green-600">
+                                     {session.tasks.length} message{session.tasks.length > 1 ? 's' : ''}
+                                 </span>
+                             </div>
                          </div>
-                     </div>
-                 ))}
+                     );
+                 })}
              </div>
          </div>
       </div>
