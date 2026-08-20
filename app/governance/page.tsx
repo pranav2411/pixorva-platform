@@ -40,9 +40,9 @@ interface Workload {
 }
 
 const DEFAULT_PROVIDERS: ProviderConfig[] = [
-  { id: "p-1", name: "OpenAI Gateway", role: "GPT-4o / GPT-3.5", endpoint: "https://api.openai.com/v1", model: "gpt-4o", apiKey: "sk-proj-••••••••••••••••", status: "Connected" },
-  { id: "p-2", name: "Anthropic Proxy", role: "Claude 3.5 Sonnet", endpoint: "https://api.anthropic.com/v1", model: "claude-3-5-sonnet-20241022", apiKey: "sk-ant-••••••••••••••••", status: "Connected" },
-  { id: "p-3", name: "Gemini Engine", role: "Gemini 1.5 Pro / Flash", endpoint: "https://generativelanguage.googleapis.com", model: "gemini-1.5-flash", apiKey: "AIzaSy••••••••••••••••", status: "Connected" },
+  { id: "p-1", name: "OpenAI Gateway", role: "GPT-4o / GPT-3.5", endpoint: "https://api.openai.com/v1", model: "gpt-4o", apiKey: "", status: "Not Configured" },
+  { id: "p-2", name: "Anthropic Proxy", role: "Claude 3.5 Sonnet", endpoint: "https://api.anthropic.com/v1", model: "claude-3-5-sonnet-20241022", apiKey: "", status: "Not Configured" },
+  { id: "p-3", name: "Gemini Engine", role: "Gemini 1.5 Pro / Flash", endpoint: "https://generativelanguage.googleapis.com", model: "gemini-1.5-flash", apiKey: "", status: "Not Configured" },
   { id: "p-4", name: "Custom Cloud Node", role: "vLLM / Ollama Node", endpoint: "http://104.24.12.80:8000/v1", model: "meta-llama/Meta-Llama-3-8B-Instruct", apiKey: "", status: "Not Configured" }
 ];
 
@@ -618,11 +618,49 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
                 </div>
               </div>
 
-              <div className="bg-gray-50 border-2 border-black p-4 rounded-xl mt-6 text-black">
-                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Active Proxy Endpoint Target</span>
-                <p className="font-mono text-xs font-bold mt-1 text-gray-700 break-all">
-                  {(providers.find(p => p.id === sandboxProvider) || providers[0]).endpoint}
-                </p>
+              <div className="bg-gray-50 border-2 border-black p-4 rounded-xl mt-6 text-black space-y-3">
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block pb-1 border-b border-gray-200">Configure Selected Provider</span>
+                
+                <div>
+                  <label className="block text-[8px] font-black uppercase text-gray-500">Endpoint URL</label>
+                  <input 
+                    type="text" 
+                    value={(providers.find(p => p.id === sandboxProvider) || providers[0]).endpoint}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setProviders(prev => prev.map(p => p.id === sandboxProvider ? { ...p, endpoint: val } : p));
+                    }}
+                    className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none mt-1 font-mono"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[8px] font-black uppercase text-gray-500">Target Model</label>
+                    <input 
+                      type="text" 
+                      value={(providers.find(p => p.id === sandboxProvider) || providers[0]).model}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setProviders(prev => prev.map(p => p.id === sandboxProvider ? { ...p, model: val } : p));
+                      }}
+                      className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[8px] font-black uppercase text-red-500 font-bold">Your API Key *</label>
+                    <input 
+                      type="password" 
+                      value={(providers.find(p => p.id === sandboxProvider) || providers[0]).apiKey || ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setProviders(prev => prev.map(p => p.id === sandboxProvider ? { ...p, apiKey: val, status: val.trim() ? "Connected" : "Not Configured" } : p));
+                      }}
+                      placeholder="Enter API Key"
+                      className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none mt-1"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>

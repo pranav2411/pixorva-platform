@@ -15,11 +15,11 @@ export async function POST(req: Request) {
     let cost = 0.0;
 
     let activeKey = apiKey;
+    const keyToUse = (activeKey && !activeKey.includes('•••') && activeKey.trim() !== "") ? activeKey.trim() : null;
     
-    // Determine provider and call target endpoint
+    // Determine provider and call target endpoint using strictly client key
     if (provider === "p-1") { // OpenAI
-        const keyToUse = (activeKey && !activeKey.includes('•••') && activeKey.trim() !== "") ? activeKey : process.env.OPENAI_API_KEY;
-        if (!keyToUse) throw new Error("OpenAI API Key not configured.");
+        if (!keyToUse) throw new Error("OpenAI API Key not configured in the LLM Registry. Please enter your API Key.");
 
         const response = await fetch(`${endpoint}/chat/completions`, {
             method: "POST",
@@ -47,8 +47,7 @@ export async function POST(req: Request) {
         cost = (inTokens * 0.0000025) + (outTokens * 0.00001);
 
     } else if (provider === "p-2") { // Anthropic
-        const keyToUse = (activeKey && !activeKey.includes('•••') && activeKey.trim() !== "") ? activeKey : process.env.ANTHROPIC_API_KEY;
-        if (!keyToUse) throw new Error("Anthropic API Key not configured.");
+        if (!keyToUse) throw new Error("Anthropic API Key not configured in the LLM Registry. Please enter your API Key.");
 
         const response = await fetch(`${endpoint}/messages`, {
             method: "POST",
@@ -78,8 +77,7 @@ export async function POST(req: Request) {
         cost = (inTokens * 0.000003) + (outTokens * 0.000015);
 
     } else if (provider === "p-3") { // Gemini
-        const keyToUse = (activeKey && !activeKey.includes('•••') && activeKey.trim() !== "") ? activeKey : process.env.GOOGLE_API_KEY;
-        if (!keyToUse) throw new Error("Google API Key not configured.");
+        if (!keyToUse) throw new Error("Gemini API Key not configured in the LLM Registry. Please enter your API Key.");
 
         const targetModel = model || "gemini-1.5-flash";
         const response = await fetch(`${endpoint}/v1beta/models/${targetModel}:generateContent?key=${keyToUse}`, {
