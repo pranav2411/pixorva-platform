@@ -60,9 +60,17 @@ function formatMarkdownText(text: string) {
 
 function getCleanedPreviewHtml(code: string) {
     if (!code) return "";
-    let cleaned = code.replace(/```(html|jsx|tsx|xml|javascript|typescript)?/gi, "").replace(/```/g, "").trim();
+    
+    const codeBlockRegex = /```(?:html|jsx|tsx|javascript|typescript|xml)?([\s\S]*?)```/i;
+    const match = codeBlockRegex.exec(code);
+    let cleaned = "";
+    if (match && match[1]) {
+        cleaned = match[1].trim();
+    } else {
+        cleaned = code.replace(/```(html|jsx|tsx|xml|javascript|typescript)?/gi, "").replace(/```/g, "").trim();
+    }
 
-    if (cleaned.toLowerCase().includes('<!doctype html') || cleaned.toLowerCase().includes('<html')) {
+    if (cleaned.toLowerCase().includes('<!doctype html') || cleaned.toLowerCase().includes('<html') || cleaned.toLowerCase().includes('<body>')) {
         if (!cleaned.includes('tailwindcss.com') && !cleaned.includes('tailwind.css')) {
             cleaned = cleaned.replace('<head>', '<head><script src="https://cdn.tailwindcss.com"></script>');
         }
