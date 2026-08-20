@@ -177,6 +177,8 @@ export default function Home() {
           <Link href="/employees" className="hover:text-yellow-600 transition">Marketplace</Link>
           <Link href="/pricing" className="hover:text-yellow-600 transition">Pricing</Link>
           <Link href="/studio" className="hover:text-yellow-600 transition">Studio</Link>
+          <Link href="/workspace" className="hover:text-yellow-600 transition">Workspace</Link>
+          <Link href="/governance" className="hover:text-yellow-600 transition">Governance</Link>
         </div>
 
         <div className="flex items-center gap-4">
