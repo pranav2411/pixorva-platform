@@ -80,7 +80,8 @@ export default function Home() {
                 name: agentName,
                 icon: icon,
                 steps: steps,
-                schedule: 'Manual'
+                schedule: 'Manual',
+                is_paid_individually: true
             });
 
             if (insertError) {

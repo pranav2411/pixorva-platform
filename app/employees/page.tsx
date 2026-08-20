@@ -190,7 +190,8 @@ export default function EmployeesPage() {
             const { count, error: countError } = await supabase
                 .from('agents')
                 .select('*', { count: 'exact', head: true })
-                .eq('user_id', user.id);
+                .eq('user_id', user.id)
+                .eq('is_paid_individually', false);
 
             if (countError) throw countError;
 

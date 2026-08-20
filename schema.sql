@@ -56,7 +56,8 @@ create table if not exists public.agents (
   icon text,
   schedule text default 'Manual' not null,
   steps jsonb default '[]'::jsonb not null,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  is_paid_individually boolean default false not null
 );
 
 -- Enable RLS for Agents
