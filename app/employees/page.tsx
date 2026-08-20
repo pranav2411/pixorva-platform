@@ -11,7 +11,7 @@ const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
 
 // --- THE MEGA ROSTER (INDIAN PRICING & REASONABLE RATES) ---
-const EMPLOYEES = [
+export const EMPLOYEES = [
   // ENGINEERING
   {
     id: "dev-1", category: "Engineering", name: "Devon", role: "React Developer", icon: "Code", price: "₹999/mo",
