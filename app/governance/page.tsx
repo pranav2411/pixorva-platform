@@ -3,14 +3,24 @@
 import React, { useState } from "react";
 import { Oswald, Inter } from "next/font/google";
 import { 
-  ArrowLeft, Database, ShieldCheck, Lock, Users, Clipboard, 
-  Plus, Check, Play, Download, Settings, RefreshCw, ShieldAlert
+  ArrowLeft, Database, ShieldCheck, Lock, Plus, Play, Download, 
+  RefreshCw, ShieldAlert, Cpu, DollarSign, Activity, FileCode, Check, Trash
 } from 'lucide-react';
 import Link from "next/link";
 import { showToast } from "../utils/Toast";
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
+
+interface ProviderConfig {
+  id: string;
+  name: string;
+  role: string;
+  endpoint: string;
+  model: string;
+  apiKey: string;
+  status: "Connected" | "Not Configured";
+}
 
 interface Workload {
   id: string;
@@ -25,6 +35,13 @@ interface Workload {
   vulnerabilityCount: number | null;
   certifiedHash: string | null;
 }
+
+const DEFAULT_PROVIDERS: ProviderConfig[] = [
+  { id: "p-1", name: "OpenAI Gateway", role: "GPT-4o / GPT-3.5", endpoint: "https://api.openai.com/v1", model: "gpt-4o", apiKey: "sk-proj-••••••••••••••••", status: "Connected" },
+  { id: "p-2", name: "Anthropic Proxy", role: "Claude 3.5 Sonnet", endpoint: "https://api.anthropic.com/v1", model: "claude-3-5-sonnet-20241022", apiKey: "sk-ant-••••••••••••••••", status: "Connected" },
+  { id: "p-3", name: "Gemini Engine", role: "Gemini 1.5 Pro / Flash", endpoint: "https://generativelanguage.googleapis.com", model: "gemini-1.5-flash", apiKey: "AIzaSy••••••••••••••••", status: "Connected" },
+  { id: "p-4", name: "Custom Cloud Node", role: "vLLM / Ollama Node", endpoint: "http://104.24.12.80:8000/v1", model: "meta-llama/Meta-Llama-3-8B-Instruct", apiKey: "", status: "Not Configured" }
+];
 
 const DEFAULT_WORKLOADS: Workload[] = [
   {
@@ -65,19 +82,6 @@ const DEFAULT_WORKLOADS: Workload[] = [
     driftScore: 0.05,
     vulnerabilityCount: 0,
     certifiedHash: "6c2f3d9b1a5e8f4c2c7d9a1b5c8e4f2d7a9b1c5e8f4c2c7d9a1b5c8e4f2d7a9b"
-  },
-  {
-    id: "wl-4",
-    name: "Stripe Checkout Copilot",
-    version: "v3.0.0",
-    owner: "Finance",
-    useCase: "Automated invoice resolution",
-    riskTier: "High",
-    lineage: "GPT-4o-Mini Proxy",
-    biasScore: 0.08,
-    driftScore: 0.22,
-    vulnerabilityCount: 3,
-    certifiedHash: "f4b3a2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3"
   }
 ];
 
@@ -92,82 +96,147 @@ export default function GovernancePage() {
   const [workloads, setWorkloads] = useState<Workload[]>(DEFAULT_WORKLOADS);
   const [selectedWlId, setSelectedWlId] = useState<string>("wl-1");
   const [audits, setAudits] = useState(DEFAULT_AUDITS);
+  const [providers, setProviders] = useState<ProviderConfig[]>(DEFAULT_PROVIDERS);
   
-  // Policy State
+  // Dynamic Proxy Stats
+  const [totalRequests, setTotalRequests] = useState(2845);
+  const [violationsBlocked, setViolationsBlocked] = useState(14);
+  const [avgLatency, setAvgLatency] = useState(1150);
+  const [totalCost, setTotalCost] = useState(14.28);
+
+  // Policy States
   const [contentFiltering, setContentFiltering] = useState(true);
   const [rateLimiting, setRateLimiting] = useState(true);
   const [quotaEnforcement, setQuotaEnforcement] = useState(false);
   const [blockUnapproved, setBlockUnapproved] = useState(true);
-  const [yamlConfig, setYamlConfig] = useState(`# Pixorva Governance Guardrail Policy
+  const [yamlConfig, setYamlConfig] = useState(`# Universal Gateway Proxy Guardrail Policy
 version: "1.0.0"
 guardrails:
   content_filter:
     enabled: true
-    sensitivity: "strict"
-    blocked_categories: ["toxic", "unapproved_code"]
+    banned_keywords: ["hack", "bypass", "leak password", "exploit"]
   rate_limit:
     enabled: true
-    requests_per_minute: 100
+    requests_per_minute: 120
   quota:
     enabled: false
-    monthly_allowance_usd: 50.00
-  admission_control:
-    block_high_risk: true
-    require_signature: true`);
+    limit_usd: 50.00`);
 
   // Testing Loading states
   const [testingBias, setTestingBias] = useState(false);
   const [testingDrift, setTestingDrift] = useState(false);
   const [scanningSec, setScanningSec] = useState(false);
 
-  // New Workload Form
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [newName, setNewName] = useState("");
-  const [newVersion, setNewVersion] = useState("v1.0.0");
-  const [newOwner, setNewOwner] = useState("Engineering");
-  const [newUseCase, setNewUseCase] = useState("");
-  const [newRisk, setNewRisk] = useState<"Minimal" | "Limited" | "High">("Minimal");
-  const [newLineage, setNewLineage] = useState("");
+  // Sandbox States
+  const [sandboxProvider, setSandboxProvider] = useState("p-1");
+  const [sandboxPrompt, setSandboxPrompt] = useState("");
+  const [sandboxResponse, setSandboxResponse] = useState("");
+  const [sandboxMeta, setSandboxMeta] = useState<any>(null);
+  const [sendingSandbox, setSendingSandbox] = useState(false);
+
+  // New Provider Form
+  const [showAddProvider, setShowAddProvider] = useState(false);
+  const [newProvName, setNewProvName] = useState("");
+  const [newProvRole, setNewProvRole] = useState("");
+  const [newProvEndpoint, setNewProvEndpoint] = useState("");
+  const [newProvModel, setNewProvModel] = useState("");
+  const [newProvKey, setNewProvKey] = useState("");
 
   const activeWorkload = workloads.find(w => w.id === selectedWlId) || workloads[0];
 
-  const handleRegisterWorkload = (e: React.FormEvent) => {
+  const handleAddProviderSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newName.trim() || !newUseCase.trim()) {
-      showToast("Please fill in all workload fields", "error");
+    if (!newProvName.trim() || !newProvEndpoint.trim() || !newProvModel.trim()) {
+      showToast("Please fill in required fields", "error");
       return;
     }
-
-    const newWl: Workload = {
-      id: `wl-${Date.now()}`,
-      name: newName,
-      version: newVersion,
-      owner: newOwner,
-      useCase: newUseCase,
-      riskTier: newRisk,
-      lineage: newLineage || "Imported Custom Model",
-      biasScore: null,
-      driftScore: null,
-      vulnerabilityCount: null,
-      certifiedHash: null
+    const newProv: ProviderConfig = {
+      id: `p-${Date.now()}`,
+      name: newProvName,
+      role: newProvRole || newProvModel,
+      endpoint: newProvEndpoint,
+      model: newProvModel,
+      apiKey: newProvKey ? "••••••••••••••••" : "",
+      status: "Connected"
     };
 
-    setWorkloads(prev => [...prev, newWl]);
-    setSelectedWlId(newWl.id);
-    
-    // Log Audit Event
+    setProviders(prev => [...prev, newProv]);
+    setNewProvName("");
+    setNewProvRole("");
+    setNewProvEndpoint("");
+    setNewProvModel("");
+    setNewProvKey("");
+    setShowAddProvider(false);
+    showToast(`${newProv.name} integrated successfully!`, "success");
+
+    // Add Audit Log
     const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     setAudits(prev => [
-      { time: nowStr, event: "Workload Registered", details: `Registered new AI workload: ${newWl.name}`, status: "info" },
+      { time: nowStr, event: "Provider Connected", details: `Integrated new universal LLM endpoint: ${newProv.name} (${newProv.model})`, status: "success" },
       ...prev
     ]);
+  };
 
-    // Reset Form
-    setNewName("");
-    setNewUseCase("");
-    setNewLineage("");
-    setShowAddForm(false);
-    showToast("Workload Registered Successfully!", "success");
+  const handleSendSandbox = () => {
+    if (!sandboxPrompt.trim()) return;
+    setSendingSandbox(true);
+    setSandboxResponse("");
+    setSandboxMeta(null);
+
+    // Check policies dynamically
+    const selectedProv = providers.find(p => p.id === sandboxProvider) || providers[0];
+    const isBanned = contentFiltering && (
+      sandboxPrompt.toLowerCase().includes("hack") ||
+      sandboxPrompt.toLowerCase().includes("bypass") ||
+      sandboxPrompt.toLowerCase().includes("leak") ||
+      sandboxPrompt.toLowerCase().includes("exploit")
+    );
+
+    setTimeout(() => {
+      setSendingSandbox(false);
+      const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      if (isBanned) {
+        setSandboxResponse("❌ [403 Forbidden] REQUEST BLOCKED BY POLICY GATEWAY: Content filter rules matched forbidden keyphrase ('hack'/'bypass'/'leak'/'exploit').");
+        setViolationsBlocked(prev => prev + 1);
+        setTotalRequests(prev => prev + 1);
+        
+        setAudits(prev => [
+          { time: nowStr, event: "Gateway Violation Blocked", details: `Blocked prompt to ${selectedProv.name} containing potential vulnerability/exploit payload.`, status: "error" },
+          ...prev
+        ]);
+        showToast("Policy Violation Blocked!", "error");
+        return;
+      }
+
+      // Successful request simulation
+      const reply = `[PROXIED VIA PIXORVA GATEWAY from ${selectedProv.name}]\n\nI have successfully received and processed your query regarding "${sandboxPrompt}". To connect your backend architectures securely, ensure you use environment variable configs and configure SSL connection contexts for database migrations.`;
+      setSandboxResponse(reply);
+      
+      const inTokens = Math.floor(sandboxPrompt.length / 4) + 12;
+      const outTokens = Math.floor(reply.length / 4) + 30;
+      const costDelta = parseFloat((((inTokens * 0.15) + (outTokens * 0.60)) / 1000000).toFixed(6));
+      const latencyDelta = Math.floor(800 + Math.random() * 600);
+
+      setSandboxMeta({
+        inTokens,
+        outTokens,
+        cost: costDelta,
+        latency: latencyDelta
+      });
+
+      // Update counters
+      setTotalRequests(prev => prev + 1);
+      setTotalCost(prev => parseFloat((prev + costDelta).toFixed(4)));
+      setAvgLatency(prev => Math.floor((prev * 0.9) + (latencyDelta * 0.1)));
+
+      setAudits(prev => [
+        { time: nowStr, event: "Proxy Call Success", details: `Proxied call to ${selectedProv.name} (${selectedProv.model}) completed in ${latencyDelta}ms (Used ${inTokens + outTokens} tokens, Cost: $${costDelta.toFixed(5)})`, status: "success" },
+        ...prev
+      ]);
+      showToast("Gateway request succeeded!", "success");
+
+    }, 1200);
   };
 
   const runBiasTest = () => {
@@ -183,7 +252,7 @@ guardrails:
         ...prev
       ]);
       showToast("Bias test run completed!", "success");
-    }, 1500);
+    }, 1200);
   };
 
   const runDriftTest = () => {
@@ -199,7 +268,7 @@ guardrails:
         ...prev
       ]);
       showToast("PSI Drift evaluation completed!", "success");
-    }, 1500);
+    }, 1200);
   };
 
   const runVulnerabilityScan = () => {
@@ -221,16 +290,7 @@ guardrails:
         ...prev
       ]);
       showToast("Vulnerability scan completed & signed!", "success");
-    }, 1500);
-  };
-
-  const saveYamlPolicy = () => {
-    showToast("Gateway Policy applied successfully!", "success");
-    const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    setAudits(prev => [
-      { time: nowStr, event: "Policy Config Saved", details: "YAML admission controllers updated", status: "info" },
-      ...prev
-    ]);
+    }, 1200);
   };
 
   const triggerEvidenceExport = () => {
@@ -238,27 +298,25 @@ guardrails:
 ======================================================
 Generated At: ${new Date().toLocaleString()}
 
-1. SYSTEM REGISTRY & METADATA
+1. GLOBAL COMPLIANCE GATEWAY ANALYTICS
+------------------------------------------------------
+Total Requests Proxied:    ${totalRequests}
+Violations Blocked:        ${violationsBlocked}
+Average Latency:           ${avgLatency}ms
+Accumulated Proxy Cost:    $${totalCost.toFixed(4)}
+
+2. CONNECTED PROVIDERS
+------------------------------------------------------
+${providers.map(p => `- ${p.name} (${p.model}) -> Status: ${p.status} (Endpoint: ${p.endpoint})`).join('\n')}
+
+3. COMPLIANCE ASSESSMENT & SCORECARD
 ------------------------------------------------------
 Workload Name: ${activeWorkload.name}
 Version:       ${activeWorkload.version}
-Owner:         ${activeWorkload.owner}
-Use Case:      ${activeWorkload.useCase}
-Lineage:       ${activeWorkload.lineage}
-Risk Category: ${activeWorkload.riskTier}
-
-2. COMPLIANCE ASSESSMENT & SCORECARD
-------------------------------------------------------
 Bias evaluation index:     ${activeWorkload.biasScore !== null ? activeWorkload.biasScore : 'Pending Scan'}
 Population Stability (PSI): ${activeWorkload.driftScore !== null ? activeWorkload.driftScore : 'Pending Scan'}
 Vulnerability Count:        ${activeWorkload.vulnerabilityCount !== null ? activeWorkload.vulnerabilityCount : 'Pending Scan'}
 Certified Security Hash:    ${activeWorkload.certifiedHash !== null ? activeWorkload.certifiedHash : 'Unsigned'}
-
-3. RUNTIME POLICY GATEWAY RULES
-------------------------------------------------------
-Content Filtering enabled:  ${contentFiltering ? 'YES' : 'NO'}
-Rate Limiting enabled:      ${rateLimiting ? 'YES' : 'NO'}
-Admission Controller Block: ${blockUnapproved ? 'YES' : 'NO'}
 
 4. COMPLIANCE AUDIT TIMELINE
 ------------------------------------------------------
@@ -271,7 +329,7 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${activeWorkload.name.toLowerCase().replace(/\s+/g, '-')}-compliance-card.txt`;
+    a.download = `universal-compliance-audit-card.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -291,135 +349,156 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
                   </Link>
                   <div>
                     <h1 className={`text-2xl md:text-3xl uppercase ${oswald.className} tracking-tighter leading-none`}>AI Governance Lab</h1>
-                    <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wide">Continuous Compliance Control Tower</span>
+                    <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wide">Universal LLM Proxy Control Tower</span>
                   </div>
               </div>
               <div className="bg-yellow-400 text-black border-2 border-black px-3 py-1.5 rounded font-black text-xs uppercase tracking-wide shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
-                🛡️ Continuous Audit Active
+                🛡️ Universal Audit Active
               </div>
           </div>
       </div>
 
       <main className="max-w-7xl mx-auto px-6 py-8">
+
+        {/* METRICS ROW */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          
+          <div className="bg-white border-4 border-black p-4 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Total Proxied Requests</span>
+              <span className={`text-2xl font-black ${oswald.className}`}>{totalRequests.toLocaleString()}</span>
+            </div>
+            <div className="bg-blue-100 p-2 border-2 border-black rounded-lg"><Cpu size={20}/></div>
+          </div>
+
+          <div className="bg-white border-4 border-black p-4 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Blocked Violations</span>
+              <span className={`text-2xl font-black text-red-500 ${oswald.className}`}>{violationsBlocked}</span>
+            </div>
+            <div className="bg-red-100 p-2 border-2 border-black rounded-lg"><ShieldAlert size={20} className="text-red-500"/></div>
+          </div>
+
+          <div className="bg-white border-4 border-black p-4 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Average Latency</span>
+              <span className={`text-2xl font-black ${oswald.className}`}>{avgLatency}ms</span>
+            </div>
+            <div className="bg-green-100 p-2 border-2 border-black rounded-lg"><Activity size={20} className="text-green-600"/></div>
+          </div>
+
+          <div className="bg-white border-4 border-black p-4 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Proxy Accrued Costs</span>
+              <span className={`text-2xl font-black ${oswald.className}`}>${totalCost.toFixed(2)}</span>
+            </div>
+            <div className="bg-yellow-100 p-2 border-2 border-black rounded-lg"><DollarSign size={20} className="text-yellow-600"/></div>
+          </div>
+
+        </div>
         
-        {/* TOP ROW GRID: INVENTORY & SCORING */}
+        {/* GRID LAYOUT */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
           
-          {/* COLUMN 1: AI INVENTORY & REGISTRY (5 COLS) */}
+          {/* COLUMN 1: PROVIDERS REGISTRY (5 COLS) */}
           <div className="lg:col-span-5 flex flex-col">
             <div className="bg-white border-4 border-black rounded-xl p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex-grow flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-center mb-4 pb-3 border-b-2 border-gray-100">
                   <div className="flex items-center gap-2">
                     <Database size={20} className="text-black" />
-                    <h2 className={`text-xl uppercase ${oswald.className}`}>System Registry</h2>
+                    <h2 className={`text-xl uppercase ${oswald.className}`}>LLM Registry</h2>
                   </div>
                   <button 
-                    onClick={() => setShowAddForm(!showAddForm)}
+                    onClick={() => setShowAddProvider(!showAddProvider)}
                     className="bg-black text-white hover:bg-yellow-400 hover:text-black transition text-xs font-bold uppercase px-3 py-1.5 rounded border border-black flex items-center gap-1.5"
                   >
-                    <Plus size={14} /> Register
+                    <Plus size={14} /> Add Provider
                   </button>
                 </div>
 
-                {showAddForm ? (
-                  <form onSubmit={handleRegisterWorkload} className="bg-yellow-50 border-2 border-black p-4 rounded-xl mb-4 space-y-3 animate-in slide-in-from-top-4 duration-200">
-                    <h4 className="text-xs font-black uppercase text-yellow-800">Register New Workload</h4>
+                {showAddProvider ? (
+                  <form onSubmit={handleAddProviderSubmit} className="bg-yellow-50 border-2 border-black p-4 rounded-xl mb-4 space-y-3 animate-in slide-in-from-top-4 duration-200 text-black">
+                    <h4 className="text-xs font-black uppercase text-yellow-800">Integrate Custom LLM</h4>
                     <div className="space-y-2">
                       <div>
-                        <label className="block text-[9px] font-black uppercase text-gray-600">Model Name *</label>
+                        <label className="block text-[9px] font-black uppercase text-gray-600">Provider Name *</label>
                         <input 
                           type="text" 
                           required 
-                          value={newName} 
-                          onChange={(e) => setNewName(e.target.value)} 
-                          placeholder="e.g. Llama-3-Chat" 
+                          value={newProvName} 
+                          onChange={(e) => setNewProvName(e.target.value)} 
+                          placeholder="e.g. Local Llama Server" 
                           className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none" 
                         />
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="block text-[9px] font-black uppercase text-gray-600">Version</label>
-                          <input 
-                            type="text" 
-                            value={newVersion} 
-                            onChange={(e) => setNewVersion(e.target.value)} 
-                            placeholder="v1.0.0" 
-                            className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none" 
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[9px] font-black uppercase text-gray-600">Owner</label>
-                          <input 
-                            type="text" 
-                            value={newOwner} 
-                            onChange={(e) => setNewOwner(e.target.value)} 
-                            placeholder="Engineering" 
-                            className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none" 
-                          />
-                        </div>
                       </div>
                       <div>
-                        <label className="block text-[9px] font-black uppercase text-gray-600">Use Case *</label>
+                        <label className="block text-[9px] font-black uppercase text-gray-600">Proxy Target Model *</label>
                         <input 
                           type="text" 
                           required 
-                          value={newUseCase} 
-                          onChange={(e) => setNewUseCase(e.target.value)} 
-                          placeholder="e.g. SQL Generation" 
+                          value={newProvModel} 
+                          onChange={(e) => setNewProvModel(e.target.value)} 
+                          placeholder="meta-llama/Meta-Llama-3-8B-Instruct" 
+                          className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none" 
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] font-black uppercase text-gray-600">Target Endpoint Url *</label>
+                        <input 
+                          type="url" 
+                          required 
+                          value={newProvEndpoint} 
+                          onChange={(e) => setNewProvEndpoint(e.target.value)} 
+                          placeholder="http://your-gpu-ip:8000/v1" 
                           className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none" 
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="block text-[9px] font-black uppercase text-gray-600">Risk Tier</label>
-                          <select 
-                            value={newRisk} 
-                            onChange={(e: any) => setNewRisk(e.target.value)} 
-                            className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none"
-                          >
-                            <option value="Minimal">Minimal</option>
-                            <option value="Limited">Limited</option>
-                            <option value="High">High</option>
-                          </select>
+                          <label className="block text-[9px] font-black uppercase text-gray-600">API Key / Token (Optional)</label>
+                          <input 
+                            type="password" 
+                            value={newProvKey} 
+                            onChange={(e) => setNewProvKey(e.target.value)} 
+                            placeholder="••••••••••••" 
+                            className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none" 
+                          />
                         </div>
                         <div>
-                          <label className="block text-[9px] font-black uppercase text-gray-600">Lineage/Base Model</label>
+                          <label className="block text-[9px] font-black uppercase text-gray-600">Label/Role</label>
                           <input 
                             type="text" 
-                            value={newLineage} 
-                            onChange={(e) => setNewLineage(e.target.value)} 
-                            placeholder="Llama-3-8b" 
+                            value={newProvRole} 
+                            onChange={(e) => setNewProvRole(e.target.value)} 
+                            placeholder="Llama-3 Server" 
                             className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none" 
                           />
                         </div>
                       </div>
                     </div>
                     <div className="flex gap-2 pt-2">
-                      <button type="submit" className="flex-grow bg-black text-white hover:bg-yellow-400 hover:text-black py-2 rounded text-xs font-bold uppercase transition">Add to Registry</button>
-                      <button type="button" onClick={() => setShowAddForm(false)} className="px-3 bg-white border-2 border-black hover:bg-red-50 py-2 rounded text-xs font-bold uppercase transition">Cancel</button>
+                      <button type="submit" className="flex-grow bg-black text-white hover:bg-yellow-400 hover:text-black py-2 rounded text-xs font-bold uppercase transition">Connect Endpoint</button>
+                      <button type="button" onClick={() => setShowAddProvider(false)} className="px-3 bg-white border-2 border-black hover:bg-red-50 py-2 rounded text-xs font-bold uppercase transition">Cancel</button>
                     </div>
                   </form>
                 ) : null}
 
                 <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1">
-                  {workloads.map((wl) => {
-                    const isSelected = wl.id === selectedWlId;
+                  {providers.map((p) => {
+                    const isSelected = p.id === sandboxProvider;
                     return (
                       <div 
-                        key={wl.id}
-                        onClick={() => setSelectedWlId(wl.id)}
-                        className={`p-4 border-2 rounded-xl transition cursor-pointer flex justify-between items-center ${isSelected ? 'bg-black text-white border-black' : 'bg-gray-50 text-black border-gray-200 hover:border-black'}`}
+                        key={p.id}
+                        onClick={() => setSandboxProvider(p.id)}
+                        className={`p-4 border-2 rounded-xl transition cursor-pointer flex justify-between items-center ${isSelected ? 'bg-black text-white border-black shadow' : 'bg-gray-50 text-black border-gray-200 hover:border-black'}`}
                       >
                         <div>
-                          <h4 className="font-bold text-xs uppercase">{wl.name}</h4>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className={`text-[8px] px-1.5 py-0.5 rounded font-black border ${isSelected ? 'bg-white text-black border-white' : 'bg-gray-200 text-gray-700 border-gray-300'}`}>{wl.version}</span>
-                            <span className="text-[9px] font-semibold opacity-60">{wl.owner}</span>
-                          </div>
+                          <h4 className="font-bold text-xs uppercase">{p.name}</h4>
+                          <span className="text-[9px] font-semibold opacity-60 block mt-0.5">{p.model}</span>
                         </div>
-                        <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded border-2 ${wl.riskTier === 'High' ? 'bg-red-400 text-black border-black' : wl.riskTier === 'Limited' ? 'bg-yellow-400 text-black border-black' : 'bg-green-400 text-black border-black'}`}>
-                          {wl.riskTier} Risk
+                        <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded border-2 ${p.status === 'Connected' ? 'bg-green-400 text-black border-black' : 'bg-gray-200 text-gray-500 border-gray-300'}`}>
+                          {p.status}
                         </span>
                       </div>
                     );
@@ -427,90 +506,76 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
                 </div>
               </div>
 
-              <div className="bg-gray-50 border-2 border-black p-4 rounded-xl mt-6">
-                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Active Workload Lineage</span>
-                <p className="font-mono text-xs font-bold mt-1 text-gray-700">{activeWorkload.lineage}</p>
+              <div className="bg-gray-50 border-2 border-black p-4 rounded-xl mt-6 text-black">
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Active Proxy Endpoint Target</span>
+                <p className="font-mono text-xs font-bold mt-1 text-gray-700 break-all">
+                  {(providers.find(p => p.id === sandboxProvider) || providers[0]).endpoint}
+                </p>
               </div>
             </div>
           </div>
 
-          {/* COLUMN 2: RISK ENGINE & COMPLIANCE VERIFICATION (7 COLS) */}
+          {/* COLUMN 2: UNIVERSAL PROXY GATEWAY SANDBOX (7 COLS) */}
           <div className="lg:col-span-7 flex flex-col">
             <div className="bg-white border-4 border-black rounded-xl p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex-grow flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-center mb-4 pb-3 border-b-2 border-gray-100">
                   <div className="flex items-center gap-2">
-                    <ShieldCheck size={20} className="text-black" />
-                    <h2 className={`text-xl uppercase ${oswald.className}`}>Compliance Scorecard</h2>
+                    <Activity size={20} className="text-black" />
+                    <h2 className={`text-xl uppercase ${oswald.className}`}>Proxy Gateway Sandbox</h2>
                   </div>
-                  <span className={`text-xs font-black uppercase px-3 py-1 rounded border-2 ${activeWorkload.riskTier === 'High' ? 'bg-red-400 border-black' : activeWorkload.riskTier === 'Limited' ? 'bg-yellow-400 border-black' : 'bg-green-400 border-black'}`}>
-                    Active: {activeWorkload.name}
+                  <span className="text-xs font-black uppercase px-3 py-1 rounded border-2 bg-yellow-400 border-black">
+                    Live Testing
                   </span>
                 </div>
 
-                {/* Scorecards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  
-                  {/* Bias card */}
-                  <div className="bg-gray-50 border-2 border-black p-4 rounded-xl text-center">
-                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">Bias Ratio</span>
-                    <div className="text-2xl font-black my-2">
-                      {activeWorkload.biasScore !== null ? activeWorkload.biasScore : "N/A"}
-                    </div>
-                    {activeWorkload.biasScore !== null ? (
-                      <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black ${activeWorkload.biasScore < 0.05 ? 'bg-green-200' : 'bg-yellow-200'}`}>
-                        {activeWorkload.biasScore < 0.05 ? 'Passed' : 'Warning'}
-                      </span>
-                    ) : (
-                      <span className="text-[8px] font-bold text-gray-400 uppercase">Scan Pending</span>
+                {/* Tester panel */}
+                <div className="space-y-4 mb-4">
+                  <div>
+                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Enter Test Prompt</label>
+                    <textarea 
+                      value={sandboxPrompt} 
+                      onChange={(e) => setSandboxPrompt(e.target.value)} 
+                      rows={3}
+                      placeholder="e.g. Write a script to fetch server status (Try containing 'hack' or 'exploit' to test Content Filters)"
+                      className="w-full text-xs p-3 bg-gray-50 border-2 border-black rounded-xl focus:outline-none focus:ring-0 leading-relaxed placeholder-gray-400 text-black"
+                    />
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    <button 
+                      disabled={sendingSandbox || !sandboxPrompt.trim()}
+                      onClick={handleSendSandbox}
+                      className="bg-black text-white hover:bg-yellow-400 hover:text-black transition px-6 py-3 rounded-lg border-2 border-black font-black uppercase text-xs tracking-wider disabled:opacity-50"
+                    >
+                      {sendingSandbox ? "Routing..." : "Send via Proxy"}
+                    </button>
+                    
+                    {sandboxMeta && (
+                      <div className="flex gap-4 text-[9px] font-black uppercase bg-gray-100 border border-gray-200 px-3 py-2 rounded-lg text-gray-500">
+                        <span>Latency: <strong className="text-black">{sandboxMeta.latency}ms</strong></span>
+                        <span>Tokens: <strong className="text-black">{sandboxMeta.inTokens + sandboxMeta.outTokens}</strong></span>
+                        <span>Cost: <strong className="text-black">${sandboxMeta.cost.toFixed(5)}</strong></span>
+                      </div>
                     )}
                   </div>
 
-                  {/* Drift card */}
-                  <div className="bg-gray-50 border-2 border-black p-4 rounded-xl text-center">
-                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">PSI Drift Index</span>
-                    <div className="text-2xl font-black my-2">
-                      {activeWorkload.driftScore !== null ? activeWorkload.driftScore : "N/A"}
+                  {/* Sandbox Response Output */}
+                  {sandboxResponse && (
+                    <div className="space-y-1 animate-in zoom-in-95 duration-200">
+                      <span className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Gateway Response Output</span>
+                      <div className={`p-4 border-2 border-black rounded-xl font-medium text-xs break-words leading-relaxed max-h-48 overflow-y-auto ${sandboxResponse.includes('403 Forbidden') ? 'bg-red-50 text-red-800 border-red-200' : 'bg-gray-50 text-gray-800'}`}>
+                        {sandboxResponse}
+                      </div>
                     </div>
-                    {activeWorkload.driftScore !== null ? (
-                      <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black ${activeWorkload.driftScore < 0.1 ? 'bg-green-200' : 'bg-red-200'}`}>
-                        {activeWorkload.driftScore < 0.1 ? 'Stable' : 'High Drift'}
-                      </span>
-                    ) : (
-                      <span className="text-[8px] font-bold text-gray-400 uppercase">Scan Pending</span>
-                    )}
-                  </div>
+                  )}
 
-                  {/* Vulnerability card */}
-                  <div className="bg-gray-50 border-2 border-black p-4 rounded-xl text-center">
-                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">Vulnerabilities</span>
-                    <div className="text-2xl font-black my-2">
-                      {activeWorkload.vulnerabilityCount !== null ? activeWorkload.vulnerabilityCount : "N/A"}
-                    </div>
-                    {activeWorkload.vulnerabilityCount !== null ? (
-                      <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black ${activeWorkload.vulnerabilityCount === 0 ? 'bg-green-200' : 'bg-red-200'}`}>
-                        {activeWorkload.vulnerabilityCount === 0 ? 'Secure' : 'Alert'}
-                      </span>
-                    ) : (
-                      <span className="text-[8px] font-bold text-gray-400 uppercase">Scan Pending</span>
-                    )}
-                  </div>
-
-                </div>
-
-                {/* Audit Integrity Hash */}
-                <div className="bg-gray-900 text-green-400 p-4 rounded-xl font-mono text-[10px] break-all border-2 border-black mb-6">
-                  <div className="flex items-center gap-1.5 mb-1.5 text-gray-400 font-bold uppercase tracking-wider text-[8px]">
-                    <ShieldCheck size={12} className="text-green-400" />
-                    Audit Certification Signature (SHA-256)
-                  </div>
-                  {activeWorkload.certifiedHash ? activeWorkload.certifiedHash : "UNSIGNED - RUN VULNERABILITY SCAN TO CERTIFY"}
                 </div>
               </div>
 
-              {/* Action Suite */}
+              {/* Assessment Dials */}
               <div className="border-t-2 border-gray-100 pt-6">
-                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-3">Compliance Scan Engine</span>
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-3">Model Compliance Verification</span>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <button 
                     disabled={testingBias}
@@ -624,7 +689,7 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
 
               <div className="mt-4">
                 <button 
-                  onClick={saveYamlPolicy}
+                  onClick={() => showToast("Gateway Policy applied successfully!", "success")}
                   className="w-full bg-black text-white hover:bg-yellow-400 hover:text-black transition py-3 rounded-lg border-2 border-black font-bold uppercase text-[10px]"
                 >
                   Apply Gateway Rules
@@ -640,7 +705,7 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
               <div>
                 <div className="flex justify-between items-center mb-4 pb-3 border-b-2 border-gray-100">
                   <div className="flex items-center gap-2">
-                    <Clipboard size={20} className="text-black" />
+                    <FileCode size={20} className="text-black" />
                     <h2 className={`text-xl uppercase ${oswald.className}`}>Audit Vault Logs</h2>
                   </div>
                   <span className="text-[10px] font-bold text-gray-400 uppercase">Immutable Vault</span>
@@ -651,7 +716,7 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
                     return (
                       <div key={idx} className="bg-gray-50 border-2 border-black p-3.5 rounded-xl flex items-start gap-3">
                         <div className={`p-1.5 rounded-lg border border-black mt-0.5 ${item.status === 'success' ? 'bg-green-200' : item.status === 'error' ? 'bg-red-200' : item.status === 'warning' ? 'bg-yellow-200' : 'bg-blue-200'}`}>
-                          {item.status === 'error' ? <ShieldAlert size={14} /> : <ShieldCheck size={14} />}
+                          <ShieldCheck size={14} />
                         </div>
                         <div className="flex-grow">
                           <div className="flex justify-between items-center">
