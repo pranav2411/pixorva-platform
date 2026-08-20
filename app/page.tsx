@@ -58,12 +58,16 @@ export default function Home() {
         const sessionId = urlParams.get('session_id');
 
         if (success === 'true' && sessionId) {
-          // Trigger checkout receipt email endpoint
-          fetch('/api/checkout/success', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId, userId: user.id })
-          }).catch(err => console.error("Error triggering receipt email:", err));
+          try {
+            // Await the API call to guarantee the fetch completes before page redirect/reload aborts it
+            await fetch('/api/checkout/success', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ sessionId, userId: user.id })
+            });
+          } catch (err) {
+            console.error("Error triggering receipt email:", err);
+          }
         }
 
         if (success === 'true' && agentName && icon && stepsStr) {
