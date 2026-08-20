@@ -177,7 +177,7 @@ guardrails:
     ]);
   };
 
-  const handleSendSandbox = () => {
+  const handleSendSandbox = async () => {
     if (!sandboxPrompt.trim()) return;
     setSendingSandbox(true);
     setSandboxResponse("");
@@ -192,51 +192,58 @@ guardrails:
       sandboxPrompt.toLowerCase().includes("exploit")
     );
 
-    setTimeout(() => {
+    const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    if (isBanned) {
       setSendingSandbox(false);
-      const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-      if (isBanned) {
-        setSandboxResponse("❌ [403 Forbidden] REQUEST BLOCKED BY POLICY GATEWAY: Content filter rules matched forbidden keyphrase ('hack'/'bypass'/'leak'/'exploit').");
-        setViolationsBlocked(prev => prev + 1);
-        setTotalRequests(prev => prev + 1);
-        
-        setAudits(prev => [
-          { time: nowStr, event: "Gateway Violation Blocked", details: `Blocked prompt to ${selectedProv.name} containing potential vulnerability/exploit payload.`, status: "error" },
-          ...prev
-        ]);
-        showToast("Policy Violation Blocked!", "error");
-        return;
-      }
-
-      // Successful request simulation
-      const reply = `[PROXIED VIA PIXORVA GATEWAY from ${selectedProv.name}]\n\nI have successfully received and processed your query regarding "${sandboxPrompt}". To connect your backend architectures securely, ensure you use environment variable configs and configure SSL connection contexts for database migrations.`;
-      setSandboxResponse(reply);
+      setSandboxResponse("❌ [403 Forbidden] REQUEST BLOCKED BY POLICY GATEWAY: Content filter rules matched forbidden keyphrase ('hack'/'bypass'/'leak'/'exploit').");
+      setViolationsBlocked(prev => prev + 1);
+      setTotalRequests(prev => prev + 1);
       
-      const inTokens = Math.floor(sandboxPrompt.length / 4) + 12;
-      const outTokens = Math.floor(reply.length / 4) + 30;
-      const costDelta = parseFloat((((inTokens * 0.15) + (outTokens * 0.60)) / 1000000).toFixed(6));
-      const latencyDelta = Math.floor(800 + Math.random() * 600);
+      setAudits(prev => [
+        { time: nowStr, event: "Gateway Violation Blocked", details: `Blocked prompt to ${selectedProv.name} containing potential vulnerability/exploit payload.`, status: "error" },
+        ...prev
+      ]);
+      showToast("Policy Violation Blocked!", "error");
+      return;
+    }
 
-      setSandboxMeta({
-        inTokens,
-        outTokens,
-        cost: costDelta,
-        latency: latencyDelta
+    try {
+      const response = await fetch('/api/governance/proxy', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: sandboxPrompt,
+          provider: selectedProv.id,
+          endpoint: selectedProv.endpoint,
+          model: selectedProv.model,
+          apiKey: selectedProv.apiKey
+        })
       });
+
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error || "Proxy failed");
+
+      setSandboxResponse(data.text);
+      setSandboxMeta(data.meta);
 
       // Update counters
       setTotalRequests(prev => prev + 1);
-      setTotalCost(prev => parseFloat((prev + costDelta).toFixed(4)));
-      setAvgLatency(prev => Math.floor((prev * 0.9) + (latencyDelta * 0.1)));
+      setTotalCost(prev => parseFloat((prev + data.meta.cost).toFixed(6)));
+      setAvgLatency(prev => Math.floor((prev * 0.9) + (data.meta.latency * 0.1)));
 
       setAudits(prev => [
-        { time: nowStr, event: "Proxy Call Success", details: `Proxied call to ${selectedProv.name} (${selectedProv.model}) completed in ${latencyDelta}ms (Used ${inTokens + outTokens} tokens, Cost: $${costDelta.toFixed(5)})`, status: "success" },
+        { time: nowStr, event: "Proxy Call Success", details: `Proxied call to ${selectedProv.name} (${selectedProv.model}) completed in ${data.meta.latency}ms (Used ${data.meta.inTokens + data.meta.outTokens} tokens, Cost: $${data.meta.cost.toFixed(5)})`, status: "success" },
         ...prev
       ]);
       showToast("Gateway request succeeded!", "success");
 
-    }, 1200);
+    } catch (err: any) {
+      setSandboxResponse(`❌ Error calling proxy: ${err.message}`);
+      showToast("Proxy connection failed.", "error");
+    } finally {
+      setSendingSandbox(false);
+    }
   };
 
   const runBiasTest = () => {
