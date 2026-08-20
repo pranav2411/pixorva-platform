@@ -158,13 +158,65 @@ export default function EmployeesPage() {
             return;
         }
 
-        // Check if user is eligible for hiring with their Free Trial
+        // Check if user has active plan or is eligible for Free Trial
         const { data: profile } = await supabase
             .from('profiles')
-            .select('trial_started_at, trial_ends_at, trial_agent_id')
+            .select('trial_started_at, trial_ends_at, trial_agent_id, plan')
             .eq('id', user.id)
             .single();
 
+        const plan = profile?.plan || 'free';
+
+        // 1. Enterprise Plan: Unlimited agents for free
+        if (plan === 'enterprise') {
+            const { error: agentError } = await supabase
+                .from('agents')
+                .insert({
+                    user_id: user.id,
+                    name: `${employee.name} (${employee.role})`,
+                    steps: employee.steps,
+                    schedule: 'Manual',
+                    icon: employee.icon
+                });
+
+            if (agentError) throw agentError;
+            alert(`🎉 Success! ${employee.name} has joined your team under your Enterprise Plan.`);
+            router.push("/");
+            return;
+        }
+
+        // 2. Growth Pro Plan: Limit to 4 agents for free
+        if (plan === 'growth_pro') {
+            const { count, error: countError } = await supabase
+                .from('agents')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', user.id);
+
+            if (countError) throw countError;
+
+            if (count !== null && count >= 4) {
+                alert("⚠️ You have reached your limit of 4 active agents under the Growth Pro Plan. Please upgrade to the Enterprise Plan to hire more.");
+                router.push("/pricing");
+                return;
+            }
+
+            const { error: agentError } = await supabase
+                .from('agents')
+                .insert({
+                    user_id: user.id,
+                    name: `${employee.name} (${employee.role})`,
+                    steps: employee.steps,
+                    schedule: 'Manual',
+                    icon: employee.icon
+                });
+
+            if (agentError) throw agentError;
+            alert(`🎉 Success! ${employee.name} has joined your team under your Growth Pro Plan.`);
+            router.push("/");
+            return;
+        }
+
+        // 3. Free Tier (Check Trial Status)
         const isTrialActive = profile?.trial_ends_at && new Date() < new Date(profile.trial_ends_at);
         const hasChosenTrialAgent = profile?.trial_agent_id !== null;
 
@@ -189,10 +241,10 @@ export default function EmployeesPage() {
                 // Save this agent ID as the chosen trial agent
                 const { error: profileError } = await supabase
                     .from('profiles')
-                    .update({
+                    .upsert({
+                        id: user.id,
                         trial_agent_id: newAgent.id
-                    })
-                    .eq('id', user.id);
+                    });
 
                 if (profileError) throw profileError;
 

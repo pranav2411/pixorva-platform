@@ -52,6 +52,7 @@ export default function Home() {
         const agentName = urlParams.get('agent_name');
         const icon = urlParams.get('icon');
         const stepsStr = urlParams.get('steps');
+        const plan = urlParams.get('plan');
 
         if (success === 'true' && agentName && icon && stepsStr) {
           try {
@@ -76,6 +77,28 @@ export default function Home() {
             console.error("Error parsing redirect parameters:", err);
           } finally {
             // Clean url params so refresh doesn't trigger insert again
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        }
+
+        if (success === 'true' && plan) {
+          try {
+            const { error: updateError } = await supabase
+              .from('profiles')
+              .upsert({
+                id: user.id,
+                plan: plan
+              });
+
+            if (updateError) {
+              console.error("Failed to update plan:", updateError.message);
+              alert("Payment succeeded, but we had trouble updating your plan. Please contact support.");
+            } else {
+              alert(`🎉 Success! You have upgraded to the ${plan === 'growth_pro' ? 'Growth Pro' : 'Enterprise'} plan!`);
+            }
+          } catch (err) {
+            console.error("Error upgrading plan:", err);
+          } finally {
             window.history.replaceState({}, document.title, window.location.pathname);
           }
         }

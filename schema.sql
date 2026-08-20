@@ -9,7 +9,8 @@ create table if not exists public.profiles (
   trial_started_at timestamp with time zone,
   trial_ends_at timestamp with time zone,
   trial_agent_id uuid,
-  has_used_trial boolean default false not null
+  has_used_trial boolean default false not null,
+  plan text default 'free' not null
 );
 
 -- Enable RLS for Profiles

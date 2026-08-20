@@ -5,12 +5,48 @@ import { Oswald, Inter } from "next/font/google";
 import { Check, X, Zap, ArrowLeft, Crown, Shield, Rocket } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-
+import { useRouter } from "next/navigation";
+import { createClient } from "../utils/supabase/client";
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
 
 export default function PricingPage() {
+  const router = useRouter();
+
+  const handleSubscribe = async (plan: string, price: number) => {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      router.push("/login?redirect=/pricing");
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          planName: plan === 'growth_pro' ? 'Growth Pro Plan' : 'Enterprise Plan',
+          amount: price * 100, // price in paise (INR subunit)
+          isPlan: true,
+          planCode: plan
+        })
+      });
+
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error(data.error || "Failed to create subscription session");
+      }
+    } catch (err: any) {
+      alert("Subscription failed: " + err.message);
+    }
+  };
+
   return (
     <div className={`min-h-screen bg-white text-black ${inter.className}`}>
       
@@ -24,7 +60,7 @@ export default function PricingPage() {
                 height={32}
                 className="w-8 h-8 rounded"
             />
-        <span className={`text-2xl uppercase italic ${oswald.className}`}>Pixorva</span>
+            <span className={`text-2xl uppercase italic ${oswald.className}`}>Pixorva</span>
         </Link>
         <Link href="/trial">
             <button className="bg-yellow-400 text-black border-2 border-black px-4 py-2 rounded font-bold uppercase hover:bg-black hover:text-white transition shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none">
@@ -105,50 +141,66 @@ export default function PricingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               
               {/* STARTER */}
-              <div className="border-4 border-black rounded-2xl p-8 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition hover:-translate-y-1 bg-white">
-                  <div className="bg-gray-100 w-12 h-12 rounded-full flex items-center justify-center mb-4 border-2 border-black"><Shield size={24}/></div>
-                  <h3 className={`text-2xl uppercase ${oswald.className}`}>Starter</h3>
-                  <p className="text-gray-500 text-sm font-bold mb-6">For solo founders testing ideas.</p>
-                  <div className="text-4xl font-black mb-6">₹0 <span className="text-sm font-medium text-gray-500">/ 7 Days</span></div>
-                  <ul className="space-y-3 text-sm font-medium mb-8">
-                      <li className="flex gap-2"><Check size={16}/> Access to 3 Basic Agents</li>
-                      <li className="flex gap-2"><Check size={16}/> 10 Tasks / Day</li>
-                      <li className="flex gap-2"><Check size={16}/> Standard Speed</li>
-                  </ul>
+              <div className="border-4 border-black rounded-2xl p-8 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition hover:-translate-y-1 bg-white flex flex-col justify-between">
+                  <div>
+                      <div className="bg-gray-100 w-12 h-12 rounded-full flex items-center justify-center mb-4 border-2 border-black"><Shield size={24}/></div>
+                      <h3 className={`text-2xl uppercase ${oswald.className}`}>Starter</h3>
+                      <p className="text-gray-500 text-sm font-bold mb-6">For testing individual agents.</p>
+                      <div className="text-4xl font-black mb-6">₹0 <span className="text-sm font-medium text-gray-500">/ 3 Days</span></div>
+                      <ul className="space-y-3 text-sm font-medium mb-8">
+                          <li className="flex gap-2"><Check size={16}/> Try 1 Agent of choice</li>
+                          <li className="flex gap-2"><Check size={16}/> Full Agent capabilities</li>
+                          <li className="flex gap-2"><Check size={16}/> 1 Free Trial per account</li>
+                      </ul>
+                  </div>
                   <Link href="/trial">
                     <button className="w-full border-2 border-black py-3 rounded-lg font-bold uppercase hover:bg-black hover:text-white transition">Start Free Trial</button>
                   </Link>
               </div>
 
               {/* PRO (HIGHLIGHTED) */}
-              <div className="border-4 border-black rounded-2xl p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-black text-white relative transform md:-translate-y-4">
-                  <div className="absolute top-0 right-0 bg-yellow-400 text-black text-xs font-black px-3 py-1 uppercase rounded-bl-lg border-l-2 border-b-2 border-black">Most Popular</div>
-                  <div className="bg-yellow-400 text-black w-12 h-12 rounded-full flex items-center justify-center mb-4 border-2 border-white"><Rocket size={24}/></div>
-                  <h3 className={`text-2xl uppercase ${oswald.className}`}>Growth Pro</h3>
-                  <p className="text-gray-400 text-sm font-bold mb-6">For scaling startups.</p>
-                  <div className="text-4xl font-black mb-6 text-yellow-400">₹4,999 <span className="text-sm font-medium text-gray-400">/ mo</span></div>
-                  <ul className="space-y-3 text-sm font-medium mb-8">
-                      <li className="flex gap-2"><Check size={16}/> Access to ALL 20 Agents</li>
-                      <li className="flex gap-2"><Check size={16}/> Unlimited Tasks</li>
-                      <li className="flex gap-2"><Check size={16}/> &quot;Flash&quot; Speed (Fast)</li>
-                      <li className="flex gap-2"><Check size={16}/> Save History</li>
-                  </ul>
-                  <button className="w-full bg-yellow-400 text-black border-2 border-yellow-400 py-3 rounded-lg font-bold uppercase hover:bg-white hover:border-white transition">Get Growth Pro</button>
+              <div className="border-4 border-black rounded-2xl p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-black text-white relative transform md:-translate-y-4 flex flex-col justify-between">
+                  <div>
+                      <div className="absolute top-0 right-0 bg-yellow-400 text-black text-xs font-black px-3 py-1 uppercase rounded-bl-lg border-l-2 border-b-2 border-black">Most Popular</div>
+                      <div className="bg-yellow-400 text-black w-12 h-12 rounded-full flex items-center justify-center mb-4 border-2 border-white"><Rocket size={24}/></div>
+                      <h3 className={`text-2xl uppercase ${oswald.className}`}>Growth Pro</h3>
+                      <p className="text-gray-400 text-sm font-bold mb-6">For scaling startups.</p>
+                      <div className="text-4xl font-black mb-6 text-yellow-400">₹4,999 <span className="text-sm font-medium text-gray-400">/ mo</span></div>
+                      <ul className="space-y-3 text-sm font-medium mb-8">
+                          <li className="flex gap-2"><Check size={16}/> Full access to any 4 Agents</li>
+                          <li className="flex gap-2"><Check size={16}/> Unlimited tasks</li>
+                          <li className="flex gap-2"><Check size={16}/> Fast execution speed</li>
+                          <li className="flex gap-2"><Check size={16}/> Save workstation history</li>
+                      </ul>
+                  </div>
+                  <button 
+                    onClick={() => handleSubscribe('growth_pro', 4999)}
+                    className="w-full bg-yellow-400 text-black border-2 border-yellow-400 py-3 rounded-lg font-bold uppercase hover:bg-white hover:border-white transition"
+                  >
+                      Get Growth Pro
+                  </button>
               </div>
 
-              {/* AGENCY */}
-              <div className="border-4 border-black rounded-2xl p-8 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition hover:-translate-y-1 bg-white">
-                  <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mb-4 border-2 border-black"><Crown size={24}/></div>
-                  <h3 className={`text-2xl uppercase ${oswald.className}`}>Enterprise</h3>
-                  <p className="text-gray-500 text-sm font-bold mb-6">For heavy workflows.</p>
-                  <div className="text-4xl font-black mb-6">₹19,999 <span className="text-sm font-medium text-gray-500">/ mo</span></div>
-                  <ul className="space-y-3 text-sm font-medium mb-8">
-                      <li className="flex gap-2"><Check size={16}/> Build Custom Agents</li>
-                      <li className="flex gap-2"><Check size={16}/> &quot;Pro&quot; Intelligence (Smarter)</li>
-                      <li className="flex gap-2"><Check size={16}/> API Access</li>
-                      <li className="flex gap-2"><Check size={16}/> Dedicated Support</li>
-                  </ul>
-                  <button className="w-full border-2 border-black py-3 rounded-lg font-bold uppercase hover:bg-black hover:text-white transition">Contact Sales</button>
+              {/* ENTERPRISE */}
+              <div className="border-4 border-black rounded-2xl p-8 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition hover:-translate-y-1 bg-white flex flex-col justify-between">
+                  <div>
+                      <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mb-4 border-2 border-black"><Crown size={24}/></div>
+                      <h3 className={`text-2xl uppercase ${oswald.className}`}>Enterprise</h3>
+                      <p className="text-gray-500 text-sm font-bold mb-6">For heavy workflows.</p>
+                      <div className="text-4xl font-black mb-6">₹19,999 <span className="text-sm font-medium text-gray-500">/ mo</span></div>
+                      <ul className="space-y-3 text-sm font-medium mb-8">
+                          <li className="flex gap-2"><Check size={16}/> Deploy ALL AI Agents</li>
+                          <li className="flex gap-2"><Check size={16}/> Unlimited tasks & executions</li>
+                          <li className="flex gap-2"><Check size={16}/> Priority execution speed</li>
+                          <li className="flex gap-2"><Check size={16}/> Dedicated account support</li>
+                      </ul>
+                  </div>
+                  <button 
+                    onClick={() => handleSubscribe('enterprise', 19999)}
+                    className="w-full border-2 border-black py-3 rounded-lg font-bold uppercase hover:bg-black hover:text-white transition"
+                  >
+                      Get Enterprise
+                  </button>
               </div>
 
           </div>
