@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     // If you try to send to anyone else, it will fail.
     
     const data = await resend.emails.send({
-      from: 'Pixorva Agent <onboarding@resend.dev>',
+      from: 'Pixorva Agent <info@pixorva.com>',
       to: to, // <--- CHANGED FROM 'delivered@resend.dev' TO 'to'
       subject: subject,
       html: html,
