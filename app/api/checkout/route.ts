@@ -32,7 +32,7 @@ export async function POST(req: Request) {
           },
         ],
         mode: 'subscription',
-        success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/?success=true&plan=${planCode}`,
+        success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/?success=true&session_id={CHECKOUT_SESSION_ID}&plan=${planCode}`,
         cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/pricing?canceled=true`,
         metadata: {
           userId: userId,
@@ -58,7 +58,10 @@ export async function POST(req: Request) {
           },
         ],
         mode: 'payment',
-        success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/?success=true&agent_name=${encodeURIComponent(agentName)}&icon=${encodeURIComponent(icon)}&steps=${encodeURIComponent(JSON.stringify(steps))}`,
+        invoice_creation: {
+          enabled: true,
+        },
+        success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/?success=true&session_id={CHECKOUT_SESSION_ID}&agent_name=${encodeURIComponent(agentName)}&icon=${encodeURIComponent(icon)}&steps=${encodeURIComponent(JSON.stringify(steps))}`,
         cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/employees?canceled=true`,
         metadata: {
           userId: userId,

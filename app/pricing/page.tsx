@@ -124,11 +124,12 @@ export default function PricingPage() {
                       <li className="flex items-center justify-center gap-2"><Zap size={18} fill="black"/> Skills: 20+ Experts</li>
                       <li className="flex items-center justify-center gap-2"><Zap size={18} fill="black"/> Drama: Zero. None.</li>
                   </ul>
-                  <Link href="/trial" className="w-full">
-                    <button className="mt-8 w-full bg-black text-white py-3 rounded-lg font-bold uppercase hover:bg-white hover:text-black hover:border-2 hover:border-black transition">
-                        Join the Revolution
-                    </button>
-                  </Link>
+                  <button 
+                    onClick={() => handleSubscribe('growth_pro', 4999)}
+                    className="mt-8 w-full bg-black text-white py-3 rounded-lg font-bold uppercase hover:bg-white hover:text-black hover:border-2 hover:border-black transition"
+                  >
+                      Join the Revolution
+                  </button>
               </div>
 
           </div>

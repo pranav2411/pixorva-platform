@@ -53,6 +53,16 @@ export default function Home() {
         const icon = urlParams.get('icon');
         const stepsStr = urlParams.get('steps');
         const plan = urlParams.get('plan');
+        const sessionId = urlParams.get('session_id');
+
+        if (success === 'true' && sessionId) {
+          // Trigger checkout receipt email endpoint
+          fetch('/api/checkout/success', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId, userId: user.id })
+          }).catch(err => console.error("Error triggering receipt email:", err));
+        }
 
         if (success === 'true' && agentName && icon && stepsStr) {
           try {
