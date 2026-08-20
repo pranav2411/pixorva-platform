@@ -7,7 +7,7 @@ import {
   ArrowLeft, Play, Terminal, Code, Megaphone, ShieldCheck, 
   DollarSign, User as UserIcon, Layout, FileText, Zap, Loader2,
   Users, PieChart, Camera, Database, Lock, Clipboard, Video, Target, 
-  CheckCircle, Smartphone, Paperclip, X, Download, Mail, Send
+  CheckCircle, Smartphone, Paperclip, X, Download, Mail, Send, Plus
 } from "lucide-react";
 import { createClient } from '../../utils/supabase/client';
 import Link from "next/link";
@@ -430,19 +430,59 @@ export default function AgentWorkstation() {
           )
       }
 
-      // B. TERMINAL VIEW
+      // B. TERMINAL VIEW (CHAT LOG)
       if (activeTab === 'terminal') {
+          const chatMessages = getActiveChatMessages();
           return (
-             <div className="p-8 font-mono text-sm whitespace-pre-wrap">
-                 {currentResult ? (
-                     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 animate-in fade-in">{currentResult}</div>
+             <div className="flex flex-col h-full bg-gray-50 overflow-y-auto p-6 md:p-8">
+                 {chatMessages.length === 0 ? (
+                     <div className="flex-1 flex flex-col items-center justify-center text-gray-400 opacity-50 h-full">
+                         <Zap size={48} className="mb-4 text-black animate-bounce"/>
+                         <div className="font-bold uppercase tracking-wider text-xs">Start a conversation with {agent.name.split('(')[0]}</div>
+                     </div>
                  ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-gray-400 opacity-50">
-                        <Zap size={48} className="mb-4"/>
-                        <div>Select a capability or type a command.</div>
-                    </div>
+                     <div className="space-y-6">
+                         {chatMessages.map((msg) => (
+                             <div key={msg.id} className="space-y-3">
+                                 {/* User Message Bubble */}
+                                 <div className="flex justify-end">
+                                     <div className="bg-black text-white px-4 py-3 rounded-2xl border-2 border-black max-w-[80%] font-bold text-xs uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                                         {msg.input}
+                                     </div>
+                                 </div>
+                                 
+                                 {/* Agent Response Bubble */}
+                                 <div className="flex justify-start">
+                                     <div className="bg-white border-4 border-black p-4 rounded-2xl max-w-[90%] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-xs text-gray-800 relative">
+                                         {msg.result === "Thinking..." ? (
+                                             <div className="flex items-center gap-2 font-black uppercase text-gray-500">
+                                                 <Loader2 className="animate-spin" size={14} /> thinking...
+                                             </div>
+                                         ) : msg.type === 'code' ? (
+                                             <div className="space-y-3">
+                                                 <div className="font-mono bg-gray-900 text-green-400 p-3 rounded-lg overflow-x-auto max-h-48">
+                                                     {msg.result}
+                                                 </div>
+                                                 <button 
+                                                     onClick={() => {
+                                                         setCurrentResult(msg.result);
+                                                         setActiveTab('preview');
+                                                     }}
+                                                     className="bg-yellow-400 text-black border-2 border-black px-3 py-1.5 rounded-lg text-[10px] font-black uppercase hover:bg-black hover:text-white transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5 flex items-center gap-1.5"
+                                                 >
+                                                     <Layout size={12}/> Open Visual Preview
+                                                 </button>
+                                             </div>
+                                         ) : (
+                                             <div className="whitespace-pre-wrap leading-relaxed">{msg.result}</div>
+                                         )}
+                                     </div>
+                                 </div>
+                             </div>
+                         ))}
+                     </div>
                  )}
-                 <div ref={logsEndRef} />
+                 <div ref={logsEndRef} className="h-4" />
              </div>
           );
       }
@@ -463,6 +503,32 @@ export default function AgentWorkstation() {
           );
       }
   };
+
+  const getActiveChatMessages = () => {
+      if (typeof window === 'undefined') return [];
+      const clearTime = localStorage.getItem('chat_clear_at_' + params.id);
+      let messages = [...tasks];
+      if (clearTime) {
+          messages = messages.filter(t => new Date(t.created_at) > new Date(clearTime));
+      }
+      return messages.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+  };
+
+  const handleNewChat = () => {
+      if (typeof window !== 'undefined') {
+          localStorage.setItem('chat_clear_at_' + params.id, new Date().toISOString());
+      }
+      setCurrentResult("");
+      setTasks(prev => [...prev]);
+      showToast("Started a new chat session.", "success");
+  };
+
+  // Scroll to bottom of chat
+  useEffect(() => {
+      if (activeTab === 'terminal') {
+          logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }
+  }, [tasks, activeTab]);
 
   // --- 6. HELPERS ---
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -508,6 +574,16 @@ export default function AgentWorkstation() {
                     </div>
                 </div>
              </div>
+         </div>
+
+         {/* NEW CHAT BUTTON */}
+         <div className="p-4 border-b border-gray-150 bg-gray-50/50">
+             <button 
+                 onClick={handleNewChat}
+                 className="w-full bg-black hover:bg-yellow-400 text-white hover:text-black py-3 rounded-xl border-2 border-black font-black uppercase text-xs tracking-wider transition shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5 flex items-center justify-center gap-2"
+             >
+                 <Plus size={16} /> New Chat
+             </button>
          </div>
 
          {/* CAPABILITIES */}
