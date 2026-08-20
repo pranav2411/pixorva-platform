@@ -757,7 +757,23 @@ export default function AgentWorkstation() {
   }
 
   if (loading) return <div className="h-screen flex items-center justify-center font-bold gap-2"><Loader2 className="animate-spin"/> Loading Workstation...</div>;
-  if (!agent) return <div className="h-screen flex items-center justify-center">Agent not found.</div>;
+  
+  if (!agent) {
+      return (
+          <div className="h-screen bg-gray-50 flex flex-col items-center justify-center p-6 text-center">
+              <div className="bg-white border-4 border-black p-8 rounded-3xl max-w-md w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-black">
+                  <span className="text-4xl block mb-4">🔍</span>
+                  <h1 className={`text-2xl uppercase mb-3 ${oswald.className}`}>Agent Not Found</h1>
+                  <p className="text-sm font-semibold text-gray-500 mb-6 leading-relaxed">
+                      This agent might have been deleted, or your subscription slot was cancelled.
+                  </p>
+                  <Link href="/" className="inline-block bg-yellow-400 text-black border-2 border-black px-6 py-3 rounded-xl font-bold uppercase text-xs tracking-wider transition shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-1">
+                      Return to HQ
+                  </Link>
+              </div>
+          </div>
+      );
+  }
 
   return (
     <div className={`min-h-screen bg-gray-50 text-black ${inter.className} flex flex-col md:flex-row`}>
