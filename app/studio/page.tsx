@@ -5,7 +5,7 @@ import { Oswald, Inter } from "next/font/google";
 // FIXED: Added 'Target' to the imports below
 import { 
   ArrowLeft, Save, Bot, Zap, Code, Terminal, Shield, 
-  Megaphone, DollarSign, PenTool, Brain, Sparkles, CheckCircle, Target 
+  Megaphone, DollarSign, PenTool, Brain, Sparkles, CheckCircle, Target, X, Loader2 
 } from "lucide-react";
 import Link from "next/link";
 import { createClient } from '../utils/supabase/client';
@@ -24,6 +24,15 @@ export default function StudioPage() {
   const [goal, setGoal] = useState(""); // e.g., "Write clean code"
   const [instructions, setInstructions] = useState(""); // The Brain
   const [icon, setIcon] = useState("Bot");
+
+  // Custom Modal state
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    type: 'trial' | 'hire_option' | 'success';
+    successMessage?: string;
+  }>({ isOpen: false, type: 'trial' });
+  const [modalLoading, setModalLoading] = useState(false);
+  const [slotCount, setSlotCount] = useState(0);
 
   // --- PRESETS ---
   const applyPreset = (preset: string) => {
@@ -47,6 +56,138 @@ export default function StudioPage() {
       }
   };
 
+  const handleConfirmTrial = async () => {
+    setModalLoading(true);
+    const supabase = createClient();
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) { router.push("/login"); return; }
+        
+        // Provision the custom agent directly in Supabase
+        const { data: newAgent, error: agentError } = await supabase
+            .from('agents')
+            .insert({
+                user_id: user.id,
+                name: `${name} (${role})`,
+                goal: goal,
+                instructions: instructions,
+                icon: icon,
+                schedule: 'Manual',
+                steps: [{ name: "Custom Logic", icon: "Brain" }],
+                is_paid_individually: false
+            })
+            .select('id')
+            .single();
+
+        if (agentError) throw agentError;
+
+        // Save this agent ID as the chosen trial agent
+        const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert({
+                id: user.id,
+                trial_agent_id: newAgent.id
+            });
+
+        if (profileError) throw profileError;
+
+        setConfirmModal({
+            isOpen: true,
+            type: 'success',
+            successMessage: `🎉 Success! Your custom agent ${name} has been deployed under your 3-day free trial.`
+        });
+    } catch (e: any) {
+        alert("Activation failed: " + e.message);
+    } finally {
+        setModalLoading(false);
+    }
+  };
+
+  const handleConfirmPaidUpgrade = async () => {
+    setModalLoading(true);
+    try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) { router.push("/login"); return; }
+
+        // Price is ₹999/mo (99900 paise)
+        const parsedAmount = 999 * 100;
+
+        const response = await fetch('/api/checkout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: user.id,
+                agentName: `${name} (${role})`,
+                icon: icon,
+                steps: [{ name: "Custom Logic", icon: "Brain" }],
+                amount: parsedAmount
+            })
+        });
+
+        const data = await response.json();
+        if (data.url) {
+            window.location.href = data.url;
+        } else {
+            throw new Error(data.error || "Failed to create checkout session");
+        }
+    } catch (e: any) {
+        alert("Deploy failed: " + e.message);
+    } finally {
+        setModalLoading(false);
+    }
+  };
+
+  const handleConfirmPlanHire = async () => {
+    setModalLoading(true);
+    const supabase = createClient();
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) { router.push("/login"); return; }
+
+        // Check count
+        const { count, error: countError } = await supabase
+            .from('agents')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', user.id)
+            .eq('is_paid_individually', false);
+
+        if (countError) throw countError;
+
+        if (count !== null && count >= 4) {
+            alert("Your 4 subscription slots are full. Please purchase individually or upgrade.");
+            return;
+        }
+
+        const { error: agentError } = await supabase
+            .from('agents')
+            .insert({
+                user_id: user.id,
+                name: `${name} (${role})`,
+                goal: goal,
+                instructions: instructions,
+                icon: icon,
+                schedule: 'Manual',
+                steps: [{ name: "Custom Logic", icon: "Brain" }],
+                is_paid_individually: false
+            });
+
+        if (agentError) throw agentError;
+        
+        setConfirmModal({
+            isOpen: true,
+            type: 'success',
+            successMessage: `🎉 Success! Your custom agent ${name} has been deployed under your Growth Pro Plan.`
+        });
+    } catch (e: any) {
+        alert("Deploy failed: " + e.message);
+    } finally {
+        setModalLoading(false);
+    }
+  };
+
   // --- DEPLOY AGENT ---
   const handleDeploy = async () => {
     if (!name || !role || !instructions) {
@@ -54,30 +195,96 @@ export default function StudioPage() {
         return;
     }
 
-    setLoading(true);
     const supabase = createClient();
     
     try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) { router.push("/login"); return; }
 
-        // Save to DB
-        const { error } = await supabase.from('agents').insert({
-            user_id: user.id,
-            name: `${name} (${role})`, // Format: Jarvis (Assistant)
-            goal: goal,
-            instructions: instructions, // The Custom Brain
-            icon: icon,
-            schedule: 'Manual',
-            steps: [{ name: "Custom Logic", icon: "Brain" }] // Visual placeholder
+        // Check plan and trial status
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('trial_started_at, trial_ends_at, trial_agent_id, plan')
+            .eq('id', user.id)
+            .single();
+
+        const plan = profile?.plan || 'free';
+
+        // 1. Enterprise: Free deploy immediately
+        if (plan === 'enterprise') {
+            setLoading(true);
+            const { error: agentError } = await supabase
+                .from('agents')
+                .insert({
+                    user_id: user.id,
+                    name: `${name} (${role})`,
+                    goal: goal,
+                    instructions: instructions,
+                    icon: icon,
+                    schedule: 'Manual',
+                    steps: [{ name: "Custom Logic", icon: "Brain" }],
+                    is_paid_individually: false
+                });
+
+            if (agentError) throw agentError;
+
+            setConfirmModal({
+                isOpen: true,
+                type: 'success',
+                successMessage: `🎉 Success! Your custom agent ${name} has been deployed under your Enterprise Plan.`
+            });
+            setLoading(false);
+            return;
+        }
+
+        // 2. Growth Pro Plan: Show Hire Options Modal
+        if (plan === 'growth_pro') {
+            const { count, error: countError } = await supabase
+                .from('agents')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', user.id)
+                .eq('is_paid_individually', false);
+
+            if (countError) throw countError;
+            
+            setSlotCount(count || 0);
+            setConfirmModal({ isOpen: true, type: 'hire_option' });
+            return;
+        }
+
+        // 3. Free Tier (Check Trial Status)
+        const isTrialActive = profile?.trial_ends_at && new Date() < new Date(profile.trial_ends_at);
+        const hasChosenTrialAgent = profile?.trial_agent_id !== null;
+
+        if (isTrialActive && !hasChosenTrialAgent) {
+            setConfirmModal({ isOpen: true, type: 'trial' });
+            return;
+        }
+
+        // Otherwise, redirect to Stripe checkout directly for standard paid purchase of 999 INR
+        setLoading(true);
+        const parsedAmount = 999 * 100;
+
+        const response = await fetch('/api/checkout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: user.id,
+                agentName: `${name} (${role})`,
+                icon: icon,
+                steps: [{ name: "Custom Logic", icon: "Brain" }],
+                amount: parsedAmount
+            })
         });
 
-        if (error) throw error;
-
-        // Success Animation
-        setTimeout(() => {
-            router.push("/");
-        }, 1000);
+        const data = await response.json();
+        if (data.url) {
+            window.location.href = data.url;
+        } else {
+            throw new Error(data.error || "Failed to create checkout session");
+        }
 
     } catch (e: any) {
         alert("Deploy failed: " + e.message);
@@ -229,6 +436,127 @@ export default function StudioPage() {
           </p>
 
       </div>
+
+      {/* CUSTOM NEOBRUTALIST CONFIRMATION MODAL */}
+      {confirmModal.isOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+            <div className="bg-white border-4 border-black p-8 rounded-3xl max-w-md w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] animate-in zoom-in-95 duration-200 text-center relative">
+                {confirmModal.type !== 'success' && (
+                    <button 
+                      disabled={modalLoading}
+                      onClick={() => setConfirmModal({ isOpen: false, type: 'trial' })} 
+                      className="absolute right-4 top-4 text-gray-400 hover:text-black transition disabled:opacity-50"
+                    >
+                        <X size={24} />
+                    </button>
+                )}
+
+                <div className="mb-6 flex justify-center">
+                    <div className={`${confirmModal.type === 'success' ? 'bg-green-400' : 'bg-yellow-400'} p-4 rounded-2xl border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black`}>
+                        {confirmModal.type === 'success' ? (
+                            <CheckCircle size={36} strokeWidth={3} className="text-black" />
+                        ) : (
+                            <Zap size={36} fill="black" />
+                        )}
+                    </div>
+                </div>
+
+                <h3 className={`text-3xl uppercase mb-3 ${oswald.className}`}>
+                    {confirmModal.type === 'success' 
+                        ? 'Deployed Successfully!' 
+                        : confirmModal.type === 'trial' 
+                        ? 'Start Free Trial' 
+                        : 'Deploy Option'}
+                </h3>
+
+                <div className="text-sm font-semibold text-gray-600 mb-8 leading-relaxed">
+                    {confirmModal.type === 'success' ? (
+                        <p className="text-base text-gray-800 font-bold">{confirmModal.successMessage}</p>
+                    ) : confirmModal.type === 'trial' ? (
+                        <>Would you like to use your one-time <strong>3-day Free Trial</strong> to deploy <strong>{name}</strong> for free?</>
+                    ) : (
+                        <>
+                            Choose how you would like to deploy <strong>{name}</strong>:
+                        </>
+                    )}
+                </div>
+
+                <div className="flex flex-col gap-3">
+                    {confirmModal.type === 'success' ? (
+                        <button 
+                          onClick={() => {
+                              setConfirmModal({ isOpen: false, type: 'trial' });
+                              router.push("/");
+                          }}
+                          className="w-full bg-black text-white hover:bg-yellow-400 hover:text-black py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md"
+                        >
+                            Go to Dashboard
+                        </button>
+                    ) : confirmModal.type === 'trial' ? (
+                        <>
+                            <button 
+                              disabled={modalLoading}
+                              onClick={handleConfirmTrial}
+                              className="w-full bg-black text-white hover:bg-yellow-400 hover:text-black py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                            >
+                                {modalLoading ? <Loader2 className="animate-spin" size={16} /> : 'Deploy using Free Trial'}
+                            </button>
+                            <button 
+                              disabled={modalLoading}
+                              onClick={handleConfirmPaidUpgrade}
+                              className="w-full bg-yellow-400 text-black hover:bg-black hover:text-white py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                            >
+                                {modalLoading ? <Loader2 className="animate-spin" size={16} /> : 'Purchase Individually (₹999/mo)'}
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            {/* Option 1: Use Plan Slot */}
+                            <div className="w-full">
+                                <button 
+                                  disabled={modalLoading || slotCount >= 4}
+                                  onClick={handleConfirmPlanHire}
+                                  className="w-full bg-black text-white hover:bg-yellow-400 hover:text-black py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:border-gray-300"
+                                >
+                                    {modalLoading ? <Loader2 className="animate-spin" size={16} /> : 'Add to Plan (Free Slot)'}
+                                </button>
+                                <p className="text-[10px] text-gray-500 font-bold mt-1.5 uppercase">
+                                    {slotCount >= 4 
+                                        ? 'All 4 plan slots used. Upgrade or buy one-off.' 
+                                        : `plan slots used: ${slotCount} / 4`}
+                                </p>
+                            </div>
+
+                            {/* Option 2: Purchase Individually */}
+                            <div className="w-full mt-2">
+                                <button 
+                                  disabled={modalLoading}
+                                  onClick={handleConfirmPaidUpgrade}
+                                  className="w-full bg-yellow-400 text-black hover:bg-black hover:text-white py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                                >
+                                    {modalLoading ? <Loader2 className="animate-spin" size={16} /> : 'Purchase Individually (₹999/mo)'}
+                                </button>
+                                <p className="text-[10px] text-gray-500 font-bold mt-1.5 uppercase">
+                                    Keep your plan slots open for other agents
+                                </p>
+                            </div>
+                        </>
+                    )}
+
+                    {confirmModal.type !== 'success' && (
+                        <button 
+                          disabled={modalLoading}
+                          onClick={() => setConfirmModal({ isOpen: false, type: 'trial' })}
+                          className="w-full bg-white text-gray-500 hover:text-red-500 py-2 font-bold uppercase text-xs tracking-wider transition disabled:opacity-50 mt-2"
+                        >
+                            Cancel
+                        </button>
+                    )}
+                </div>
+            </div>
+        </div>
+      )}
+
     </div>
   );
 }
