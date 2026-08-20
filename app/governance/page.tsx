@@ -8,6 +8,9 @@ import {
 } from 'lucide-react';
 import Link from "next/link";
 import { showToast } from "../utils/Toast";
+import { createClient } from "../utils/supabase/client";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -141,6 +144,96 @@ guardrails:
   const [newProvEndpoint, setNewProvEndpoint] = useState("");
   const [newProvModel, setNewProvModel] = useState("");
   const [newProvKey, setNewProvKey] = useState("");
+
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Auth Guard & User-specific State Sync Hook
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const supabase = createClient();
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        if (!currentUser) {
+            router.push("/login");
+            return;
+        }
+        setUser(currentUser);
+
+        // Load User-Specific State from LocalStorage
+        const storedWl = localStorage.getItem(`gov_workloads_${currentUser.id}`);
+        if (storedWl) setWorkloads(JSON.parse(storedWl));
+
+        const storedProv = localStorage.getItem(`gov_providers_${currentUser.id}`);
+        if (storedProv) setProviders(JSON.parse(storedProv));
+
+        const storedAudits = localStorage.getItem(`gov_audits_${currentUser.id}`);
+        if (storedAudits) setAudits(JSON.parse(storedAudits));
+
+        const storedStats = localStorage.getItem(`gov_stats_${currentUser.id}`);
+        if (storedStats) {
+            const parsed = JSON.parse(storedStats);
+            setTotalRequests(parsed.totalRequests);
+            setViolationsBlocked(parsed.violationsBlocked);
+            setAvgLatency(parsed.avgLatency);
+            setTotalCost(parsed.totalCost);
+        }
+
+        const storedPolicies = localStorage.getItem(`gov_policies_${currentUser.id}`);
+        if (storedPolicies) {
+            const parsed = JSON.parse(storedPolicies);
+            setContentFiltering(parsed.contentFiltering);
+            setRateLimiting(parsed.rateLimiting);
+            setQuotaEnforcement(parsed.quotaEnforcement);
+            setBlockUnapproved(parsed.blockUnapproved);
+            setYamlConfig(parsed.yamlConfig);
+        }
+      } catch (err) {
+        console.error("Auth guard error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkUser();
+  }, [router]);
+
+  // Automated Synchronization Triggers
+  useEffect(() => {
+    if (!user) return;
+    localStorage.setItem(`gov_workloads_${user.id}`, JSON.stringify(workloads));
+  }, [workloads, user]);
+
+  useEffect(() => {
+    if (!user) return;
+    localStorage.setItem(`gov_providers_${user.id}`, JSON.stringify(providers));
+  }, [providers, user]);
+
+  useEffect(() => {
+    if (!user) return;
+    localStorage.setItem(`gov_audits_${user.id}`, JSON.stringify(audits));
+  }, [audits, user]);
+
+  useEffect(() => {
+    if (!user) return;
+    localStorage.setItem(`gov_stats_${user.id}`, JSON.stringify({
+      totalRequests,
+      violationsBlocked,
+      avgLatency,
+      totalCost
+    }));
+  }, [totalRequests, violationsBlocked, avgLatency, totalCost, user]);
+
+  useEffect(() => {
+    if (!user) return;
+    localStorage.setItem(`gov_policies_${user.id}`, JSON.stringify({
+      contentFiltering,
+      rateLimiting,
+      quotaEnforcement,
+      blockUnapproved,
+      yamlConfig
+    }));
+  }, [contentFiltering, rateLimiting, quotaEnforcement, blockUnapproved, yamlConfig, user]);
 
   const activeWorkload = workloads.find(w => w.id === selectedWlId) || workloads[0];
 
@@ -343,6 +436,18 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
     URL.revokeObjectURL(url);
     showToast("Evidence Pack Downloaded!", "success");
   };
+
+  if (loading) {
+    return (
+      <div className={`min-h-screen bg-gray-50 flex items-center justify-center ${inter.className}`}>
+        <div className="bg-white border-4 border-black p-8 rounded-xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-center max-w-sm">
+          <RefreshCw className="animate-spin mx-auto text-black mb-4" size={32} />
+          <h3 className={`text-xl uppercase ${oswald.className}`}>Verifying Access Credentials...</h3>
+          <p className="text-xs text-gray-500 font-bold uppercase mt-2">Continuous Compliance Control Tower</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen bg-gray-50 text-black ${inter.className} pb-12`}>
