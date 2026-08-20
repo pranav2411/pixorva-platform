@@ -16,10 +16,25 @@ import { User } from '@supabase/supabase-js';
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
 
+interface Profile {
+  full_name?: string;
+}
+
+interface Agent {
+  id: string;
+  name: string;
+  goal?: string;
+  instructions?: string;
+  icon?: string;
+  schedule: string;
+  steps: { name: string; icon: string; type?: string }[];
+  created_at?: string;
+}
+
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<any>(null);
-  const [myAgents, setMyAgents] = useState<any[]>([]);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [myAgents, setMyAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -30,6 +45,41 @@ export default function Home() {
 
       if (user) {
         setLoading(true);
+
+        // Check for successful Stripe checkout redirect parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const success = urlParams.get('success');
+        const agentName = urlParams.get('agent_name');
+        const icon = urlParams.get('icon');
+        const stepsStr = urlParams.get('steps');
+
+        if (success === 'true' && agentName && icon && stepsStr) {
+          try {
+            const steps = JSON.parse(decodeURIComponent(stepsStr));
+            
+            // Provision the new agent in Supabase
+            const { error: insertError } = await supabase.from('agents').insert({
+                user_id: user.id,
+                name: agentName,
+                icon: icon,
+                steps: steps,
+                schedule: 'Manual'
+            });
+
+            if (insertError) {
+              console.error("Failed to provision hired agent:", insertError.message);
+              alert("Payment succeeded, but we had trouble provisioning your agent. Please contact support.");
+            } else {
+              alert(`🎉 Success! ${agentName} has joined your team.`);
+            }
+          } catch (err) {
+            console.error("Error parsing redirect parameters:", err);
+          } finally {
+            // Clean url params so refresh doesn't trigger insert again
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        }
+
         const { data: agents } = await supabase.from('agents').select('*').order('created_at', { ascending: false });
         if (agents) setMyAgents(agents);
 
@@ -278,7 +328,15 @@ function CustomAgentCard() {
   );
 }
 
-function AgentCard({ name, role, color, icon, desc }: any) {
+interface AgentCardProps {
+  name: string;
+  role: string;
+  color: string;
+  icon: React.ReactNode;
+  desc: string;
+}
+
+function AgentCard({ name, role, color, icon, desc }: AgentCardProps) {
     return (
       <div className="group relative cursor-pointer">
         <div className={`h-64 rounded-2xl border-4 border-black ${color} flex items-center justify-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all group-hover:translate-y-1 group-hover:shadow-none overflow-hidden relative`}>

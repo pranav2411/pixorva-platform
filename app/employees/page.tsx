@@ -128,12 +128,25 @@ const EMPLOYEES = [
   },
 ];
 
+interface Employee {
+  id: string;
+  category: string;
+  name: string;
+  role: string;
+  icon: string;
+  price: string;
+  desc: string;
+  skills: string[];
+  color: string;
+  steps: { type: string; name: string; icon: string }[];
+}
+
 export default function EmployeesPage() {
   const [hiring, setHiring] = useState<string | null>(null);
   const [filter, setFilter] = useState("All");
   const router = useRouter();
 
-  const handleHire = async (employee: any) => {
+  const handleHire = async (employee: Employee) => {
     setHiring(employee.id);
     const supabase = createClient();
 
@@ -145,23 +158,32 @@ export default function EmployeesPage() {
             return;
         }
 
-        const { error } = await supabase.from('agents').insert({
-            user_id: user.id,
-            name: `${employee.name} (${employee.role})`, 
-            steps: employee.steps,
-            schedule: 'Manual',
-            icon: employee.icon // Save icon for dashboard
+        // Parse price (e.g. "₹999/mo" -> 99900 paise)
+        const parsedAmount = parseInt(employee.price.replace(/[^\d]/g, ""), 10) * 100;
+
+        const response = await fetch('/api/checkout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: user.id,
+                agentName: `${employee.name} (${employee.role})`,
+                icon: employee.icon,
+                steps: employee.steps,
+                amount: parsedAmount
+            })
         });
 
-        if (error) throw error;
+        const data = await response.json();
+        if (data.url) {
+            window.location.href = data.url;
+        } else {
+            throw new Error(data.error || "Failed to create checkout session");
+        }
 
-        setTimeout(() => {
-            alert(`${employee.name} has joined your team!`);
-            router.push("/");
-        }, 500);
-
-    } catch (e: any) {
-        alert("Hiring failed: " + e.message);
+    } catch (e: unknown) {
+        alert("Hiring failed: " + (e as Error).message);
         setHiring(null);
     }
   };
