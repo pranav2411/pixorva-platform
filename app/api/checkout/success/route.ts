@@ -98,33 +98,16 @@ export async function POST(req: Request) {
       </div>
     `;
 
-    let emailResponse;
-    try {
-      emailResponse = await resend.emails.send({
-        from: 'Pixorva Billing <billing@pixorva.com>',
-        to: userEmail,
-        subject: `Invoice & Confirmation for ${itemName}`,
-        html: htmlContent,
-      });
+    const emailResponse = await resend.emails.send({
+      from: 'Pixorva Billing <billing@pixorva.com>',
+      to: userEmail,
+      subject: `Invoice & Confirmation for ${itemName}`,
+      html: htmlContent,
+    });
 
-      // If Resend returns validation error (unverified sandbox recipient)
-      if (emailResponse.error && (emailResponse.error.name === 'validation_error' || (emailResponse.error as any).statusCode === 403)) {
-        console.log("Resend Sandbox restriction hit. Redirecting receipt to verified owner: pranavkh2411@gmail.com");
-        emailResponse = await resend.emails.send({
-          from: 'Pixorva Billing <billing@pixorva.com>',
-          to: 'pranavkh2411@gmail.com',
-          subject: `[Sandbox Redirect] Invoice & Confirmation for ${itemName}`,
-          html: htmlContent,
-        });
-      }
-    } catch (sendErr) {
-      console.warn("Resend send failed. Redirecting to owner fallback...", sendErr);
-      emailResponse = await resend.emails.send({
-        from: 'Pixorva Billing <billing@pixorva.com>',
-        to: 'pranavkh2411@gmail.com',
-        subject: `[Sandbox Fallback] Invoice & Confirmation for ${itemName}`,
-        html: htmlContent,
-      });
+    if (emailResponse.error) {
+      console.error("Resend delivery failed:", emailResponse.error);
+      return NextResponse.json({ error: emailResponse.error.message }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, emailResponse });
