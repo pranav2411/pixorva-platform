@@ -65,7 +65,7 @@ export default function GovernanceInfoPage() {
     await triggerRazorpayCheckout({
       userId: user.id,
       agentName: "Governance Control Tower",
-      icon: "🛡️",
+      icon: "ShieldCheck",
       steps: steps,
       amount: 199900, // ₹1,999 in paise
       email: user.email || "",

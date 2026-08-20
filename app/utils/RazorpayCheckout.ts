@@ -46,9 +46,9 @@ export const triggerRazorpayCheckout = async (params: CheckoutParams) => {
         currency: "INR",
         notes: {
           userId: params.userId,
-          agentName: params.agentName,
-          icon: params.icon,
-          steps: JSON.stringify(params.steps)
+          agentName: params.agentName ? params.agentName.replace(/[^\x00-\x7F]/g, "") : "",
+          icon: params.icon ? params.icon.replace(/[^\x00-\x7F]/g, "") : "",
+          steps: params.steps ? JSON.stringify(params.steps).replace(/[^\x00-\x7F]/g, "") : "[]"
         }
       })
     });
