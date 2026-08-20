@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "../utils/supabase/client";
+import { showToast } from "../utils/Toast";
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -43,7 +44,7 @@ export default function PricingPage() {
         throw new Error(data.error || "Failed to create subscription session");
       }
     } catch (err: any) {
-      alert("Subscription failed: " + err.message);
+      showToast("Subscription failed: " + err.message, "error");
     }
   };
 

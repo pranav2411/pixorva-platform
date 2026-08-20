@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { createClient } from '../../utils/supabase/client';
 import Link from "next/link";
+import { showToast } from '../../utils/Toast';
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -142,7 +143,7 @@ export default function AgentWorkstation() {
             throw new Error(data.error || "Failed to create checkout session");
         }
     } catch (err: unknown) {
-        alert("Failed to initiate purchase: " + (err as Error).message);
+        showToast("Failed to initiate purchase: " + (err as Error).message, "error");
         setLoading(false);
     }
   };
@@ -198,7 +199,7 @@ export default function AgentWorkstation() {
         removeFile();
 
     } catch (e) {
-        alert("Connection Error.");
+        showToast("Connection Error.", "error");
     } finally {
         setRunning(false);
     }
@@ -208,28 +209,26 @@ export default function AgentWorkstation() {
   const executeAction = async () => {
       if (!pendingAction) return;
       
-      if (confirm(`Authorize agent to send email to ${pendingAction.to}?`)) {
-          // Visual Feedback
-          const btn = document.getElementById('approve-btn');
-          if(btn) btn.innerText = "Sending...";
+      // Visual Feedback
+      const btn = document.getElementById('approve-btn');
+      if(btn) btn.innerText = "Sending...";
 
-          const response = await fetch('/api/send-email', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ 
-                  to: pendingAction.to,
-                  subject: pendingAction.subject,
-                  html: pendingAction.body
-              })
-          });
-          const res = await response.json();
-          if (res.success) {
-              alert("✅ Email Sent Successfully!");
-              setPendingAction(null); // Close card
-          } else {
-              alert("❌ Failed: " + res.error);
-              if(btn) btn.innerText = "Try Again";
-          }
+      const response = await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+              to: pendingAction.to,
+              subject: pendingAction.subject,
+              html: pendingAction.body
+          })
+      });
+      const res = await response.json();
+      if (res.success) {
+          showToast("Email Sent Successfully!", "success");
+          setPendingAction(null); // Close card
+      } else {
+          showToast("Failed: " + res.error, "error");
+          if(btn) btn.innerText = "Try Again";
       }
   };
 

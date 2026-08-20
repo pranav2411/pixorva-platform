@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "../utils/supabase/client";
 import { EMPLOYEES } from "../employees/page";
+import { showToast } from "../utils/Toast";
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -123,7 +124,7 @@ export default function TrialPage() {
         setStep(4); // Trigger success screen
 
     } catch (e: any) {
-        alert("Failed to activate agent trial: " + e.message);
+        showToast("Failed to activate agent trial: " + e.message, "error");
         setActivatingAgent(null);
     }
   };

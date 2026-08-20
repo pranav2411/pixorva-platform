@@ -9,10 +9,11 @@ import {
   ArrowRight, Briefcase, Megaphone, PenTool, Target, Plus, Zap, Trash2, 
   Play, MessageSquare, Globe, Mail, Clock, Database, Twitter, 
   Settings as SettingsIcon, LogOut, Send, Code, ShieldCheck, DollarSign, User as UserIcon,
-  Users, PieChart, Camera, Lock, Clipboard, Video, CheckCircle, Smartphone, Search
+  Users, PieChart, Camera, Lock, Clipboard, Video, CheckCircle, Smartphone, Search, X
 } from "lucide-react";
 import { createClient } from './utils/supabase/client';
 import { User } from '@supabase/supabase-js';
+import { showToast } from './utils/Toast';
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -38,6 +39,7 @@ export default function Home() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [myAgents, setMyAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(false);
+  const [deletingAgentId, setDeletingAgentId] = useState<string | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -86,9 +88,9 @@ export default function Home() {
 
             if (insertError) {
               console.error("Failed to provision hired agent:", insertError.message);
-              alert("Payment succeeded, but we had trouble provisioning your agent. Please contact support.");
+              showToast("Payment succeeded, but we had trouble provisioning your agent. Please contact support.", "error");
             } else {
-              alert(`🎉 Success! ${agentName} has joined your team.`);
+              showToast(`🎉 Success! ${agentName} has joined your team.`, "success");
             }
           } catch (err) {
             console.error("Error parsing redirect parameters:", err);
@@ -108,12 +110,14 @@ export default function Home() {
               });
 
             if (updateError) {
-              console.error("Failed to update plan:", updateError.message);
-              alert("Payment succeeded, but we had trouble updating your plan. Please contact support.");
+               console.error("Failed to update plan:", updateError.message);
+               showToast("Payment succeeded, but we had trouble updating your plan. Please contact support.", "error");
             } else {
-              alert(`🎉 Success! You have upgraded to the ${plan === 'growth_pro' ? 'Growth Pro' : 'Enterprise'} plan! Redirecting you to the Marketplace to select your agents.`);
-              window.location.href = "/employees";
-              return;
+               showToast(`🎉 Success! You have upgraded to the ${plan === 'growth_pro' ? 'Growth Pro' : 'Enterprise'} plan!`, "success");
+               setTimeout(() => {
+                   window.location.href = "/employees";
+               }, 1500);
+               return;
             }
           } catch (err) {
             console.error("Error upgrading plan:", err);
@@ -140,13 +144,18 @@ export default function Home() {
       window.location.reload(); 
   }
 
-  const handleDelete = async (id: string) => {
-      if(!confirm("Permanently delete this agent?")) return;
+  const confirmDelete = async () => {
+      if (!deletingAgentId) return;
       const supabase = createClient();
-      const { error } = await supabase.from('agents').delete().eq('id', id);
-      if (error) { alert("Error: " + error.message); } 
-      else { setMyAgents(prev => prev.filter(a => a.id !== id)); }
-  }
+      const { error } = await supabase.from('agents').delete().eq('id', deletingAgentId);
+      if (error) { 
+          showToast("Error deleting agent: " + error.message, "error"); 
+      } else { 
+          showToast("Agent deleted successfully!", "success");
+          setMyAgents(prev => prev.filter(a => a.id !== deletingAgentId)); 
+      }
+      setDeletingAgentId(null);
+  };
 
   return (
     <div className={`min-h-screen bg-white text-black selection:bg-yellow-400 selection:text-black ${inter.className}`}>
@@ -261,9 +270,9 @@ export default function Home() {
                                         <div className="w-12 h-12 bg-black text-white rounded-lg flex items-center justify-center border-2 border-black">
                                             {getIcon(agent.steps?.[0]?.icon || agent.icon || "Zap")}
                                         </div>
-                                        <button onClick={() => handleDelete(agent.id)} className="text-gray-300 hover:text-red-600 transition p-1">
-                                            <Trash2 size={18}/>
-                                        </button>
+                                         <button onClick={() => setDeletingAgentId(agent.id)} className="text-gray-300 hover:text-red-600 transition p-1">
+                                             <Trash2 size={18}/>
+                                         </button>
                                     </div>
                                     <h3 className="text-2xl font-black uppercase leading-none mb-1">{agent.name.split('(')[0]}</h3>
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-3">{agent.name.split('(')[1]?.replace(')', '') || 'Custom Agent'}</p>
@@ -320,6 +329,50 @@ export default function Home() {
             <p className="text-gray-500 mt-10 md:mt-12 text-xs md:text-sm font-mono tracking-widest">© 2026 PIXORVA INC. // SYSTEM OPERATIONAL</p>
         </div>
       </footer>
+
+      {/* CUSTOM NEOBRUTALIST DELETE CONFIRMATION MODAL */}
+      {deletingAgentId && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+            <div className="bg-white border-4 border-black p-8 rounded-3xl max-w-sm w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] animate-in zoom-in-95 duration-200 text-center relative">
+                <button 
+                  onClick={() => setDeletingAgentId(null)} 
+                  className="absolute right-4 top-4 text-gray-400 hover:text-black transition"
+                >
+                    <X size={24} />
+                </button>
+
+                <div className="mb-6 flex justify-center">
+                    <div className="bg-red-100 p-4 rounded-2xl border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-red-600">
+                        <Trash2 size={36} />
+                    </div>
+                </div>
+
+                <h3 className={`text-3xl uppercase mb-3 ${oswald.className}`}>
+                    Delete Agent
+                </h3>
+
+                <p className="text-sm font-semibold text-gray-600 mb-8 leading-relaxed">
+                    Are you sure you want to permanently delete this agent? This action is permanent and cannot be undone.
+                </p>
+
+                <div className="flex flex-col gap-3">
+                    <button 
+                      onClick={confirmDelete}
+                      className="w-full bg-red-600 text-white hover:bg-black py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2"
+                    >
+                        Yes, Delete Agent
+                    </button>
+                    <button 
+                      onClick={() => setDeletingAgentId(null)}
+                      className="w-full bg-white text-gray-500 hover:text-black py-2 font-bold uppercase text-xs tracking-wider transition"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+      )}
+
     </div>
   );
 }

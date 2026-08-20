@@ -5,6 +5,7 @@ import { createClient } from '../utils/supabase/client';
 import { Oswald, Inter } from "next/font/google";
 import { ArrowLeft, Save, User as UserIcon, Loader2, Zap } from "lucide-react";
 import Link from 'next/link';
+import { showToast } from '../utils/Toast';
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -70,11 +71,11 @@ export default function SettingsPage() {
             updated_at: new Date().toISOString(),
         });
 
-     if (error) {
-        alert("Error updating profile!");
-     } else {
-        alert("Profile updated successfully!");
-     }
+      if (error) {
+         showToast("Error updating profile!", "error");
+      } else {
+         showToast("Profile updated successfully!", "success");
+      }
      setSaving(false);
   };
 

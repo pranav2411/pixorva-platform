@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { createClient } from '../utils/supabase/client';
 import { useRouter } from 'next/navigation';
+import { showToast } from '../utils/Toast';
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -97,7 +98,7 @@ export default function StudioPage() {
             successMessage: `🎉 Success! Your custom agent ${name} has been deployed under your 3-day free trial.`
         });
     } catch (e: any) {
-        alert("Activation failed: " + e.message);
+        showToast("Activation failed: " + e.message, "error");
     } finally {
         setModalLoading(false);
     }
@@ -134,7 +135,7 @@ export default function StudioPage() {
             throw new Error(data.error || "Failed to create checkout session");
         }
     } catch (e: any) {
-        alert("Deploy failed: " + e.message);
+        showToast("Deploy failed: " + e.message, "error");
     } finally {
         setModalLoading(false);
     }
@@ -157,7 +158,7 @@ export default function StudioPage() {
         if (countError) throw countError;
 
         if (count !== null && count >= 4) {
-            alert("Your 4 subscription slots are full. Please purchase individually or upgrade.");
+            showToast("Your 4 subscription slots are full. Please purchase individually or upgrade.", "error");
             return;
         }
 
@@ -182,7 +183,7 @@ export default function StudioPage() {
             successMessage: `🎉 Success! Your custom agent ${name} has been deployed under your Growth Pro Plan.`
         });
     } catch (e: any) {
-        alert("Deploy failed: " + e.message);
+        showToast("Deploy failed: " + e.message, "error");
     } finally {
         setModalLoading(false);
     }
@@ -191,7 +192,7 @@ export default function StudioPage() {
   // --- DEPLOY AGENT ---
   const handleDeploy = async () => {
     if (!name || !role || !instructions) {
-        alert("Please give your agent a Name, Role, and Instructions.");
+        showToast("Please give your agent a Name, Role, and Instructions.", "error");
         return;
     }
 
@@ -287,7 +288,7 @@ export default function StudioPage() {
         }
 
     } catch (e: any) {
-        alert("Deploy failed: " + e.message);
+        showToast("Deploy failed: " + e.message, "error");
         setLoading(false);
     }
   };

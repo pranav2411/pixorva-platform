@@ -6,6 +6,7 @@ import { ArrowLeft, Plus, Check, Briefcase, Code, Megaphone, PenTool, Search, Sh
 import Link from "next/link";
 import { createClient } from '../utils/supabase/client';
 import { useRouter } from 'next/navigation';
+import { showToast } from '../utils/Toast';
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -197,7 +198,7 @@ export default function EmployeesPage() {
             successMessage: `🎉 Success! ${employee.name} has joined your team for your 3-day free trial.`
         });
     } catch (e: any) {
-        alert("Activation failed: " + e.message);
+        showToast("Activation failed: " + e.message, "error");
     } finally {
         setModalLoading(false);
     }
@@ -236,7 +237,7 @@ export default function EmployeesPage() {
             throw new Error(data.error || "Failed to create checkout session");
         }
     } catch (e: any) {
-        alert("Hiring failed: " + e.message);
+        showToast("Hiring failed: " + e.message, "error");
     } finally {
         setModalLoading(false);
     }
@@ -261,7 +262,7 @@ export default function EmployeesPage() {
         if (countError) throw countError;
 
         if (count !== null && count >= 4) {
-            alert("Your 4 subscription slots are full. Please purchase individually or upgrade.");
+            showToast("Your 4 subscription slots are full. Please purchase individually or upgrade.", "error");
             return;
         }
 
@@ -285,7 +286,7 @@ export default function EmployeesPage() {
             successMessage: `🎉 Success! ${employee.name} has joined your team under your Growth Pro Plan.`
         });
     } catch (e: any) {
-        alert("Hiring failed: " + e.message);
+        showToast("Hiring failed: " + e.message, "error");
     } finally {
         setModalLoading(false);
     }
@@ -298,7 +299,7 @@ export default function EmployeesPage() {
     try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
-            alert("Please log in to hire employees.");
+            showToast("Please log in to hire employees.", "error");
             router.push("/login");
             setHiring(null);
             return;
@@ -390,7 +391,7 @@ export default function EmployeesPage() {
         }
 
     } catch (e: unknown) {
-        alert("Hiring failed: " + (e as Error).message);
+        showToast("Hiring failed: " + (e as Error).message, "error");
         setHiring(null);
     }
   };
