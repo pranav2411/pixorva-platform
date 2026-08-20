@@ -112,31 +112,52 @@ export async function POST(req: Request) {
     // Fetch user's other agents for collaboration
     let collaborationPrompt = "";
     if (userId) {
-        const { data: otherAgents } = await supabase
+        const { data: hiredAgents } = await supabase
             .from('agents')
             .select('id, name, goal')
-            .eq('user_id', userId)
-            .neq('id', agentId || "");
+            .eq('user_id', userId);
 
-        if (otherAgents && otherAgents.length > 0) {
-            collaborationPrompt = `
-            🤖 WORKSPACE COLLABORATION PROTOCOL:
-            You are operating in a multi-agent environment. The user has hired other specialized agents that you can consult or delegate tasks to if you need their capabilities (e.g. Ruby backend developer, Marketing coordinator, Legal assistant, etc.) for a better user experience.
-            
-            Hired Agents Available:
-            ${otherAgents.map(a => `- Name: "${a.name}" (ID: ${a.id}). Goal: ${a.goal}`).join('\n')}
+        const allTemplates = [
+            { name: "CY", role: "Ruby Developer", goal: "Ruby backend developer & Rails database expert" },
+            { name: "Quinn", role: "Python Developer", goal: "Python backend developer & Django server expert" },
+            { name: "Stella", role: "UI/UX Designer", goal: "Design mockups, wireframes & user interfaces" },
+            { name: "Marcus", role: "Database Admin", goal: "Database design, SQL schemas, migrations & queries" },
+            { name: "Gordon", role: "Devops Engineer", goal: "CI/CD pipelines, Docker, Kubernetes & AWS deployment" },
+            { name: "Sarah", role: "QA Engineer", goal: "Write test cases, automated testing & security reports" },
+            { name: "Larry", role: "Technical Writer", goal: "API docs, user manuals & system documentations" },
+            { name: "Holly", role: "Product Manager", goal: "Define roadmaps, write PRDs & coordinate goals" },
+            { name: "Finn", role: "System Architect", goal: "High level architecture designs & database diagrams" },
+            { name: "Pat", role: "Security Specialist", goal: "Vulnerability analysis, secure coding & threat modeling" },
+            { name: "Sam", role: "Customer Support", goal: "Resolve support queries & customer templates" }
+        ];
 
-            If you need to consult one of these agents to solve the user's request, you can delegate a specific subtask to them by returning a JSON command.
-            You MUST output this exact JSON format (and nothing else):
-            {
-              "tool": "delegate",
-              "agentId": "THE_TARGET_AGENT_UUID",
-              "task": "The specific query or task instructions you want this agent to perform"
-            }
+        const agentListText = allTemplates.map(tpl => {
+            const hired = hiredAgents?.find(a => a.name.toLowerCase().includes(tpl.name.toLowerCase()) || a.goal?.toLowerCase().includes(tpl.role.toLowerCase()));
+            return `- Name: "${tpl.name}" (${tpl.role})
+  Goal/Capability: ${tpl.goal}
+  Status: ${hired ? `Hired (ID: "${hired.id}")` : 'Not Hired (Use ID: "' + tpl.name.toLowerCase() + '-placeholder")'}`;
+        }).join('\n\n');
 
-            - Do NOT include any other text. Once they return their result, the system will inject it and you will finalize the answer.
-            `;
+        collaborationPrompt = `
+        🤖 WORKSPACE COLLABORATION PROTOCOL:
+        You are in a multi-agent workspace. You can consult or delegate subtasks to other specialized template agents listed below to provide a better user experience (e.g. asking CY the Ruby Developer to connect a database).
+        
+        Other Workspace Agents:
+        ${agentListText}
+
+        🔴 DELEGATION TRIGGER RULE:
+        If the user asks you to "Ask [Agent Name]", "Consult [Agent Name]", "Delegate to [Agent Name]", or if they ask a question directed at another agent (e.g. "Ask Ruby how to connect backend"), you MUST NOT respond in plain text.
+        You MUST output this exact JSON delegation block (and absolutely NOTHING else):
+        {
+          "tool": "delegate",
+          "agentId": "THE_TARGET_AGENT_UUID_OR_PLACEHOLDER_ID_FROM_LIST",
+          "agentName": "THE_TARGET_AGENT_NAME",
+          "task": "The specific query or instructions you want this agent to perform"
         }
+
+        - Find the closest matching agent from the list above. E.g. "Ruby" matches CY (Ruby Developer).
+        - Do NOT include any other text before or after the JSON. Once the user approves or purchases, the system will execute it and give you the output.
+        `;
     }
 
     // --- 5. BUILD PROMPT ---
@@ -177,21 +198,39 @@ export async function POST(req: Request) {
         if (finalResult.includes('"tool": "delegate"') || finalResult.includes('"tool":"delegate"')) {
             const parsed = JSON.parse(finalResult);
             if (parsed.tool === "delegate" && parsed.agentId && parsed.task) {
-                // Check if target agent is owned/hired by this user
-                const { data: targetAgent } = await supabase
-                    .from('agents')
-                    .select('*')
-                    .eq('id', parsed.agentId)
-                    .eq('user_id', userId)
-                    .maybeSingle();
+                const isPlaceholder = parsed.agentId.includes('-placeholder');
+                
+                let targetAgent = null;
+                if (!isPlaceholder) {
+                    const { data } = await supabase
+                        .from('agents')
+                        .select('*')
+                        .eq('id', parsed.agentId)
+                        .eq('user_id', userId)
+                        .maybeSingle();
+                    targetAgent = data;
+                }
 
                 if (targetAgent) {
                     parsed.hired = true;
                     parsed.agentName = targetAgent.name;
                 } else {
                     parsed.hired = false;
-                    // If not hired, we can try to guess target agent name or fetch template details
-                    parsed.agentName = parsed.agentName || "Specialist Agent";
+                    const nameMap: Record<string, string> = {
+                        "cy": "CY (Ruby Developer)",
+                        "quinn": "Quinn (Python Developer)",
+                        "stella": "Stella (UI/UX Designer)",
+                        "marcus": "Marcus (Database Admin)",
+                        "gordon": "Gordon (Devops Engineer)",
+                        "sarah": "Sarah (QA Engineer)",
+                        "larry": "Larry (Technical Writer)",
+                        "holly": "Holly (Product Manager)",
+                        "finn": "Finn (System Architect)",
+                        "pat": "Pat (Security Specialist)",
+                        "sam": "Sam (Customer Support)"
+                    };
+                    const key = parsed.agentId.replace('-placeholder', '').toLowerCase();
+                    parsed.agentName = nameMap[key] || parsed.agentName || "Specialist Agent";
                 }
                 
                 finalResult = JSON.stringify(parsed);
