@@ -12,6 +12,7 @@ import {
 import { createClient } from '../../utils/supabase/client';
 import Link from "next/link";
 import { showToast } from '../../utils/Toast';
+import { EMPLOYEES } from '../../employees/page';
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -255,8 +256,18 @@ export default function AgentWorkstation() {
 
         const targetName = (targetNameInput && typeof targetNameInput === 'string') ? targetNameInput : undefined;
         const nameToBuy = targetName || agent.name;
+        
+        const matchedEmp = EMPLOYEES.find(e => 
+            nameToBuy.toLowerCase().includes(e.name.toLowerCase()) || 
+            e.name.toLowerCase().includes(nameToBuy.toLowerCase())
+        );
+
+        const finalName = matchedEmp ? `${matchedEmp.name} (${matchedEmp.role})` : nameToBuy;
+        const finalIcon = matchedEmp ? matchedEmp.icon : (targetIcon || agent.icon);
+        const finalSteps = matchedEmp ? matchedEmp.steps : agent.steps;
+
         let price = "₹999/mo"; // Default
-        const lowerName = nameToBuy.toLowerCase();
+        const lowerName = finalName.toLowerCase();
         if (lowerName.includes("devon")) price = "₹999/mo";
         else if (lowerName.includes("ruby")) price = "₹1,299/mo";
         else if (lowerName.includes("quinn")) price = "₹799/mo";
@@ -280,9 +291,9 @@ export default function AgentWorkstation() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 userId: user.id,
-                agentName: nameToBuy,
-                icon: targetIcon || agent.icon,
-                steps: agent.steps,
+                agentName: finalName,
+                icon: finalIcon,
+                steps: finalSteps,
                 amount: parsedAmount
             })
         });

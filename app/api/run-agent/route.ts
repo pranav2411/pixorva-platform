@@ -118,17 +118,21 @@ export async function POST(req: Request) {
             .eq('user_id', userId);
 
         const allTemplates = [
-            { name: "CY", role: "Ruby Developer", goal: "Ruby backend developer & Rails database expert" },
-            { name: "Quinn", role: "Python Developer", goal: "Python backend developer & Django server expert" },
-            { name: "Stella", role: "UI/UX Designer", goal: "Design mockups, wireframes & user interfaces" },
-            { name: "Marcus", role: "Database Admin", goal: "Database design, SQL schemas, migrations & queries" },
-            { name: "Gordon", role: "Devops Engineer", goal: "CI/CD pipelines, Docker, Kubernetes & AWS deployment" },
-            { name: "Sarah", role: "QA Engineer", goal: "Write test cases, automated testing & security reports" },
-            { name: "Larry", role: "Technical Writer", goal: "API docs, user manuals & system documentations" },
-            { name: "Holly", role: "Product Manager", goal: "Define roadmaps, write PRDs & coordinate goals" },
-            { name: "Finn", role: "System Architect", goal: "High level architecture designs & database diagrams" },
-            { name: "Pat", role: "Security Specialist", goal: "Vulnerability analysis, secure coding & threat modeling" },
-            { name: "Sam", role: "Customer Support", goal: "Resolve support queries & customer templates" }
+            { name: "Devon", role: "React Developer", goal: "Builds UI components, fixes React hooks, and sets up Next.js projects." },
+            { name: "Ruby", role: "Backend Architect", goal: "Designs SQL database schemas, writes Node.js/Postgres API endpoints, and optimizes queries." },
+            { name: "Quinn", role: "QA Tester", goal: "Writes Jest/Cypress unit tests and finds edge cases in backend/frontend logic." },
+            { name: "Cy", role: "Security Analyst", goal: "Audits code for vulnerabilities, secure coding, compliance & security policies." },
+            { name: "Marcus", role: "Growth Hacker", goal: "Writes viral threads, LinkedIn hooks, and ad copy." },
+            { name: "Stella", role: "Social Media Manager", goal: "Creates Instagram captions, TikTok scripts, and visual marketing plans." },
+            { name: "Gordon", role: "SEO Blog Writer", goal: "Writes ranking articles with perfect SEO keyword structures." },
+            { name: "Vic", role: "Video Scripter", goal: "Turns blog posts into engaging YouTube/video scripts." },
+            { name: "Sarah", role: "SDR / Outreach Specialist", goal: "Finds email leads and writes personalized cold outreach emails." },
+            { name: "Larry", role: "Lead Enricher", goal: "Finds contact emails, LinkedIn profiles, and company enrichment data." },
+            { name: "Holly", role: "HR Manager", goal: "Drafts job descriptions, screens resumes, and writes employee policies." },
+            { name: "Finn", role: "Finance Analyst", goal: "Analyzes P&L sheets, revenue data, and drafts tax summaries." },
+            { name: "Lawson", role: "Legal Assistant", goal: "Drafts NDAs, legal contracts, privacy policies & reviews terms." },
+            { name: "Pat", role: "Product Manager", goal: "Writes user stories, specs, roadmap items, and feature specs." },
+            { name: "Sam", role: "Customer Support Agent", goal: "Drafts empathetic replies to support complaints and customer emails." }
         ];
 
         const agentListText = allTemplates.map(tpl => {
@@ -217,16 +221,19 @@ export async function POST(req: Request) {
                 } else {
                     parsed.hired = false;
                     const nameMap: Record<string, string> = {
-                        "cy": "CY (Ruby Developer)",
-                        "quinn": "Quinn (Python Developer)",
-                        "stella": "Stella (UI/UX Designer)",
-                        "marcus": "Marcus (Database Admin)",
-                        "gordon": "Gordon (Devops Engineer)",
-                        "sarah": "Sarah (QA Engineer)",
-                        "larry": "Larry (Technical Writer)",
-                        "holly": "Holly (Product Manager)",
-                        "finn": "Finn (System Architect)",
-                        "pat": "Pat (Security Specialist)",
+                        "ruby": "Ruby (Backend Architect)",
+                        "quinn": "Quinn (QA Tester)",
+                        "cy": "Cy (Security Analyst)",
+                        "marcus": "Marcus (Growth Hacker)",
+                        "stella": "Stella (Social Media Mgr)",
+                        "gordon": "Gordon (SEO Blog Writer)",
+                        "vic": "Vic (Video Scripter)",
+                        "sarah": "Sarah (SDR / Outreach)",
+                        "larry": "Larry (Lead Enricher)",
+                        "holly": "Holly (HR Manager)",
+                        "finn": "Finn (Finance Analyst)",
+                        "lawson": "Lawson (Legal Assistant)",
+                        "pat": "Pat (Product Manager)",
                         "sam": "Sam (Customer Support)"
                     };
                     const key = parsed.agentId.replace('-placeholder', '').toLowerCase();
