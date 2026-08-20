@@ -130,7 +130,7 @@ export default function PricingPage() {
                   <ul className="space-y-3 text-sm font-medium mb-8">
                       <li className="flex gap-2"><Check size={16}/> Access to ALL 20 Agents</li>
                       <li className="flex gap-2"><Check size={16}/> Unlimited Tasks</li>
-                      <li className="flex gap-2"><Check size={16}/> "Flash" Speed (Fast)</li>
+                      <li className="flex gap-2"><Check size={16}/> &quot;Flash&quot; Speed (Fast)</li>
                       <li className="flex gap-2"><Check size={16}/> Save History</li>
                   </ul>
                   <button className="w-full bg-yellow-400 text-black border-2 border-yellow-400 py-3 rounded-lg font-bold uppercase hover:bg-white hover:border-white transition">Get Growth Pro</button>
@@ -144,7 +144,7 @@ export default function PricingPage() {
                   <div className="text-4xl font-black mb-6">₹19,999 <span className="text-sm font-medium text-gray-500">/ mo</span></div>
                   <ul className="space-y-3 text-sm font-medium mb-8">
                       <li className="flex gap-2"><Check size={16}/> Build Custom Agents</li>
-                      <li className="flex gap-2"><Check size={16}/> "Pro" Intelligence (Smarter)</li>
+                      <li className="flex gap-2"><Check size={16}/> &quot;Pro&quot; Intelligence (Smarter)</li>
                       <li className="flex gap-2"><Check size={16}/> API Access</li>
                       <li className="flex gap-2"><Check size={16}/> Dedicated Support</li>
                   </ul>

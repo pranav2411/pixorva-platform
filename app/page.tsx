@@ -151,7 +151,7 @@ export default function Home() {
                             <Users size={48} className="text-gray-400" />
                         </div>
                         <h3 className="text-3xl font-bold text-gray-800 mb-2">Your office is empty!</h3>
-                        <p className="text-gray-500 mb-8 max-w-md">You haven't hired anyone yet. Visit the Marketplace to hire Devon, Ruby, Lawson, and more.</p>
+                        <p className="text-gray-500 mb-8 max-w-md">You haven&apos;t hired anyone yet. Visit the Marketplace to hire Devon, Ruby, Lawson, and more.</p>
                         <Link href="/employees">
                             <button className="bg-black text-white px-8 py-4 rounded-xl font-bold uppercase hover:bg-yellow-400 hover:text-black transition flex items-center gap-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]">
                                 <Plus size={20} /> Go to Marketplace

@@ -47,7 +47,7 @@ export default function TrialPage() {
                     </div>
                     <div className={`flex items-center gap-3 transition ${step >= 3 ? 'text-black' : 'opacity-30'}`}>
                         {step >= 3 ? <CheckCircle size={20} className="text-green-500"/> : <div className="w-5 h-5 rounded-full border-2 border-gray-300"/>}
-                        Applying "7-Day Free Pass"
+                        Applying &quot;7-Day Free Pass&quot;
                     </div>
                 </div>
               </>

@@ -26,8 +26,8 @@ async function searchWeb(query: string) {
         });
         
         const data = await response.json();
-        return data.results.map((r: any) => `- ${r.title}: ${r.content}`).join("\n");
-    } catch (e) {
+        return data.results.map((r: { title: string; content: string }) => `- ${r.title}: ${r.content}`).join("\n");
+    } catch {
         return null;
     }
 }
@@ -35,7 +35,6 @@ async function searchWeb(query: string) {
 export async function POST(req: Request) {
   try {
     const { input, agentId, userId, agentRole, fileData } = await req.json();
-    const role = agentRole ? agentRole.toLowerCase() : "";
 
     // --- 1. GET HISTORY ---
     let historyContext = "";
@@ -102,7 +101,11 @@ export async function POST(req: Request) {
     // APPEND PROTOCOL AT THE END
     let finalPrompt = `${systemPrompt}\n${historyContext}\n${searchContext}\n\n${ACTION_PROTOCOL}\n\nUSER REQUEST: "${input}"`;
 
-    let promptParts: any[] = [{ text: finalPrompt }];
+    if (fileData) {
+        finalPrompt += `\n[FILE ATTACHED]`;
+    }
+
+    const promptParts: ({ text: string } | { inlineData: { data: string; mimeType: string } })[] = [{ text: finalPrompt }];
 
     if (fileData) {
         promptParts.push({
@@ -111,7 +114,6 @@ export async function POST(req: Request) {
                 mimeType: fileData.type
             }
         });
-        promptParts[0].text += `\n[FILE ATTACHED]`;
     }
 
     // --- 6. GENERATE ---
@@ -139,7 +141,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, result: finalResult });
 
-  } catch (error: any) {
-    return NextResponse.json({ success: false, result: `❌ Error: ${error.message}` });
+  } catch (error: unknown) {
+    return NextResponse.json({ success: false, result: `❌ Error: ${(error as Error).message}` });
   }
 }

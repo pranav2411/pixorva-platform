@@ -1,20 +1,13 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { createClient } from '@supabase/supabase-js';
-
-const stripe = new Stripe('sk_test_...', {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   // Update this string to match the error message's expected type
   apiVersion: '2026-01-28.clover', 
 });
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
 export async function POST(req: Request) {
   try {
-    const { agentId, agentName, priceId, userId } = await req.json();
+    const { agentId, agentName, userId } = await req.json();
 
     // 1. Create a Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
@@ -45,8 +38,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ url: session.url });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Stripe Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
 }
