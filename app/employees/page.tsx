@@ -195,25 +195,29 @@ export default function EmployeesPage() {
             if (countError) throw countError;
 
             if (count !== null && count >= 4) {
-                alert("⚠️ You have reached your limit of 4 active agents under the Growth Pro Plan. Please upgrade to the Enterprise Plan to hire more.");
-                router.push("/pricing");
+                const confirmPaidHire = confirm(`You have reached your limit of 4 free active agents under the Growth Pro Plan.\n\nWould you like to purchase ${employee.name} individually for ${employee.price}?`);
+                if (!confirmPaidHire) {
+                    setHiring(null);
+                    return;
+                }
+                // If they confirm, let them proceed to Stripe Checkout below!
+            } else {
+                // They have < 4 agents, provision for free:
+                const { error: agentError } = await supabase
+                    .from('agents')
+                    .insert({
+                        user_id: user.id,
+                        name: `${employee.name} (${employee.role})`,
+                        steps: employee.steps,
+                        schedule: 'Manual',
+                        icon: employee.icon
+                    });
+
+                if (agentError) throw agentError;
+                alert(`🎉 Success! ${employee.name} has joined your team under your Growth Pro Plan.`);
+                router.push("/");
                 return;
             }
-
-            const { error: agentError } = await supabase
-                .from('agents')
-                .insert({
-                    user_id: user.id,
-                    name: `${employee.name} (${employee.role})`,
-                    steps: employee.steps,
-                    schedule: 'Manual',
-                    icon: employee.icon
-                });
-
-            if (agentError) throw agentError;
-            alert(`🎉 Success! ${employee.name} has joined your team under your Growth Pro Plan.`);
-            router.push("/");
-            return;
         }
 
         // 3. Free Tier (Check Trial Status)
