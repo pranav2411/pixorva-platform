@@ -88,12 +88,7 @@ const DEFAULT_WORKLOADS: Workload[] = [
   }
 ];
 
-const DEFAULT_AUDITS = [
-  { time: "10:30 AM", event: "Model Certification", details: "Devon React Agent certified with 0 vulnerabilities", status: "success" },
-  { time: "09:15 AM", event: "Policy Violation Blocked", details: "Blocked deployment of unapproved sentiment pipeline", status: "error" },
-  { time: "Yesterday", event: "Guardrails Config Updated", details: "Rate limiting threshold set to 100 req/min", status: "info" },
-  { time: "2 days ago", event: "Vulnerability Scan", details: "Completed scans on Stripe Checkout Copilot: 3 warnings flagged", status: "warning" }
-];
+const DEFAULT_AUDITS: any[] = [];
 
 export default function GovernancePage() {
   const [workloads, setWorkloads] = useState<Workload[]>(DEFAULT_WORKLOADS);
@@ -102,10 +97,10 @@ export default function GovernancePage() {
   const [providers, setProviders] = useState<ProviderConfig[]>(DEFAULT_PROVIDERS);
   
   // Dynamic Proxy Stats
-  const [totalRequests, setTotalRequests] = useState(2845);
-  const [violationsBlocked, setViolationsBlocked] = useState(14);
-  const [avgLatency, setAvgLatency] = useState(1150);
-  const [totalCost, setTotalCost] = useState(14.28);
+  const [totalRequests, setTotalRequests] = useState(0);
+  const [violationsBlocked, setViolationsBlocked] = useState(0);
+  const [avgLatency, setAvgLatency] = useState(0);
+  const [totalCost, setTotalCost] = useState(0.00);
 
   // Policy States
   const [contentFiltering, setContentFiltering] = useState(true);
