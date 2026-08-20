@@ -109,12 +109,43 @@ export async function POST(req: Request) {
     - If the user asks to "Write" or "Draft", then just write normal text.
     `;
 
+    // Fetch user's other agents for collaboration
+    let collaborationPrompt = "";
+    if (userId) {
+        const { data: otherAgents } = await supabase
+            .from('agents')
+            .select('id, name, goal')
+            .eq('user_id', userId)
+            .neq('id', agentId || "");
+
+        if (otherAgents && otherAgents.length > 0) {
+            collaborationPrompt = `
+            🤖 WORKSPACE COLLABORATION PROTOCOL:
+            You are operating in a multi-agent environment. The user has hired other specialized agents that you can consult or delegate tasks to if you need their capabilities (e.g. Ruby backend developer, Marketing coordinator, Legal assistant, etc.) for a better user experience.
+            
+            Hired Agents Available:
+            ${otherAgents.map(a => `- Name: "${a.name}" (ID: ${a.id}). Goal: ${a.goal}`).join('\n')}
+
+            If you need to consult one of these agents to solve the user's request, you can delegate a specific subtask to them by returning a JSON command.
+            You MUST output this exact JSON format (and nothing else):
+            {
+              "tool": "delegate",
+              "agentId": "THE_TARGET_AGENT_UUID",
+              "task": "The specific query or task instructions you want this agent to perform"
+            }
+
+            - Do NOT include any other text. Once they return their result, the system will inject it and you will finalize the answer.
+            `;
+        }
+    }
+
     // --- 5. BUILD PROMPT ---
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     let systemPrompt = `ROLE: ${agentRole || "Assistant"}.`;
     if (customInstructions) systemPrompt += `\nCONTEXT: ${customInstructions}`;
+    if (collaborationPrompt) systemPrompt += `\n${collaborationPrompt}`;
 
     // APPEND PROTOCOL AT THE END
     let finalPrompt = `${systemPrompt}\n${historyContext}\n${searchContext}\n\n${ACTION_PROTOCOL}\n\nUSER REQUEST: "${input}"`;
@@ -140,6 +171,44 @@ export async function POST(req: Request) {
 
     // CLEANUP JSON (Remove markdown wrappers if AI adds them)
     finalResult = finalResult.replace(/```json/g, "").replace(/```/g, "").trim();
+
+    // Check for delegation request
+    try {
+        if (finalResult.includes('"tool": "delegate"') || finalResult.includes('"tool":"delegate"')) {
+            const parsed = JSON.parse(finalResult);
+            if (parsed.tool === "delegate" && parsed.agentId && parsed.task) {
+                const { data: targetAgent } = await supabase
+                    .from('agents')
+                    .select('name, instructions, goal')
+                    .eq('id', parsed.agentId)
+                    .single();
+
+                if (targetAgent) {
+                    const targetRole = targetAgent.name || "Assistant";
+                    const targetInstructions = targetAgent.instructions || targetAgent.goal || "";
+                    const targetPrompt = `ROLE: ${targetRole}.\nCONTEXT: ${targetInstructions}\n\nUSER REQUEST: "${parsed.task}"`;
+                    
+                    const targetResult = await model.generateContent([{ text: targetPrompt }]);
+                    const targetResponse = targetResult.response.text();
+
+                    const synthesisPrompt = `
+                    You delegated a subtask to "${targetRole}" and they responded with:
+                    ---
+                    ${targetResponse}
+                    ---
+                    
+                    Now, synthesize their work and output the final, complete response to the user's original request: "${input}"
+                    (Make sure to mention in your final reply that you collaborated with ${targetRole} to achieve this).
+                    `;
+                    
+                    const finalSynthesisResult = await model.generateContent([{ text: `${systemPrompt}\n\n${synthesisPrompt}` }]);
+                    finalResult = finalSynthesisResult.response.text();
+                }
+            }
+        }
+    } catch (e) {
+        // Ignore parsing errors
+    }
 
     // --- 7. SAVE ---
     if (userId && agentId) {

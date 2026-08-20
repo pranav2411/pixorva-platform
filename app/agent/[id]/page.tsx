@@ -7,7 +7,7 @@ import {
   ArrowLeft, Play, Terminal, Code, Megaphone, ShieldCheck, 
   DollarSign, User as UserIcon, Layout, FileText, Zap, Loader2,
   Users, PieChart, Camera, Database, Lock, Clipboard, Video, Target, 
-  CheckCircle, Smartphone, Paperclip, X, Download, Mail, Send, Plus
+  CheckCircle, Smartphone, Paperclip, X, Download, Mail, Send, Plus, Trash2
 } from "lucide-react";
 import { createClient } from '../../utils/supabase/client';
 import Link from "next/link";
@@ -15,6 +15,110 @@ import { showToast } from '../../utils/Toast';
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
+
+function formatMarkdownText(text: string) {
+    if (!text) return "";
+    let safeText = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+        
+    safeText = safeText.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    safeText = safeText.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    
+    const lines = safeText.split('\n');
+    let inList = false;
+    const formattedLines = lines.map((line) => {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('* ') || trimmed.startsWith('- ')) {
+            const listContent = trimmed.substring(2).trim();
+            let prefix = "";
+            if (!inList) {
+                inList = true;
+                prefix = '<ul class="list-disc ml-6 my-2 space-y-1">';
+            }
+            return `${prefix}<li>${listContent}</li>`;
+        } else {
+            let suffix = "";
+            if (inList) {
+                inList = false;
+                suffix = '</ul>';
+            }
+            if (trimmed === "") {
+                return `${suffix}<br/>`;
+            }
+            return `${suffix}<p class="my-1.5 leading-relaxed">${line}</p>`;
+        }
+    });
+
+    if (inList) {
+        formattedLines.push('</ul>');
+    }
+
+    return formattedLines.join('');
+}
+
+function getCleanedPreviewHtml(code: string) {
+    if (!code) return "";
+    let cleaned = code.replace(/```(html|jsx|tsx|xml|javascript|typescript)?/gi, "").replace(/```/g, "").trim();
+
+    if (cleaned.toLowerCase().includes('<!doctype html') || cleaned.toLowerCase().includes('<html')) {
+        if (!cleaned.includes('tailwindcss.com') && !cleaned.includes('tailwind.css')) {
+            cleaned = cleaned.replace('<head>', '<head><script src="https://cdn.tailwindcss.com"></script>');
+        }
+        return cleaned;
+    }
+
+    let babelCode = cleaned
+        .replace(/import\s+[\s\S]*?from\s+['"].*?['"];?/g, "")
+        .replace(/export\s+default\s+/g, "")
+        .replace(/export\s+/g, "");
+
+    return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="UTF-8" />
+        <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+          body { margin: 0; padding: 20px; font-family: sans-serif; background-color: #f9fafb; }
+        </style>
+      </head>
+      <body>
+        <div id="root"></div>
+        <script type="text/babel">
+          try {
+            \${babelCode}
+
+            let ComponentToRender = () => <div className="text-gray-500 font-medium">No renderable React component found.</div>;
+            if (typeof HomePage !== 'undefined') ComponentToRender = HomePage;
+            else if (typeof Page !== 'undefined') ComponentToRender = Page;
+            else if (typeof App !== 'undefined') ComponentToRender = App;
+            else {
+                const funcMatch = /function\\s+([A-Z][a-zA-Z0-9_]*)/.exec(\`\${babelCode.replace(/\\s+/g, ' ')}\`);
+                if (funcMatch && typeof window[funcMatch[1]] !== 'undefined') {
+                    ComponentToRender = window[funcMatch[1]];
+                } else {
+                    const constMatch = /const\\s+([A-Z][a-zA-Z0-9_]*)/.exec(\`\${babelCode.replace(/\\s+/g, ' ')}\`);
+                    if (constMatch && typeof window[constMatch[1]] !== 'undefined') {
+                        ComponentToRender = window[constMatch[1]];
+                    }
+                }
+            }
+
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(<ComponentToRender />);
+          } catch(e) {
+            document.getElementById('root').innerHTML = '<div class="text-red-500 font-bold p-4 border-2 border-red-500 rounded bg-red-50">Sandbox compilation error: ' + e.message + '</div>';
+          }
+        </script>
+      </body>
+    </html>
+    `;
+}
 
 export default function AgentWorkstation() {
   const params = useParams();
@@ -476,7 +580,7 @@ export default function AgentWorkstation() {
                                                  </button>
                                              </div>
                                          ) : (
-                                             <div className="whitespace-pre-wrap leading-relaxed">{msg.result}</div>
+                                             <div className="whitespace-pre-wrap leading-relaxed markdown-content" dangerouslySetInnerHTML={{ __html: formatMarkdownText(msg.result) }} />
                                          )}
                                      </div>
                                  </div>
@@ -493,8 +597,8 @@ export default function AgentWorkstation() {
       if (activeTab === 'preview') {
           return (
              <div className="w-full h-full bg-white">
-                 {currentResult.includes('<html') || currentResult.includes('<!DOCTYPE') ? (
-                     <iframe srcDoc={currentResult} className="w-full h-full border-none" sandbox="allow-scripts" />
+                 {currentResult && (currentResult.includes('<html') || currentResult.includes('<!DOCTYPE') || currentResult.includes('React') || currentResult.includes('import') || currentResult.includes('const') || currentResult.includes('function') || currentResult.includes('class') || currentResult.includes('```')) ? (
+                     <iframe srcDoc={getCleanedPreviewHtml(currentResult)} className="w-full h-full border-none" sandbox="allow-scripts" />
                  ) : (
                      <div className="flex flex-col items-center justify-center h-full text-gray-400">
                          <Layout size={48} className="mb-4"/>
@@ -573,6 +677,36 @@ export default function AgentWorkstation() {
       setActiveSessionIndex(null);
       setTasks(prev => [...prev]);
       showToast("Started a new chat session.", "success");
+  };
+
+  const handleDeleteSession = async (session: any) => {
+      const supabase = createClient();
+      try {
+          const taskIdsToDelete = session.tasks.map((t: any) => t.id);
+          const { error } = await supabase
+              .from('tasks')
+              .delete()
+              .in('id', taskIdsToDelete);
+
+          if (error) throw error;
+
+          if (typeof window !== 'undefined') {
+              const clearTimes = JSON.parse(localStorage.getItem('chat_sessions_' + params.id) || '[]');
+              if (session.index > 0 && clearTimes.length >= session.index) {
+                  clearTimes.splice(session.index - 1, 1);
+                  localStorage.setItem('chat_sessions_' + params.id, JSON.stringify(clearTimes));
+              }
+          }
+
+          setTasks(prev => prev.filter(t => !taskIdsToDelete.includes(t.id)));
+          if (activeSessionIndex === session.index) {
+              setActiveSessionIndex(null);
+              setCurrentResult("");
+          }
+          showToast("Chat session deleted.", "success");
+      } catch (err: any) {
+          showToast("Failed to delete chat: " + err.message, "error");
+      }
   };
 
   // Scroll to bottom of chat
@@ -666,10 +800,22 @@ export default function AgentWorkstation() {
                                  setActiveTab(lastMsg?.type === 'code' ? 'preview' : 'terminal');
                                  setPendingAction(null); 
                              }} 
-                             className={`p-3 border-2 rounded-xl cursor-pointer transition flex flex-col justify-between hover:border-black ${isSelected ? 'bg-yellow-50 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'bg-white border-gray-200'}`}
+                             className={`p-3 border-2 rounded-xl cursor-pointer transition flex flex-col justify-between hover:border-black relative group/session ${isSelected ? 'bg-yellow-50 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'bg-white border-gray-200'}`}
                          >
-                             <div className="font-bold text-xs truncate mb-1 text-gray-800 uppercase tracking-wide">
-                                 {session.title}
+                             <div className="flex justify-between items-start gap-2">
+                                 <div className="font-bold text-xs truncate mb-1 text-gray-800 uppercase tracking-wide flex-1">
+                                     {session.title}
+                                 </div>
+                                 <button 
+                                     onClick={(e) => {
+                                         e.stopPropagation();
+                                         handleDeleteSession(session);
+                                     }}
+                                     className="text-gray-400 hover:text-red-500 transition p-0.5"
+                                     title="Delete Chat Session"
+                                 >
+                                     <Trash2 size={13} />
+                                 </button>
                              </div>
                              <div className="flex justify-between items-center text-[9px] text-gray-400 font-bold uppercase mt-1">
                                  <span>{new Date(session.lastUpdateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
