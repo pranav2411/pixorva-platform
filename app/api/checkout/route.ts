@@ -40,7 +40,7 @@ export async function POST(req: Request) {
         },
       });
     } else {
-      // 2. Create a standard one-time payment session for a single agent
+      // 2. Create a monthly recurring subscription session for a single agent/utility
       session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [
@@ -52,15 +52,15 @@ export async function POST(req: Request) {
                 description: 'Monthly salary for AI Employee',
                 images: ['https://cdn-icons-png.flaticon.com/512/4712/4712035.png'], // Generic Bot Icon
               },
-              unit_amount: amount, // Dynamic amount in paise
+              unit_amount: amount, // Dynamic monthly salary in paise
+              recurring: {
+                interval: 'month',
+              },
             },
             quantity: 1,
           },
         ],
-        mode: 'payment',
-        invoice_creation: {
-          enabled: true,
-        },
+        mode: 'subscription',
         success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/?success=true&session_id={CHECKOUT_SESSION_ID}&agent_name=${encodeURIComponent(agentName)}&icon=${encodeURIComponent(icon)}&steps=${encodeURIComponent(JSON.stringify(steps))}`,
         cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/employees?canceled=true`,
         metadata: {
