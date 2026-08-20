@@ -67,7 +67,17 @@ function getCleanedPreviewHtml(code: string) {
     if (match && match[1]) {
         cleaned = match[1].trim();
     } else {
-        cleaned = code.replace(/```(html|jsx|tsx|xml|javascript|typescript)?/gi, "").replace(/```/g, "").trim();
+        // Fallback: Check if there's raw HTML boundaries when backticks are missing
+        const htmlStart = code.toLowerCase().indexOf('<!doctype');
+        const htmlStart2 = code.toLowerCase().indexOf('<html');
+        const startIdx = htmlStart !== -1 ? htmlStart : htmlStart2;
+        const endIdx = code.toLowerCase().lastIndexOf('</html>');
+        
+        if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
+            cleaned = code.substring(startIdx, endIdx + 7).trim();
+        } else {
+            cleaned = code.replace(/```(html|jsx|tsx|xml|javascript|typescript)?/gi, "").replace(/```/g, "").trim();
+        }
     }
 
     if (cleaned.toLowerCase().includes('<!doctype html') || cleaned.toLowerCase().includes('<html') || cleaned.toLowerCase().includes('<body>')) {
