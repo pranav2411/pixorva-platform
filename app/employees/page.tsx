@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Oswald, Inter } from "next/font/google";
-import { ArrowLeft, Plus, Check, Briefcase, Code, Megaphone, PenTool, Search, ShieldCheck, DollarSign, User, Users, PieChart, Camera, Database, Lock, Clipboard, Video, Target, CheckCircle, Smartphone } from "lucide-react";
+import { ArrowLeft, Plus, Check, Briefcase, Code, Megaphone, PenTool, Search, ShieldCheck, DollarSign, User, Users, PieChart, Camera, Database, Lock, Clipboard, Video, Target, CheckCircle, Smartphone, X, Zap, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { createClient } from '../utils/supabase/client';
 import { useRouter } from 'next/navigation';
@@ -146,6 +146,97 @@ export default function EmployeesPage() {
   const [filter, setFilter] = useState("All");
   const router = useRouter();
 
+  // Custom Modal state
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    employee: Employee | null;
+    type: 'trial' | 'paid_upgrade';
+  }>({ isOpen: false, employee: null, type: 'trial' });
+  const [modalLoading, setModalLoading] = useState(false);
+
+  const handleConfirmTrial = async () => {
+    const employee = confirmModal.employee;
+    if (!employee) return;
+    setModalLoading(true);
+    const supabase = createClient();
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) { router.push("/login"); return; }
+        
+        // Provision the agent directly in Supabase
+        const { data: newAgent, error: agentError } = await supabase
+            .from('agents')
+            .insert({
+                user_id: user.id,
+                name: `${employee.name} (${employee.role})`,
+                steps: employee.steps,
+                schedule: 'Manual',
+                icon: employee.icon
+            })
+            .select('id')
+            .single();
+
+        if (agentError) throw agentError;
+
+        // Save this agent ID as the chosen trial agent
+        const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert({
+                id: user.id,
+                trial_agent_id: newAgent.id
+            });
+
+        if (profileError) throw profileError;
+
+        alert(`🎉 Success! ${employee.name} has joined your team for your 3-day free trial.`);
+        setConfirmModal({ isOpen: false, employee: null, type: 'trial' });
+        router.push("/");
+    } catch (e: any) {
+        alert("Activation failed: " + e.message);
+    } finally {
+        setModalLoading(false);
+    }
+  };
+
+  const handleConfirmPaidUpgrade = async () => {
+    const employee = confirmModal.employee;
+    if (!employee) return;
+    setModalLoading(true);
+    try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) { router.push("/login"); return; }
+
+        // Parse price (e.g. "₹999/mo" -> 99900 paise)
+        const parsedAmount = parseInt(employee.price.replace(/[^\d]/g, ""), 10) * 100;
+
+        const response = await fetch('/api/checkout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: user.id,
+                agentName: `${employee.name} (${employee.role})`,
+                icon: employee.icon,
+                steps: employee.steps,
+                amount: parsedAmount
+            })
+        });
+
+        const data = await response.json();
+        if (data.url) {
+            window.location.href = data.url;
+        } else {
+            throw new Error(data.error || "Failed to create checkout session");
+        }
+    } catch (e: any) {
+        alert("Hiring failed: " + e.message);
+    } finally {
+        setModalLoading(false);
+    }
+  };
+
   const handleHire = async (employee: Employee) => {
     setHiring(employee.id);
     const supabase = createClient();
@@ -155,6 +246,7 @@ export default function EmployeesPage() {
         if (!user) {
             alert("Please log in to hire employees.");
             router.push("/login");
+            setHiring(null);
             return;
         }
 
@@ -196,12 +288,10 @@ export default function EmployeesPage() {
             if (countError) throw countError;
 
             if (count !== null && count >= 4) {
-                const confirmPaidHire = confirm(`You have reached your limit of 4 free active agents under the Growth Pro Plan.\n\nWould you like to purchase ${employee.name} individually for ${employee.price}?`);
-                if (!confirmPaidHire) {
-                    setHiring(null);
-                    return;
-                }
-                // If they confirm, let them proceed to Stripe Checkout below!
+                // Open custom modal instead of window.confirm
+                setConfirmModal({ isOpen: true, employee, type: 'paid_upgrade' });
+                setHiring(null);
+                return;
             } else {
                 // They have < 4 agents, provision for free:
                 const { error: agentError } = await supabase
@@ -226,40 +316,13 @@ export default function EmployeesPage() {
         const hasChosenTrialAgent = profile?.trial_agent_id !== null;
 
         if (isTrialActive && !hasChosenTrialAgent) {
-            const confirmTrial = confirm(`Would you like to use your one-time 3-day Free Trial to hire ${employee.name} for free?`);
-            if (confirmTrial) {
-                // Provision the agent directly in Supabase
-                const { data: newAgent, error: agentError } = await supabase
-                    .from('agents')
-                    .insert({
-                        user_id: user.id,
-                        name: `${employee.name} (${employee.role})`,
-                        steps: employee.steps,
-                        schedule: 'Manual',
-                        icon: employee.icon
-                    })
-                    .select('id')
-                    .single();
-
-                if (agentError) throw agentError;
-
-                // Save this agent ID as the chosen trial agent
-                const { error: profileError } = await supabase
-                    .from('profiles')
-                    .upsert({
-                        id: user.id,
-                        trial_agent_id: newAgent.id
-                    });
-
-                if (profileError) throw profileError;
-
-                alert(`🎉 Success! ${employee.name} has joined your team for your 3-day free trial.`);
-                router.push("/");
-                return;
-            }
+            // Open custom modal instead of window.confirm
+            setConfirmModal({ isOpen: true, employee, type: 'trial' });
+            setHiring(null);
+            return;
         }
 
-        // Parse price (e.g. "₹999/mo" -> 99900 paise)
+        // Redirect to Stripe checkout directly for standard paid purchase if no trial / plans active
         const parsedAmount = parseInt(employee.price.replace(/[^\d]/g, ""), 10) * 100;
 
         const response = await fetch('/api/checkout', {
@@ -368,6 +431,61 @@ export default function EmployeesPage() {
             ))}
         </div>
       </main>
+
+      {/* CUSTOM NEOBRUTALIST CONFIRMATION MODAL */}
+      {confirmModal.isOpen && confirmModal.employee && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+            <div className="bg-white border-4 border-black p-8 rounded-3xl max-w-md w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] animate-in zoom-in-95 duration-200 text-center relative">
+                <button 
+                  disabled={modalLoading}
+                  onClick={() => setConfirmModal({ isOpen: false, employee: null, type: 'trial' })} 
+                  className="absolute right-4 top-4 text-gray-400 hover:text-black transition disabled:opacity-50"
+                >
+                    <X size={24} />
+                </button>
+
+                <div className="mb-6 flex justify-center">
+                    <div className="bg-yellow-400 p-4 rounded-2xl border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black">
+                        <Zap size={36} fill="black" />
+                    </div>
+                </div>
+
+                <h3 className={`text-3xl uppercase mb-3 ${oswald.className}`}>
+                    {confirmModal.type === 'trial' ? 'Start Free Trial' : 'Limit Reached'}
+                </h3>
+
+                <p className="text-sm font-semibold text-gray-600 mb-8 leading-relaxed">
+                    {confirmModal.type === 'trial' ? (
+                        <>Would you like to use your one-time <strong>3-day Free Trial</strong> to hire <strong>{confirmModal.employee.name}</strong> for free?</>
+                    ) : (
+                        <>You have reached your limit of <strong>4 free active agents</strong> under the Growth Pro Plan.<br/><br/>Would you like to purchase <strong>{confirmModal.employee.name}</strong> individually for <strong>{confirmModal.employee.price}</strong>?</>
+                    )}
+                </p>
+
+                <div className="flex flex-col gap-3">
+                    <button 
+                      disabled={modalLoading}
+                      onClick={confirmModal.type === 'trial' ? handleConfirmTrial : handleConfirmPaidUpgrade}
+                      className="w-full bg-black text-white hover:bg-yellow-400 hover:text-black py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                        {modalLoading ? (
+                            <Loader2 className="animate-spin" size={16} />
+                        ) : (
+                            confirmModal.type === 'trial' ? 'Activate Trial Agent' : 'Purchase Individually'
+                        )}
+                    </button>
+                    <button 
+                      disabled={modalLoading}
+                      onClick={() => setConfirmModal({ isOpen: false, employee: null, type: 'trial' })}
+                      className="w-full bg-white text-gray-500 hover:text-red-500 py-2 font-bold uppercase text-xs tracking-wider transition disabled:opacity-50"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+      )}
+
     </div>
   );
 }
