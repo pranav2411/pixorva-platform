@@ -124,13 +124,7 @@ export default function WorkspacePage() {
 
         if (agents) {
           setMyAgents(agents);
-          
-          // Auto-add hired agents (excluding Governance Tower) to channels
-          const activeAgentIds = agents.filter(a => a.name !== "Governance Control Tower").map(a => a.id);
-          setChannels(prev => prev.map(c => ({
-            ...c,
-            agents: c.agents.length === 0 ? activeAgentIds : c.agents
-          })));
+          // Channels start with empty active agents selection by default
         }
 
         // Load Vault Files
@@ -170,17 +164,29 @@ export default function WorkspacePage() {
     const newChan: Channel = {
       id: `ch-${Date.now()}`,
       name: cleanName,
-      agents: myAgents.filter(a => a.name !== "Governance Control Tower").map(a => a.id)
+      agents: [] // No agents selected by default
     };
     setChannels(prev => [...prev, newChan]);
     setSelectedChId(newChan.id);
     setChannelMessages(prev => ({
       ...prev,
-      [newChan.id]: [{ sender: "System", text: `Welcome to #${cleanName}. Add active agents to begin.`, time: "Just now" }]
+      [newChan.id]: [{ sender: "System", text: `Welcome to #${cleanName}. Select agents in the right panel to begin collaboration.`, time: "Just now" }]
     }));
     setNewChannelName("");
     setShowAddChannel(false);
     showToast(`Channel #${cleanName} created!`, "success");
+  };
+
+  const handleDeleteChannel = (chId: string) => {
+    if (chId === "ch-general") return; // Prevent deleting default channel
+    setChannels(prev => prev.filter(c => c.id !== chId));
+    setChannelMessages(prev => {
+      const copy = { ...prev };
+      delete copy[chId];
+      return copy;
+    });
+    setSelectedChId("ch-general");
+    showToast("Channel deleted successfully", "success");
   };
 
   const handleSendChannelMessage = async () => {
@@ -199,13 +205,13 @@ export default function WorkspacePage() {
     setChannelMessages(prev => ({ ...prev, [activeChannel.id]: updatedMsgs }));
 
     const userPrompt = channelPrompt;
-    setChannelPrompt("");
-
     const channelAgents = myAgents.filter(a => activeChannel.agents.includes(a.id));
     if (channelAgents.length === 0) {
+      showToast("Please check at least one agent on the right to participate.", "error");
       setSendingChannelMsg(false);
       return;
     }
+    setChannelPrompt("");
 
     try {
       // Build RAG prompt context
@@ -381,13 +387,23 @@ export default function WorkspacePage() {
 
                   <div className="space-y-1 overflow-y-auto pr-1 flex-grow max-h-[220px]">
                     {channels.map((ch) => (
-                      <button 
-                        key={ch.id}
-                        onClick={() => setSelectedChId(ch.id)}
-                        className={`w-full text-left text-xs font-bold px-3 py-2 rounded-lg border-2 ${ch.id === selectedChId ? 'bg-yellow-400 border-black text-black' : 'border-transparent text-gray-600 hover:bg-gray-100'}`}
-                      >
-                        # {ch.name}
-                      </button>
+                      <div key={ch.id} className="group flex items-center justify-between gap-1 w-full">
+                        <button 
+                          onClick={() => setSelectedChId(ch.id)}
+                          className={`flex-grow text-left text-xs font-bold px-3 py-2 rounded-lg border-2 transition ${ch.id === selectedChId ? 'bg-yellow-400 border-black text-black' : 'border-transparent text-gray-600 hover:bg-gray-100'}`}
+                        >
+                          # {ch.name}
+                        </button>
+                        {ch.id !== "ch-general" && (
+                          <button 
+                            onClick={() => handleDeleteChannel(ch.id)}
+                            className="text-gray-300 hover:text-red-600 transition p-1.5 flex-shrink-0"
+                            title="Delete Channel"
+                          >
+                            <Trash2 size={14}/>
+                          </button>
+                        )}
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -473,6 +489,15 @@ export default function WorkspacePage() {
 
                   {/* Messages container */}
                   <div className="p-4 flex-grow space-y-4 overflow-y-auto bg-gray-50/50 h-[calc(100vh-420px)] lg:h-[calc(100vh-380px)]">
+                    {activeChannel.agents.length === 0 && (
+                      <div className="bg-yellow-50 border-4 border-black p-6 rounded-2xl text-center max-w-sm mx-auto my-10 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                        <Users className="mx-auto text-yellow-600 mb-3" size={32}/>
+                        <h4 className="font-black text-xs uppercase text-yellow-800">No Active Agents</h4>
+                        <p className="text-[10px] text-yellow-700 leading-normal mt-2">
+                          Select which of your hired employees should participate in this channel by checking them in the sidebar on the right.
+                        </p>
+                      </div>
+                    )}
                     {(channelMessages[activeChannel.id] || []).map((msg, idx) => {
                       const isYou = msg.sender === "You";
                       const isSys = msg.sender === "System";
