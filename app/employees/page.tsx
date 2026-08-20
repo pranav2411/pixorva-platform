@@ -560,8 +560,8 @@ export default function EmployeesPage() {
                                 </button>
                                 <p className="text-[10px] text-gray-500 font-bold mt-1.5 uppercase">
                                     {slotCount >= 4 
-                                        ? '❌ All 4 plan slots used. Upgrade or buy one-off.' 
-                                        : `✅ plan slots used: ${slotCount} / 4`}
+                                        ? 'All 4 plan slots used. Upgrade or buy one-off.' 
+                                        : `plan slots used: ${slotCount} / 4`}
                                 </p>
                             </div>
 
