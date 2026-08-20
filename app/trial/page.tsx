@@ -109,13 +109,13 @@ export default function TrialPage() {
         const trialEndsAt = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
         const { error: profileError } = await supabase
             .from('profiles')
-            .update({
+            .upsert({
+                id: user.id,
                 trial_started_at: new Date().toISOString(),
                 trial_ends_at: trialEndsAt,
                 trial_agent_id: newAgent.id,
                 has_used_trial: true
-            })
-            .eq('id', user.id);
+            });
 
         if (profileError) throw profileError;
 
