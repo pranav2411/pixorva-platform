@@ -31,8 +31,34 @@ export default function AgentWorkstation() {
   // --- FILE & ACTION STATE ---
   const [selectedFile, setSelectedFile] = useState<{ name: string, type: string, base64: string } | null>(null);
   const [pendingAction, setPendingAction] = useState<any>(null); // For Approval Card
+  const [placeholderValues, setPlaceholderValues] = useState<Record<string, string>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
   const logsEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (pendingAction && pendingAction.body) {
+      // Find matches for bracketed content [Placeholder Name]
+      const regex = /\[([^\]]+)\]/g;
+      let match;
+      const foundPlaceholders: string[] = [];
+      while ((match = regex.exec(pendingAction.body)) !== null) {
+        // Only add unique placeholder names
+        const placeholderName = match[1];
+        if (!foundPlaceholders.includes(placeholderName)) {
+          foundPlaceholders.push(placeholderName);
+        }
+      }
+
+      // Initialize state for each found placeholder
+      const initialValues: Record<string, string> = {};
+      foundPlaceholders.forEach(placeholder => {
+        initialValues[placeholder] = "";
+      });
+      setPlaceholderValues(initialValues);
+    } else {
+      setPlaceholderValues({});
+    }
+  }, [pendingAction]);
 
   // --- TRIAL STATE ---
   const [isTrial, setIsTrial] = useState(false);
@@ -213,13 +239,20 @@ export default function AgentWorkstation() {
       const btn = document.getElementById('approve-btn');
       if(btn) btn.innerText = "Sending...";
 
+      // Replace placeholders in the body
+      let updatedBody = pendingAction.body;
+      Object.entries(placeholderValues).forEach(([placeholder, val]) => {
+          const escaped = placeholder.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+          updatedBody = updatedBody.replace(new RegExp('\\[' + escaped + '\\]', 'g'), val);
+      });
+
       const response = await fetch('/api/send-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
               to: pendingAction.to,
               subject: pendingAction.subject,
-              html: pendingAction.body
+              html: updatedBody
           })
       });
       const res = await response.json();
@@ -360,6 +393,26 @@ export default function AgentWorkstation() {
                               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Subject:</span>
                               <div className="font-mono text-sm font-medium bg-gray-50 p-2 rounded border border-gray-200">{pendingAction.subject}</div>
                           </div>
+
+                          {/* Placeholder Form Fields */}
+                          {Object.keys(placeholderValues).length > 0 && (
+                              <div className="bg-yellow-50 border-2 border-black p-4 rounded-xl space-y-3">
+                                  <span className="text-[10px] font-bold text-yellow-800 uppercase tracking-widest block">Complete details before sending:</span>
+                                  {Object.keys(placeholderValues).map((placeholder) => (
+                                      <div key={placeholder}>
+                                          <label className="block text-[9px] font-black text-gray-700 uppercase mb-1 leading-none">{placeholder}</label>
+                                          <input 
+                                              type="text" 
+                                              value={placeholderValues[placeholder]}
+                                              onChange={(e) => setPlaceholderValues(prev => ({ ...prev, [placeholder]: e.target.value }))}
+                                              placeholder={`Fill in: ${placeholder.split('/')[0]}`}
+                                              className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none focus:ring-0"
+                                          />
+                                      </div>
+                                  ))}
+                              </div>
+                          )}
+
                           <div>
                               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Body:</span>
                               <div className="bg-gray-50 p-3 rounded border border-gray-200 text-xs text-gray-600 max-h-32 overflow-y-auto" dangerouslySetInnerHTML={{ __html: pendingAction.body }} />
