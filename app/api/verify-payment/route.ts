@@ -146,6 +146,27 @@ export async function POST(req: NextRequest) {
             currency: 'INR'
           }).format(amountTotal);
 
+          // Generate PDF invoice buffer
+          let pdfBuffer: Buffer | null = null;
+          try {
+            const { generateInvoicePdfBuffer } = require('../../utils/InvoicePdfGenerator');
+            pdfBuffer = await generateInvoicePdfBuffer({
+              itemName,
+              amount: amountTotal,
+              razorpayId: razorpay_payment_id,
+              subscriptionId: razorpay_subscription_id || razorpay_order_id || 'N/A',
+              userEmail,
+              date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+            });
+          } catch (pdfGenErr) {
+            console.error("PDF generation failed:", pdfGenErr);
+          }
+
+          const attachments = pdfBuffer ? [{
+            filename: `Invoice-${razorpay_payment_id}.pdf`,
+            content: pdfBuffer
+          }] : [];
+
           const htmlContent = `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border: 4px solid black; border-radius: 24px; overflow: hidden; box-shadow: 8px 8px 0px 0px rgba(0,0,0,1);">
               <div style="background-color: #facc15; padding: 24px; text-align: center; border-bottom: 4px solid black;">
@@ -154,7 +175,7 @@ export async function POST(req: NextRequest) {
               </div>
               <div style="padding: 24px; background-color: white; color: black;">
                 <p style="font-size: 16px; font-weight: bold; margin-top: 0;">Thank you for your purchase!</p>
-                <p style="font-size: 14px; color: #4b5563; line-height: 1.6;">Your subscription payment was successful. Your AI workforce resources are now active.</p>
+                <p style="font-size: 14px; color: #4b5563; line-height: 1.6;">Your subscription payment was successful. Your AI workforce resources are now active. We have attached your official tax invoice PDF to this email.</p>
                 
                 <div style="background-color: #f3f4f6; border: 2px solid black; border-radius: 12px; padding: 16px; margin: 24px 0;">
                   <h3 style="margin-top: 0; font-size: 12px; text-transform: uppercase; color: #4b5563; letter-spacing: 0.5px;">Receipt details</h3>
@@ -182,6 +203,7 @@ export async function POST(req: NextRequest) {
             to: userEmail,
             subject: `Invoice & Confirmation for ${itemName}`,
             html: htmlContent,
+            attachments
           });
         } catch (mailErr) {
           console.error("Resend delivery failed:", mailErr);
