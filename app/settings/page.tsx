@@ -34,7 +34,7 @@ export default function SettingsPage() {
   const [erasing, setErasing] = useState(false);
 
   // API Keys state
-  const [apiKeys, setApiKeys] = useState<{ id: string; name: string; token: string; created: string }[]>([]);
+  const [apiKeys, setApiKeys] = useState<{ id: string; name: string; token: string; created: string; usedToday: number; dailyLimit: number }[]>([]);
   const [newKeyName, setNewKeyName] = useState('');
 
   // Real server-side dynamic states
@@ -388,53 +388,7 @@ export default function SettingsPage() {
              </div>
           </div>
 
-          {/* Usage Quotas & Vault Telemetry */}
-          <div className="bg-white border-4 border-black rounded-3xl p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mt-10">
-             <h2 className="text-3xl font-black mb-4 uppercase flex items-center gap-3">
-                 <div className="bg-yellow-400 p-2 rounded-xl border-2 border-black"><Activity size={24}/></div>
-                 System Usage & Quotas
-             </h2>
-             <p className="text-xs font-semibold text-gray-500 mb-8 leading-relaxed">
-               Monitor live computation metrics, storage vaults, and execution runtime consumption benchmarks.
-             </p>
-             
-             <div className="space-y-6">
-               {/* Telemetry Item 1: Tokens */}
-               <div>
-                 <div className="flex justify-between items-center text-xs font-black uppercase text-gray-700 mb-2">
-                   <span>LLM Token Compute API</span>
-                   <span className="text-black">{tokensUsed.toLocaleString()} / 100,000 tokens</span>
-                 </div>
-                 <div className="w-full bg-gray-100 border-2 border-black rounded-full h-4 overflow-hidden p-0.5">
-                   <div className="bg-green-400 border border-black rounded-full h-full" style={{ width: `${Math.min((tokensUsed / 100000) * 100, 100)}%` }} />
-                 </div>
-               </div>
-
-               {/* Telemetry Item 2: Vault Disk Space */}
-               <div>
-                 <div className="flex justify-between items-center text-xs font-black uppercase text-gray-700 mb-2">
-                   <span>RAG File Vault Disk Storage</span>
-                   <span className="text-black">{vaultMegaBytes} MB / 10.0 MB</span>
-                 </div>
-                 <div className="w-full bg-gray-100 border-2 border-black rounded-full h-4 overflow-hidden p-0.5">
-                   <div className="bg-blue-400 border border-black rounded-full h-full" style={{ width: `${Math.min(parseFloat(vaultMegaBytes) * 10, 100)}%` }} />
-                 </div>
-               </div>
-
-               {/* Telemetry Item 3: Engine Run Hours */}
-               <div>
-                 <div className="flex justify-between items-center text-xs font-black uppercase text-gray-700 mb-2">
-                   <span>AI Execution Engine Hours</span>
-                   <span className="text-black">{runHours.toFixed(2)} hrs / 50.0 hrs</span>
-                 </div>
-                 <div className="w-full bg-gray-100 border-2 border-black rounded-full h-4 overflow-hidden p-0.5">
-                   <div className="bg-yellow-400 border border-black rounded-full h-full" style={{ width: `${Math.min((runHours / 50) * 100, 100)}%` }} />
-                 </div>
-               </div>
-             </div>
-          </div>
-
-          {/* API Keys Access Console */}
+           {/* API Keys Access Console */}
           <div className="bg-white border-4 border-black rounded-3xl p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mt-10">
              <h2 className="text-3xl font-black mb-4 uppercase flex items-center gap-3">
                  <div className="bg-yellow-400 p-2 rounded-xl border-2 border-black"><Key size={24}/></div>
@@ -467,30 +421,43 @@ export default function SettingsPage() {
                  No API keys generated yet. Enter a name above to create one.
                </div>
              ) : (
-               <div className="space-y-3">
+               <div className="space-y-4">
                  {apiKeys.map(k => (
-                   <div key={k.id} className="flex flex-col sm:flex-row sm:items-center justify-between border-2 border-black p-4 rounded-2xl bg-gray-50 gap-4">
-                     <div>
-                       <p className="font-black text-xs uppercase leading-none text-black mb-1">{k.name}</p>
-                       <span className="text-[10px] text-gray-400 font-bold uppercase block mb-2 sm:mb-0">Created on {k.created}</span>
-                       <code className="text-[10px] bg-white border border-gray-200 px-2 py-1 rounded font-mono block text-gray-600 w-fit select-all">{k.token}</code>
+                   <div key={k.id} className="flex flex-col border-2 border-black p-4 rounded-2xl bg-gray-50 gap-3">
+                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                       <div>
+                         <p className="font-black text-xs uppercase leading-none text-black mb-1">{k.name}</p>
+                         <span className="text-[10px] text-gray-400 font-bold uppercase block mb-2 sm:mb-0">Created on {k.created}</span>
+                       </div>
+                       <div className="flex gap-2">
+                         <button
+                           onClick={() => {
+                             navigator.clipboard.writeText(k.token);
+                             showToast("API Key copied to clipboard!", "success");
+                           }}
+                           className="bg-white border-2 border-black px-3 py-1.5 rounded-lg text-[9px] font-black uppercase hover:bg-gray-100 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5"
+                         >
+                           Copy Key
+                         </button>
+                         <button
+                           onClick={() => handleRevokeApiKey(k.id, k.name)}
+                           className="bg-red-500 text-white border-2 border-black px-3 py-1.5 rounded-lg text-[9px] font-black uppercase hover:bg-black transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5"
+                         >
+                           Revoke
+                         </button>
+                       </div>
                      </div>
-                     <div className="flex gap-2">
-                       <button
-                         onClick={() => {
-                           navigator.clipboard.writeText(k.token);
-                           showToast("API Key copied to clipboard!", "success");
-                         }}
-                         className="bg-white border-2 border-black px-3 py-1.5 rounded-lg text-[9px] font-black uppercase hover:bg-gray-100 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5"
-                       >
-                         Copy Key
-                       </button>
-                       <button
-                         onClick={() => handleRevokeApiKey(k.id, k.name)}
-                         className="bg-red-500 text-white border-2 border-black px-3 py-1.5 rounded-lg text-[9px] font-black uppercase hover:bg-black transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5"
-                       >
-                         Revoke
-                       </button>
+
+                     <div className="border-t border-gray-200 pt-3">
+                       <code className="text-[10px] bg-white border border-gray-200 px-2 py-1 rounded font-mono block text-gray-600 w-fit select-all mb-3">{k.token}</code>
+                       
+                       <div className="flex justify-between items-center text-[9px] font-black uppercase text-gray-500 mb-1">
+                         <span>Live Quota Usage (Today)</span>
+                         <span className="text-black">{k.usedToday.toLocaleString()} / {k.dailyLimit.toLocaleString()} tokens</span>
+                       </div>
+                       <div className="w-full bg-gray-100 border border-black rounded-full h-2 overflow-hidden">
+                         <div className="bg-yellow-400 h-full border-r border-black" style={{ width: `${Math.min((k.usedToday / k.dailyLimit) * 100, 100)}%` }} />
+                       </div>
                      </div>
                    </div>
                  ))}

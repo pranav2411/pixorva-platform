@@ -37,8 +37,20 @@ export async function POST(req: Request) {
     
     if (authHeader && authHeader.startsWith("Bearer px_live_")) {
       activeKeyToken = authHeader.replace("Bearer ", "").trim();
+      // Initialize server client early to allow token database validation
+      const cookieStore = await cookies();
+      const earlySupabase = createServerClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          {
+            cookies: {
+              getAll() { return cookieStore.getAll(); },
+              setAll() {}
+            },
+          }
+      );
       const { LocalDb } = require('../../utils/LocalDatabase');
-      const apiKeyRecord = LocalDb.validateKey(activeKeyToken);
+      const apiKeyRecord = await LocalDb.validateKey(earlySupabase, activeKeyToken);
       if (!apiKeyRecord) {
         return NextResponse.json({ success: false, result: "❌ Unauthorized: Invalid API Key." }, { status: 401 });
       }
@@ -301,9 +313,7 @@ export async function POST(req: Request) {
         const estimatedTokens = Math.ceil(finalResult.length / 4) + Math.ceil(input.length / 4);
         const { LocalDb } = require('../../utils/LocalDatabase');
         if (activeKeyToken) {
-            LocalDb.incrementKeyUsage(activeKeyToken, estimatedTokens);
-        } else if (finalUserId) {
-            LocalDb.incrementUserUsage(finalUserId, estimatedTokens, 0.05);
+            await LocalDb.incrementKeyUsage(supabase, activeKeyToken, estimatedTokens, input, finalResult);
         }
     } catch (telemetryError) {
         console.error("Telemetry increment failed:", telemetryError);

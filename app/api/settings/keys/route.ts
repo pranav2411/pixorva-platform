@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Key description is required." }, { status: 400 });
     }
 
-    const newKey = LocalDb.addApiKey(user.id, name);
+    const newKey = await LocalDb.addApiKey(supabase, user.id, name);
     return NextResponse.json({ success: true, key: newKey });
 
   } catch (err: any) {
@@ -63,7 +63,7 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Key ID is required." }, { status: 400 });
     }
 
-    const success = LocalDb.revokeApiKey(user.id, id);
+    const success = await LocalDb.revokeApiKey(supabase, user.id, id);
     return NextResponse.json({ success });
 
   } catch (err: any) {

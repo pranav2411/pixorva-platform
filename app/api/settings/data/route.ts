@@ -27,13 +27,24 @@ export async function GET() {
     }
 
     // 1. Retrieve real API Keys
-    const apiKeys = LocalDb.getApiKeys(user.id);
+    const apiKeys = await LocalDb.getApiKeys(supabase, user.id);
 
     // 2. Retrieve real Billing Invoices
-    const payments = LocalDb.getPayments(user.id);
+    const payments = await LocalDb.getPayments(supabase, user.id);
 
-    // 3. Retrieve real LLM telemetry usage
-    const usage = LocalDb.getUserUsage(user.id);
+    // 3. Retrieve real LLM telemetry usage (Calculate dynamically from tasks list)
+    const { data: totalRuns } = await supabase
+      .from('tasks')
+      .select('result')
+      .eq('user_id', user.id);
+    let totalTokens = 0;
+    if (totalRuns) {
+      totalTokens = totalRuns.reduce((acc: number, t: any) => acc + Math.ceil((t.result ? t.result.length : 0) / 4), 0);
+    }
+    const usage = {
+      tokensUsed: totalTokens,
+      runHours: totalRuns ? totalRuns.length * 0.05 : 0
+    };
 
     // 4. Retrieve current caller session details (IP Address & User-Agent)
     const userAgentRaw = headersList.get('user-agent') || 'Unknown Device';
