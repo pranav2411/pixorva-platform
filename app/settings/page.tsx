@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '../utils/supabase/client';
 import { Oswald, Inter } from "next/font/google";
-import { ArrowLeft, Save, User as UserIcon, Loader2, Zap, X, Trash2 } from "lucide-react";
+import { ArrowLeft, Save, User as UserIcon, Loader2, Zap, X, Trash2, Shield, User, CreditCard } from "lucide-react";
 import Link from 'next/link';
 import { showToast } from '../utils/Toast';
 
@@ -17,9 +17,14 @@ export default function SettingsPage() {
   const [email, setEmail] = useState('');
   const [userId, setUserId] = useState('');
   const [plan, setPlan] = useState('free');
+  
   const [subscriptionAgents, setSubscriptionAgents] = useState<any[]>([]);
   const [paidAgents, setPaidAgents] = useState<any[]>([]);
-  const [showCancelModal, setShowCancelModal] = useState(false);
+  
+  // Modal toggles
+  const [showCancelModal, setShowCancelModal] = useState(false); // Growth Pro/Enterprise
+  const [showCancelGovModal, setShowCancelGovModal] = useState(false); // Governance Control Tower
+  const [selectedAgentToCancel, setSelectedAgentToCancel] = useState<any | null>(null); // Individual hired employee
   const [cancelling, setCancelling] = useState(false);
 
   // 1. Load User Data
@@ -81,11 +86,12 @@ export default function SettingsPage() {
      setSaving(false);
   };
 
+  // 3. Cancel Bundled Plan (Growth Pro / Enterprise)
   const handleCancelSubscription = async () => {
     setCancelling(true);
     const supabase = createClient();
     try {
-        // 1. Downgrade plan to 'free' in profiles
+        // Downgrade plan to 'free' in profiles
         const { error: profileError } = await supabase
             .from('profiles')
             .update({ plan: 'free' })
@@ -93,7 +99,7 @@ export default function SettingsPage() {
 
         if (profileError) throw profileError;
 
-        // 2. Deactivate/delete plan slot agents (is_paid_individually = false)
+        // Deactivate/delete plan slot agents (is_paid_individually = false)
         const { error: agentsError } = await supabase
             .from('agents')
             .delete()
@@ -102,7 +108,7 @@ export default function SettingsPage() {
 
         if (agentsError) throw agentsError;
 
-        showToast("Subscription cancelled successfully.", "success");
+        showToast("Subscription plan cancelled successfully.", "success");
         setPlan('free');
         setSubscriptionAgents([]);
         setShowCancelModal(false);
@@ -113,10 +119,59 @@ export default function SettingsPage() {
     }
   };
 
+  // 4. Cancel Governance Control Tower Plan
+  const handleCancelGovernance = async () => {
+    setCancelling(true);
+    const supabase = createClient();
+    try {
+      const govAgent = paidAgents.find(a => a.name === "Governance Control Tower");
+      if (govAgent) {
+        const { error } = await supabase
+          .from('agents')
+          .delete()
+          .eq('id', govAgent.id);
+        if (error) throw error;
+        
+        showToast("Governance Control Tower subscription cancelled.", "success");
+        setPaidAgents(prev => prev.filter(a => a.id !== govAgent.id));
+      }
+      setShowCancelGovModal(false);
+    } catch (e: any) {
+      showToast("Failed to cancel Governance Control Tower: " + e.message, "error");
+    } finally {
+      setCancelling(false);
+    }
+  };
+
+  // 5. Cancel Individual Employee Subscription
+  const handleCancelIndividual = async () => {
+    if (!selectedAgentToCancel) return;
+    setCancelling(true);
+    const supabase = createClient();
+    try {
+      const { error } = await supabase
+        .from('agents')
+        .delete()
+        .eq('id', selectedAgentToCancel.id);
+      if (error) throw error;
+      
+      showToast(`Hiring subscription for ${selectedAgentToCancel.name.split('(')[0]} cancelled.`, "success");
+      setPaidAgents(prev => prev.filter(a => a.id !== selectedAgentToCancel.id));
+      setSelectedAgentToCancel(null);
+    } catch (e: any) {
+      showToast("Failed to cancel contract: " + e.message, "error");
+    } finally {
+      setCancelling(false);
+    }
+  };
+
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
+  const hasGovernance = paidAgents.some(a => a.name === "Governance Control Tower");
+  const hiredIndividuals = paidAgents.filter(a => a.name !== "Governance Control Tower");
+
   return (
-    <div className={`min-h-screen bg-gray-50 text-black ${inter.className}`}>
+    <div className={`min-h-screen bg-gray-50 text-black pb-20 ${inter.className}`}>
       
       {/* Navbar */}
       <nav className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
@@ -173,148 +228,234 @@ export default function SettingsPage() {
          <div className="bg-white border-4 border-black rounded-3xl p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mt-10">
             <h2 className="text-3xl font-black mb-6 uppercase flex items-center gap-3">
                 <div className="bg-yellow-400 p-2 rounded-xl border-2 border-black"><Zap size={24}/></div>
-                Plan & Subscription
+                Plan & Subscription Status
             </h2>
 
-            <div className="space-y-6">
-                <div className="flex justify-between items-center bg-gray-50 border-2 border-black p-4 rounded-xl">
-                    <div>
-                        <p className="text-xs font-bold uppercase text-gray-500">Current Plan</p>
-                        <p className={`text-2xl font-black uppercase ${oswald.className}`}>
-                            {plan === 'growth_pro' ? 'Growth Pro Plan' : plan === 'enterprise' ? 'Enterprise Plan' : 'Free Trial / Individual'}
-                        </p>
+            <div className="space-y-8">
+                
+                {/* 1. Bundled Plans (Growth Pro / Enterprise) */}
+                <div className="border-2 border-black p-6 rounded-2xl bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-100">
+                        <h3 className="font-black text-sm uppercase text-gray-700 flex items-center gap-2">
+                           <CreditCard size={18} />
+                           Growth Pro / Enterprise Bundle
+                        </h3>
+                        <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded border ${plan !== 'free' ? 'bg-green-100 text-green-700 border-green-300' : 'bg-gray-100 text-gray-500 border-gray-300'}`}>
+                            {plan !== 'free' ? 'Active' : 'Inactive'}
+                        </span>
                     </div>
-                    <span className="bg-yellow-400 text-black px-3 py-1.5 rounded-lg border-2 border-black text-xs font-black uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                        Active
-                    </span>
+
+                    {plan === 'growth_pro' && (
+                        <div className="space-y-4">
+                            <p className={`text-xl font-black uppercase ${oswald.className}`}>Growth Pro Plan (₹1,999/mo)</p>
+                            
+                            <div className="w-full bg-gray-50 border border-gray-200 rounded-xl p-4">
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="text-[10px] font-bold uppercase text-gray-500">Plan Slot Utilisation</span>
+                                    <span className="text-xs font-black uppercase text-black">{subscriptionAgents.length} / 4 slots</span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                                    <div className="bg-yellow-400 h-full rounded-full" style={{ width: `${(subscriptionAgents.length / 4) * 100}%` }} />
+                                </div>
+                            </div>
+                            
+                            <button
+                                onClick={() => setShowCancelModal(true)}
+                                className="w-full bg-red-500 hover:bg-black text-white py-2 rounded-xl border-2 border-black font-bold uppercase text-[10px] tracking-wider transition"
+                            >
+                                Cancel Growth Pro Subscription
+                            </button>
+                        </div>
+                    )}
+
+                    {plan === 'enterprise' && (
+                        <div className="space-y-4">
+                            <p className={`text-xl font-black uppercase ${oswald.className}`}>Enterprise Plan (₹4,999/mo)</p>
+                            <p className="text-xs font-semibold text-gray-500 leading-normal">Allows unlimited hires and control integrations across all channels.</p>
+                            <button
+                                onClick={() => setShowCancelModal(true)}
+                                className="w-full bg-red-500 hover:bg-black text-white py-2 rounded-xl border-2 border-black font-bold uppercase text-[10px] tracking-wider transition"
+                            >
+                                Cancel Enterprise Subscription
+                            </button>
+                        </div>
+                    )}
+
+                    {plan === 'free' && (
+                        <div className="space-y-3">
+                            <p className="text-xs font-medium text-gray-400 italic">No bundled platform plan active.</p>
+                            <Link href="/pricing" className="text-xs font-black uppercase text-yellow-600 hover:underline block">&rarr; Browse Platform Plans</Link>
+                        </div>
+                    )}
                 </div>
 
-                {/* Progress Bar (Only for Growth Pro Plan) */}
-                {plan === 'growth_pro' && (
-                    <div className="border-2 border-black p-6 rounded-2xl bg-white">
-                        <div className="flex justify-between items-center mb-3">
-                            <span className="text-sm font-bold uppercase text-gray-700">Free Subscription Slots Used</span>
-                            <span className="text-sm font-black uppercase text-black">
-                                {subscriptionAgents.length} / 4 Agents
-                            </span>
-                        </div>
+                {/* 2. Governance Control Tower Plan */}
+                <div className="border-2 border-black p-6 rounded-2xl bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-100">
+                        <h3 className="font-black text-sm uppercase text-gray-700 flex items-center gap-2">
+                           <Shield size={18} />
+                           Governance Gate
+                        </h3>
+                        <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded border ${hasGovernance ? 'bg-green-100 text-green-700 border-green-300' : 'bg-gray-100 text-gray-500 border-gray-300'}`}>
+                            {hasGovernance ? 'Active' : 'Inactive'}
+                        </span>
+                    </div>
 
-                        {/* Progress Bar Track */}
-                        <div className="w-full bg-gray-100 border-2 border-black rounded-full h-6 overflow-hidden p-0.5">
-                            <div 
-                                className="bg-yellow-400 h-full rounded-full border border-black transition-all duration-500"
-                                style={{ width: `${Math.min(100, (subscriptionAgents.length / 4) * 100)}%` }}
-                            />
+                    {hasGovernance ? (
+                        <div className="space-y-4">
+                            <p className={`text-xl font-black uppercase ${oswald.className}`}>Governance Control Tower (₹1,999/mo)</p>
+                            <p className="text-xs font-semibold text-gray-500 leading-normal">Grants proxy gating, auditing vaults, and admission policies checks.</p>
+                            <button
+                                onClick={() => setShowCancelGovModal(true)}
+                                className="w-full bg-red-500 hover:bg-black text-white py-2 rounded-xl border-2 border-black font-bold uppercase text-[10px] tracking-wider transition"
+                            >
+                                Cancel Governance Subscription
+                            </button>
                         </div>
+                    ) : (
+                        <div className="space-y-3">
+                            <p className="text-xs font-medium text-gray-400 italic">Governance Gate is locked.</p>
+                            <Link href="/governance/info" className="text-xs font-black uppercase text-yellow-600 hover:underline block">&rarr; Subscribe to Governance Gate</Link>
+                        </div>
+                    )}
+                </div>
 
-                        {/* List of Agents under subscription */}
-                        <div className="mt-8">
-                            <h3 className="text-xs font-bold uppercase text-gray-500 mb-4">Included in your subscription:</h3>
-                            {subscriptionAgents.length === 0 ? (
-                                <p className="text-sm text-gray-400 font-medium italic">No subscription agents hired yet. Go to Marketplace to pick up to 4 agents.</p>
-                            ) : (
-                                <div className="space-y-3">
-                                    {subscriptionAgents.map((agent) => (
-                                        <div key={agent.id} className="flex justify-between items-center border border-gray-200 px-4 py-3 rounded-xl bg-gray-50">
-                                            <span className="font-bold text-gray-800">{agent.name}</span>
-                                            <span className="text-[10px] font-black uppercase bg-green-100 text-green-700 px-2.5 py-1 rounded border border-green-300">
-                                                Plan Active
-                                            </span>
-                                        </div>
-                                    ))}
+                {/* 3. Individual Hired Employee Subscriptions */}
+                <div className="border-2 border-black p-6 rounded-2xl bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-100">
+                        <h3 className="font-black text-sm uppercase text-gray-700 flex items-center gap-2">
+                           <User size={18} />
+                           Individual AI Employee Subscriptions
+                        </h3>
+                        <span className="text-xs font-black uppercase text-black">
+                            {hiredIndividuals.length} Hired
+                        </span>
+                    </div>
+
+                    {hiredIndividuals.length === 0 ? (
+                        <p className="text-xs font-medium text-gray-400 italic">No individually hired employee subscriptions active.</p>
+                    ) : (
+                        <div className="space-y-4">
+                            {hiredIndividuals.map((agent) => {
+                              let price = "₹999/mo"; // Default
+                              const lowerName = agent.name.toLowerCase();
+                              if (lowerName.includes("ruby")) price = "₹1,299/mo";
+                              else if (lowerName.includes("quinn")) price = "₹799/mo";
+                              else if (lowerName.includes("cy")) price = "₹1,499/mo";
+                              else if (lowerName.includes("marcus")) price = "₹899/mo";
+                              else if (lowerName.includes("stella")) price = "₹699/mo";
+                              else if (lowerName.includes("gordon")) price = "₹799/mo";
+                              else if (lowerName.includes("vic")) price = "₹899/mo";
+                              else if (lowerName.includes("sarah")) price = "₹999/mo";
+                              else if (lowerName.includes("larry")) price = "₹899/mo";
+                              else if (lowerName.includes("holly")) price = "₹1,199/mo";
+                              else if (lowerName.includes("finn")) price = "₹1,499/mo";
+                              else if (lowerName.includes("lawson")) price = "₹1,999/mo";
+                              else if (lowerName.includes("pat")) price = "₹1,099/mo";
+                              else if (lowerName.includes("sam")) price = "₹499/mo";
+
+                              return (
+                                <div key={agent.id} className="flex justify-between items-center border-2 border-black p-4 rounded-xl bg-gray-50">
+                                    <div>
+                                        <p className="font-black text-sm uppercase leading-none">{agent.name.split('(')[0]}</p>
+                                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wide mt-1 block">Hired Subscription • {price}</span>
+                                    </div>
+                                    <button 
+                                        onClick={() => setSelectedAgentToCancel(agent)}
+                                        className="bg-red-500 hover:bg-black text-white px-4 py-1.5 rounded-lg border-2 border-black text-[9px] font-black uppercase transition"
+                                    >
+                                        Cancel Contract
+                                    </button>
                                 </div>
-                            )}
+                              );
+                            })}
                         </div>
+                    )}
+                </div>
 
-                        {/* Renewal Note Callout */}
-                        <div className="mt-8 bg-yellow-50 border-2 border-black border-dashed p-4 rounded-xl flex gap-3 text-sm text-gray-700 font-medium leading-relaxed">
-                            <span className="text-xl">💡</span>
-                            <div>
-                                <strong>Important Note:</strong> You can swap or change which 4 agents are active under your plan at the time of renewal. If you need more active slots simultaneously, you can upgrade to the <strong>Enterprise Plan</strong> (Unlimited access) or purchase a second plan for 4 additional slots.
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Info for Enterprise plan */}
-                {plan === 'enterprise' && (
-                    <div className="border-2 border-black p-6 rounded-2xl bg-white text-sm text-gray-600 font-medium">
-                        🎉 You have <strong>Enterprise Plan</strong> access! You can hire as many agents from the Marketplace as you want, completely free and unlimited.
-                    </div>
-                )}
-
-                {/* Info for Free plan */}
-                {plan === 'free' && (
-                    <div className="border-2 border-black p-6 rounded-2xl bg-white text-sm text-gray-600 font-medium leading-relaxed">
-                        You are currently on the <strong>Free Tier</strong>. Hires are made either through your one-time 3-day Free Trial or as individual one-off purchases. 
-                        <br/><br/>
-                        <Link href="/pricing" className="text-black font-black underline hover:text-yellow-500">
-                            Upgrade to Growth Pro or Enterprise for bundled discounts &rarr;
-                        </Link>
-                    </div>
-                )}
-
-                {/* Cancel Option (Only for active plan users) */}
-                {(plan === 'growth_pro' || plan === 'enterprise') && (
-                    <div className="flex justify-end pt-6 border-t-2 border-black border-dashed mt-6">
-                        <button
-                            onClick={() => setShowCancelModal(true)}
-                            className="bg-red-500 hover:bg-black text-white hover:text-white px-6 py-3 rounded-xl border-2 border-black font-bold uppercase text-xs tracking-wider transition shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-1"
-                        >
-                            Cancel Subscription
-                        </button>
-                    </div>
-                )}
             </div>
          </div>
 
-      {/* CUSTOM NEOBRUTALIST CANCEL SUBSCRIPTION MODAL */}
+      </main>
+
+      {/* CANCEL BUNDLED PLAN MODAL (Growth Pro / Enterprise) */}
       {showCancelModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-            <div className="bg-white border-4 border-black p-8 rounded-3xl max-w-md w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] animate-in zoom-in-95 duration-200 text-center relative">
-                <button 
-                  disabled={cancelling}
-                  onClick={() => setShowCancelModal(false)} 
-                  className="absolute right-4 top-4 text-gray-400 hover:text-black transition"
-                >
+            <div className="bg-white border-4 border-black p-8 rounded-3xl max-w-md w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center relative">
+                <button disabled={cancelling} onClick={() => setShowCancelModal(false)} className="absolute right-4 top-4 text-gray-400 hover:text-black transition">
                     <X size={24} />
                 </button>
-
                 <div className="mb-6 flex justify-center">
-                    <div className="bg-red-100 p-4 rounded-2xl border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-red-600">
-                        <Trash2 size={36} />
-                    </div>
+                    <div className="bg-red-100 p-4 rounded-2xl border-4 border-black text-red-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"><Trash2 size={36} /></div>
                 </div>
-
-                <h3 className={`text-3xl uppercase mb-3 ${oswald.className}`}>
-                    Cancel Subscription?
-                </h3>
-
-                <p className="text-sm font-semibold text-gray-600 mb-8 leading-relaxed">
-                    Are you sure you want to cancel your subscription? You will lose access to your plan slots and all your agents under the plan will be deactivated. This cannot be undone.
-                </p>
-
+                <h3 className={`text-3xl uppercase mb-3 ${oswald.className}`}>Cancel Bundle Plan?</h3>
+                <p className="text-sm font-semibold text-gray-600 mb-8 leading-relaxed">Are you sure you want to cancel your platform bundle subscription? You will immediately lose slots access and all included employee slots will be terminated.</p>
                 <div className="flex flex-col gap-3">
                     <button 
                       disabled={cancelling}
                       onClick={handleCancelSubscription}
-                      className="w-full bg-red-500 text-white hover:bg-black py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                      className="w-full bg-red-500 text-white hover:bg-black py-4 rounded-xl border-2 border-black font-black uppercase text-xs tracking-wider transition shadow-md flex items-center justify-center gap-2"
                     >
-                        {cancelling ? <Loader2 className="animate-spin" size={16} /> : 'Yes, Cancel Subscription'}
+                        {cancelling ? <Loader2 className="animate-spin" size={16} /> : 'Yes, Cancel Plan'}
                     </button>
-                    <button 
-                      disabled={cancelling}
-                      onClick={() => setShowCancelModal(false)}
-                      className="w-full bg-white text-gray-500 hover:text-black py-2 font-bold uppercase text-xs tracking-wider transition"
-                    >
-                        Keep My Plan
-                    </button>
+                    <button disabled={cancelling} onClick={() => setShowCancelModal(false)} className="w-full bg-white text-gray-500 hover:text-black py-2 font-bold uppercase text-xs tracking-wider transition">Keep My Plan</button>
                 </div>
             </div>
         </div>
       )}
 
-       </main>
+      {/* CANCEL GOVERNANCE MODAL */}
+      {showCancelGovModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+            <div className="bg-white border-4 border-black p-8 rounded-3xl max-w-md w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center relative">
+                <button disabled={cancelling} onClick={() => setShowCancelGovModal(false)} className="absolute right-4 top-4 text-gray-400 hover:text-black transition">
+                    <X size={24} />
+                </button>
+                <div className="mb-6 flex justify-center">
+                    <div className="bg-red-100 p-4 rounded-2xl border-4 border-black text-red-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"><Shield size={36} /></div>
+                </div>
+                <h3 className={`text-3xl uppercase mb-3 ${oswald.className}`}>Cancel Governance?</h3>
+                <p className="text-sm font-semibold text-gray-600 mb-8 leading-relaxed">Are you sure you want to cancel your Governance Control Tower subscription? You will lose Proxy gating and admission policies audit access immediately.</p>
+                <div className="flex flex-col gap-3">
+                    <button 
+                      disabled={cancelling}
+                      onClick={handleCancelGovernance}
+                      className="w-full bg-red-500 text-white hover:bg-black py-4 rounded-xl border-2 border-black font-black uppercase text-xs tracking-wider transition shadow-md flex items-center justify-center gap-2"
+                    >
+                        {cancelling ? <Loader2 className="animate-spin" size={16} /> : 'Yes, Cancel Governance'}
+                    </button>
+                    <button disabled={cancelling} onClick={() => setShowCancelGovModal(false)} className="w-full bg-white text-gray-500 hover:text-black py-2 font-bold uppercase text-xs tracking-wider transition">Keep My Subscription</button>
+                </div>
+            </div>
+        </div>
+      )}
+
+      {/* CANCEL INDIVIDUAL AGENT CONTRACT MODAL */}
+      {selectedAgentToCancel && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+            <div className="bg-white border-4 border-black p-8 rounded-3xl max-w-md w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center relative">
+                <button disabled={cancelling} onClick={() => setSelectedAgentToCancel(null)} className="absolute right-4 top-4 text-gray-400 hover:text-black transition">
+                    <X size={24} />
+                </button>
+                <div className="mb-6 flex justify-center">
+                    <div className="bg-red-100 p-4 rounded-2xl border-4 border-black text-red-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"><User size={36} /></div>
+                </div>
+                <h3 className={`text-3xl uppercase mb-3 ${oswald.className}`}>Cancel Contract?</h3>
+                <p className="text-sm font-semibold text-gray-600 mb-8 leading-relaxed">Are you sure you want to terminate the hiring subscription for <strong>{selectedAgentToCancel.name.split('(')[0]}</strong>? This employee will be removed from your office immediately.</p>
+                <div className="flex flex-col gap-3">
+                    <button 
+                      disabled={cancelling}
+                      onClick={handleCancelIndividual}
+                      className="w-full bg-red-500 text-white hover:bg-black py-4 rounded-xl border-2 border-black font-black uppercase text-xs tracking-wider transition shadow-md flex items-center justify-center gap-2"
+                    >
+                        {cancelling ? <Loader2 className="animate-spin" size={16} /> : 'Yes, Terminate Contract'}
+                    </button>
+                    <button disabled={cancelling} onClick={() => setSelectedAgentToCancel(null)} className="w-full bg-white text-gray-500 hover:text-black py-2 font-bold uppercase text-xs tracking-wider transition">Keep Employee</button>
+                </div>
+            </div>
+        </div>
+      )}
+
     </div>
   );
 }
