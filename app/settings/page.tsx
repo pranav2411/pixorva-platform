@@ -37,6 +37,14 @@ export default function SettingsPage() {
   const [apiKeys, setApiKeys] = useState<{ id: string; name: string; token: string; created: string; usedToday: number; dailyLimit: number }[]>([]);
   const [newKeyName, setNewKeyName] = useState('');
 
+  // Playground States
+  const [selectedPlaygroundKey, setSelectedPlaygroundKey] = useState('');
+  const [selectedAgentId, setSelectedAgentId] = useState('');
+  const [availablePlaygroundAgents, setAvailablePlaygroundAgents] = useState<{ id: string; name: string }[]>([]);
+  const [playgroundPrompt, setPlaygroundPrompt] = useState('Explain why Pixorva is fast in one sentence.');
+  const [playgroundResult, setPlaygroundResult] = useState('');
+  const [playgroundLoading, setPlaygroundLoading] = useState(false);
+
   // Real server-side dynamic states
   const [tokensUsed, setTokensUsed] = useState(0);
   const [runHours, setRunHours] = useState(0);
@@ -75,6 +83,13 @@ export default function SettingsPage() {
         if (agentsData) {
             setSubscriptionAgents(agentsData.filter((a: any) => !a.is_paid_individually));
             setPaidAgents(agentsData.filter((a: any) => a.is_paid_individually));
+            const activeAgentsList = agentsData
+              .filter((a: any) => a.schedule !== 'API_KEY' && a.schedule !== 'INVOICE')
+              .map((a: any) => ({ id: a.id, name: a.name }));
+            setAvailablePlaygroundAgents(activeAgentsList);
+            if (activeAgentsList.length > 0) {
+              setSelectedAgentId(activeAgentsList[0].id);
+            }
         }
 
         // Load API Keys, Payments, Usage telemetry from Server
@@ -83,6 +98,9 @@ export default function SettingsPage() {
           const serverData = await res.json();
           if (serverData.success) {
             setApiKeys(serverData.apiKeys || []);
+            if (serverData.apiKeys && serverData.apiKeys.length > 0) {
+              setSelectedPlaygroundKey(serverData.apiKeys[0].token);
+            }
             setPayments(serverData.payments || []);
             if (serverData.usage) {
               setTokensUsed(serverData.usage.tokensUsed || 0);
@@ -317,6 +335,57 @@ export default function SettingsPage() {
     }
   };
 
+  const handlePlaygroundExecute = async () => {
+    if (!selectedPlaygroundKey) {
+      showToast("Please select or generate an API key first.", "error");
+      return;
+    }
+    if (!selectedAgentId) {
+      showToast("Please hire or provision at least one agent first.", "error");
+      return;
+    }
+
+    setPlaygroundLoading(true);
+    setPlaygroundResult('');
+
+    try {
+      const selectedAgent = availablePlaygroundAgents.find(a => a.id === selectedAgentId);
+      const res = await fetch('/api/run-agent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${selectedPlaygroundKey}`
+        },
+        body: JSON.stringify({
+          input: playgroundPrompt,
+          agentId: selectedAgentId,
+          agentRole: selectedAgent ? selectedAgent.name : 'AI Agent'
+        })
+      });
+
+      const data = await res.json();
+      if (res.status === 200 && data.success) {
+        setPlaygroundResult(data.result);
+        showToast("API run executed successfully!", "success");
+        
+        // Refresh settings data to increment quota today count!
+        const refreshRes = await fetch('/api/settings/data');
+        const refreshData = await refreshRes.json();
+        if (refreshData.success) {
+          setApiKeys(refreshData.apiKeys || []);
+        }
+      } else {
+        setPlaygroundResult(JSON.stringify(data, null, 2));
+        showToast(data.result || "API run failed.", "error");
+      }
+    } catch (err: any) {
+      setPlaygroundResult(`Execution Error: ${err.message}`);
+      showToast("API execution failed.", "error");
+    } finally {
+      setPlaygroundLoading(false);
+    }
+  };
+
   // Revoke All active devices/sessions
   const handleRevokeAllSessions = async () => {
     try {
@@ -461,6 +530,104 @@ export default function SettingsPage() {
                      </div>
                    </div>
                  ))}
+               </div>
+             )}
+             {/* Interactive API Playground */}
+             {apiKeys.length > 0 && (
+               <div className="border-t-4 border-black mt-8 pt-6">
+                 <h3 className="text-xl font-black uppercase mb-2 flex items-center gap-2">
+                   <span className="bg-black text-white p-1 rounded">⚡</span> Interactive API Playground
+                 </h3>
+                 <p className="text-[10px] font-semibold text-gray-500 mb-6 leading-relaxed">
+                   Test your live integration keys directly inside this playground sandbox. Execution logs and tokens increment in real time.
+                 </p>
+
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                   {/* Left Controls */}
+                   <div className="space-y-4">
+                     <div>
+                       <label className="block text-[10px] font-black uppercase text-gray-700 mb-1.5">Select Authorization Key</label>
+                       <select
+                         value={selectedPlaygroundKey}
+                         onChange={(e) => setSelectedPlaygroundKey(e.target.value)}
+                         className="w-full bg-white border-2 border-black rounded-xl p-3 text-xs font-bold focus:outline-none"
+                       >
+                         {apiKeys.map(k => (
+                           <option key={k.id} value={k.token}>{k.name} ({k.token.slice(0, 12)}...)</option>
+                         ))}
+                       </select>
+                     </div>
+
+                     <div>
+                       <label className="block text-[10px] font-black uppercase text-gray-700 mb-1.5">Target AI Agent</label>
+                       {availablePlaygroundAgents.length === 0 ? (
+                         <div className="border-2 border-dashed border-gray-300 p-3 rounded-xl text-center text-xs font-bold text-gray-400">
+                           No hired agents found.
+                         </div>
+                       ) : (
+                         <select
+                           value={selectedAgentId}
+                           onChange={(e) => setSelectedAgentId(e.target.value)}
+                           className="w-full bg-white border-2 border-black rounded-xl p-3 text-xs font-bold focus:outline-none"
+                         >
+                           {availablePlaygroundAgents.map(a => (
+                             <option key={a.id} value={a.id}>{a.name}</option>
+                           ))}
+                         </select>
+                       )}
+                     </div>
+
+                     <div>
+                       <label className="block text-[10px] font-black uppercase text-gray-700 mb-1.5">Prompt Message</label>
+                       <textarea
+                         rows={3}
+                         value={playgroundPrompt}
+                         onChange={(e) => setPlaygroundPrompt(e.target.value)}
+                         className="w-full bg-white border-2 border-black rounded-xl p-3 text-xs font-bold focus:outline-none resize-none"
+                       />
+                     </div>
+
+                     <button
+                       onClick={handlePlaygroundExecute}
+                       disabled={playgroundLoading}
+                       className="w-full bg-yellow-400 hover:bg-black hover:text-white text-black py-3 px-4 border-2 border-black rounded-xl font-black uppercase text-xs transition shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5 disabled:opacity-50 flex items-center justify-center gap-2"
+                     >
+                       {playgroundLoading ? 'Executing Run...' : '⚡ Execute API Run'}
+                     </button>
+                   </div>
+
+                   {/* Right Viewports */}
+                   <div className="space-y-4">
+                     <div>
+                       <label className="block text-[10px] font-black uppercase text-gray-700 mb-1.5">Equivalent Curl Request</label>
+                       <div className="bg-black text-green-400 p-4 rounded-2xl font-mono text-[9px] overflow-x-auto select-all max-h-[140px]">
+                         <pre>
+{`curl -X POST "${typeof window !== 'undefined' ? window.location.origin : 'https://pixorva.com'}/api/run-agent" \\
+-H "Content-Type: application/json" \\
+-H "Authorization: Bearer ${selectedPlaygroundKey || 'px_live_...'}" \\
+-d '${JSON.stringify({
+  input: playgroundPrompt,
+  agentId: selectedAgentId || 'your-agent-uuid',
+  agentRole: availablePlaygroundAgents.find(a => a.id === selectedAgentId)?.name || 'AI-Agent'
+}, null, 2)}'`}
+                         </pre>
+                       </div>
+                     </div>
+
+                     <div>
+                       <label className="block text-[10px] font-black uppercase text-gray-700 mb-1.5">Execution Result</label>
+                       <div className="bg-gray-100 border-2 border-black p-4 rounded-2xl font-mono text-[10px] min-h-[120px] max-h-[150px] overflow-y-auto text-black">
+                         {playgroundLoading ? (
+                           <span className="text-gray-400 font-bold">Waiting for AI model response stream...</span>
+                         ) : playgroundResult ? (
+                           <pre className="whitespace-pre-wrap">{playgroundResult}</pre>
+                         ) : (
+                           <span className="text-gray-400 font-bold">Execute run to retrieve outputs.</span>
+                         )}
+                       </div>
+                     </div>
+                   </div>
+                 </div>
                </div>
              )}
           </div>
