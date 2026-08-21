@@ -333,8 +333,7 @@ export default function Home() {
               <div>
                 <p className="text-white font-black uppercase tracking-wider text-sm mb-3">Compliance & Grievance Redressal</p>
                 <p className="leading-relaxed mb-3">
-                  Grievance Officer: <strong>Mr. Pranav Khandelwal</strong><br/>
-                  Email: <a href="mailto:grievance@pixorva.com" className="underline hover:text-white">grievance@pixorva.com</a> / <a href="mailto:privacy@pixorva.com" className="underline hover:text-white">privacy@pixorva.com</a>
+                  Grievance Office Email: <a href="mailto:grievance@pixorva.com" className="underline hover:text-white">grievance@pixorva.com</a> / <a href="mailto:privacy@pixorva.com" className="underline hover:text-white">privacy@pixorva.com</a>
                 </p>
                 <p className="leading-relaxed">
                   Support Desk: <a href="mailto:support@pixorva.com" className="underline hover:text-white">support@pixorva.com</a><br/>

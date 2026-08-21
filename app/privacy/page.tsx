@@ -120,8 +120,7 @@ export default function PrivacyPage() {
               In accordance with the India Information Technology Act and the DPDPA, please direct queries or grievance filings to:
             </p>
             <div className="bg-yellow-50 border-2 border-black p-4 rounded-xl space-y-1.5 text-xs font-bold text-gray-800">
-              <p>Attention: Grievance Redressal Officer</p>
-              <p>Contact Person: Mr. Pranav Khandelwal</p>
+              <p>Attention: Grievance Desk</p>
               <p>Address: Jaipur, Rajasthan, India</p>
               <p>Email: <a href="mailto:grievance@pixorva.com" className="underline">grievance@pixorva.com</a> / <a href="mailto:privacy@pixorva.com" className="underline">privacy@pixorva.com</a></p>
             </div>

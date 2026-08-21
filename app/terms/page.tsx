@@ -194,7 +194,7 @@ export default function TermsPage() {
               <p>Entity Name: Pixorva Inc.</p>
               <p>Support Email: <a href="mailto:support@pixorva.com" className="underline">support@pixorva.com</a></p>
               <p>Legal Inquiries: <a href="mailto:legal@pixorva.com" className="underline">legal@pixorva.com</a></p>
-              <p>Grievance Officer: Mr. Pranav Khandelwal (<a href="mailto:grievance@pixorva.com" className="underline">grievance@pixorva.com</a>)</p>
+              <p>Grievance Office Email: <a href="mailto:grievance@pixorva.com" className="underline">grievance@pixorva.com</a></p>
             </div>
           </section>
 
