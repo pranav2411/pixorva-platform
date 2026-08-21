@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Oswald, Inter } from "next/font/google";
 import { Check, X, Zap, ArrowLeft, Crown, Shield, Rocket } from "lucide-react";
 import Link from "next/link";
@@ -15,8 +15,14 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function PricingPage() {
   const router = useRouter();
+  const [agreeCheckout, setAgreeCheckout] = useState(false);
 
   const handleSubscribe = async (plan: string, price: number) => {
+    if (!agreeCheckout) {
+      showToast("Please agree to the Terms of Service & Privacy Policy to checkout.", "error");
+      return;
+    }
+
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -136,8 +142,28 @@ export default function PricingPage() {
 
       {/* PRICING TIERS */}
       <div className="max-w-7xl mx-auto px-6 pb-24">
-          <h2 className={`text-4xl text-center uppercase mb-12 ${oswald.className}`}>Choose Your Plan</h2>
+          <h2 className={`text-4xl text-center uppercase mb-6 ${oswald.className}`}>Choose Your Plan</h2>
           
+          {/* Consent Checkbox */}
+          <div className="max-w-md mx-auto mb-12 flex justify-center text-center">
+             <div className="flex items-start gap-3 text-xs font-semibold text-gray-600 bg-gray-50 border-2 border-black p-4 rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] text-left">
+               <input
+                 type="checkbox"
+                 id="pricing-agree"
+                 checked={agreeCheckout}
+                 onChange={(e) => setAgreeCheckout(e.target.checked)}
+                 className="mt-0.5 cursor-pointer w-4 h-4 border-2 border-black rounded focus:ring-0 accent-black"
+               />
+               <label htmlFor="pricing-agree" className="cursor-pointer select-none leading-relaxed">
+                 I confirm that I accept Pixorva&apos;s{" "}
+                 <Link href="/terms" target="_blank" className="underline font-bold text-black hover:text-yellow-600">Terms of Service</Link>
+                 ,{" "}
+                 <Link href="/privacy" target="_blank" className="underline font-bold text-black hover:text-yellow-600">Privacy Policy</Link>
+                 , and monthly subscription auto-renewal terms.
+               </label>
+             </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               
               {/* STARTER */}

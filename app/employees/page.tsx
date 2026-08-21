@@ -157,10 +157,15 @@ export default function EmployeesPage() {
   }>({ isOpen: false, employee: null, type: 'trial' });
   const [modalLoading, setModalLoading] = useState(false);
   const [slotCount, setSlotCount] = useState(0);
+  const [agreeHire, setAgreeHire] = useState(false);
 
   const handleConfirmTrial = async () => {
     const employee = confirmModal.employee;
     if (!employee) return;
+    if (!agreeHire) {
+      showToast("Please agree to the Terms of Service & Privacy Policy to hire.", "error");
+      return;
+    }
     setModalLoading(true);
     const supabase = createClient();
     try {
@@ -208,6 +213,10 @@ export default function EmployeesPage() {
   const handleConfirmPaidUpgrade = async () => {
     const employee = confirmModal.employee;
     if (!employee) return;
+    if (!agreeHire) {
+      showToast("Please agree to the Terms of Service & Privacy Policy to hire.", "error");
+      return;
+    }
     setModalLoading(true);
     try {
         const supabase = createClient();
@@ -500,7 +509,7 @@ export default function EmployeesPage() {
                         : 'Hire Option'}
                 </h3>
 
-                <div className="text-sm font-semibold text-gray-600 mb-8 leading-relaxed">
+                <div className="text-sm font-semibold text-gray-600 mb-6 leading-relaxed">
                     {confirmModal.type === 'success' ? (
                         <p className="text-base text-gray-800 font-bold">{confirmModal.successMessage}</p>
                     ) : confirmModal.type === 'trial' ? (
@@ -511,6 +520,25 @@ export default function EmployeesPage() {
                         </>
                     )}
                 </div>
+
+                {/* Consent Checkbox */}
+                {confirmModal.type !== 'success' && (
+                  <div className="flex items-start gap-3 text-xs font-semibold text-gray-600 bg-gray-50 border-2 border-black p-3.5 rounded-xl text-left mb-6">
+                    <input
+                      type="checkbox"
+                      id="hire-agree-terms"
+                      checked={agreeHire}
+                      onChange={(e) => setAgreeHire(e.target.checked)}
+                      className="mt-0.5 cursor-pointer w-4 h-4 border-2 border-black rounded focus:ring-0 accent-black"
+                    />
+                    <label htmlFor="hire-agree-terms" className="cursor-pointer select-none leading-relaxed">
+                      I agree to Pixorva&apos;s{" "}
+                      <Link href="/terms" target="_blank" className="underline font-bold text-black hover:text-yellow-600">Terms of Service</Link>
+                      {" "}and{" "}
+                      <Link href="/privacy" target="_blank" className="underline font-bold text-black hover:text-yellow-600">Privacy Policy</Link>.
+                    </label>
+                  </div>
+                )}
 
                 <div className="flex flex-col gap-3">
                     {confirmModal.type === 'success' ? (
@@ -526,16 +554,16 @@ export default function EmployeesPage() {
                     ) : confirmModal.type === 'trial' ? (
                         <>
                             <button 
-                              disabled={modalLoading}
+                              disabled={modalLoading || !agreeHire}
                               onClick={handleConfirmTrial}
-                              className="w-full bg-black text-white hover:bg-yellow-400 hover:text-black py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                              className="w-full bg-black text-white hover:bg-yellow-400 hover:text-black py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-75 disabled:cursor-not-allowed"
                             >
                                 {modalLoading ? <Loader2 className="animate-spin" size={16} /> : 'Activate Trial Slot'}
                             </button>
                             <button 
-                              disabled={modalLoading}
+                              disabled={modalLoading || !agreeHire}
                               onClick={handleConfirmPaidUpgrade}
-                              className="w-full bg-yellow-400 text-black hover:bg-black hover:text-white py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                              className="w-full bg-yellow-400 text-black hover:bg-black hover:text-white py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-75 disabled:cursor-not-allowed"
                             >
                                 {modalLoading ? <Loader2 className="animate-spin" size={16} /> : `Purchase Individually (${confirmModal.employee.price})`}
                             </button>
@@ -545,9 +573,9 @@ export default function EmployeesPage() {
                             {/* Option 1: Use Plan Slot */}
                             <div className="w-full">
                                 <button 
-                                  disabled={modalLoading || slotCount >= 4}
+                                  disabled={modalLoading || slotCount >= 4 || !agreeHire}
                                   onClick={handleConfirmPlanHire}
-                                  className="w-full bg-black text-white hover:bg-yellow-400 hover:text-black py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:border-gray-300"
+                                  className="w-full bg-black text-white hover:bg-yellow-400 hover:text-black py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-75 disabled:bg-gray-100 disabled:text-gray-400 disabled:border-gray-300 disabled:cursor-not-allowed"
                                 >
                                     {modalLoading ? <Loader2 className="animate-spin" size={16} /> : 'Add to Plan (Free Slot)'}
                                 </button>
@@ -561,9 +589,9 @@ export default function EmployeesPage() {
                             {/* Option 2: Purchase Individually */}
                             <div className="w-full mt-2">
                                 <button 
-                                  disabled={modalLoading}
+                                  disabled={modalLoading || !agreeHire}
                                   onClick={handleConfirmPaidUpgrade}
-                                  className="w-full bg-yellow-400 text-black hover:bg-black hover:text-white py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                                  className="w-full bg-yellow-400 text-black hover:bg-black hover:text-white py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-75 disabled:cursor-not-allowed"
                                 >
                                     {modalLoading ? <Loader2 className="animate-spin" size={16} /> : `Purchase Individually (${confirmModal.employee.price})`}
                                 </button>

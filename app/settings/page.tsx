@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '../utils/supabase/client';
+import { useRouter } from 'next/navigation';
 import { Oswald, Inter } from "next/font/google";
 import { ArrowLeft, Save, User as UserIcon, Loader2, Zap, X, Trash2, Shield, User, CreditCard } from "lucide-react";
 import Link from 'next/link';
@@ -11,6 +12,7 @@ const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
 
 export default function SettingsPage() {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [fullName, setFullName] = useState('');
@@ -26,6 +28,10 @@ export default function SettingsPage() {
   const [showCancelGovModal, setShowCancelGovModal] = useState(false); // Governance Control Tower
   const [selectedAgentToCancel, setSelectedAgentToCancel] = useState<any | null>(null); // Individual hired employee
   const [cancelling, setCancelling] = useState(false);
+
+  // Compliance States
+  const [showErasureModal, setShowErasureModal] = useState(false);
+  const [erasing, setErasing] = useState(false);
 
   // 1. Load User Data
   useEffect(() => {
@@ -165,6 +171,67 @@ export default function SettingsPage() {
     }
   };
 
+  // 6. Download Compliance Data Archive
+  const handleDownloadArchive = () => {
+    try {
+      const archiveData = {
+        exportDate: new Date().toISOString(),
+        profile: {
+          id: userId,
+          name: fullName,
+          email: email,
+          plan: plan
+        },
+        hiredAgents: paidAgents.concat(subscriptionAgents)
+      };
+      
+      const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
+        JSON.stringify(archiveData, null, 2)
+      )}`;
+      
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", jsonString);
+      downloadAnchor.setAttribute("download", `pixorva-data-archive-${userId}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      
+      showToast("Your data archive has been compiled and downloaded.", "success");
+    } catch (err: any) {
+      showToast("Failed to compile archive: " + err.message, "error");
+    }
+  };
+
+  // 7. Request Compliance Data Erasure
+  const handleRequestErasure = async () => {
+    setErasing(true);
+    const supabase = createClient();
+    try {
+      // Delete all agents
+      const { error: agentsError } = await supabase
+        .from('agents')
+        .delete()
+        .eq('user_id', userId);
+      if (agentsError) throw agentsError;
+
+      // Delete profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', userId);
+      if (profileError) throw profileError;
+
+      // Sign out
+      await supabase.auth.signOut();
+      
+      showToast("Your profile and workforce data have been completely erased.", "success");
+      router.push("/login");
+    } catch (err: any) {
+      showToast("Failed to complete data erasure: " + err.message, "error");
+      setErasing(false);
+    }
+  };
+
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
   const hasGovernance = paidAgents.some(a => a.name === "Governance Control Tower");
@@ -223,6 +290,32 @@ export default function SettingsPage() {
 
             </div>
          </div>
+
+         {/* Compliance & Data Control Desk */}
+          <div className="bg-white border-4 border-black rounded-3xl p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mt-10">
+             <h2 className="text-3xl font-black mb-4 uppercase flex items-center gap-3">
+                 <div className="bg-yellow-400 p-2 rounded-xl border-2 border-black"><Shield size={24}/></div>
+                 Compliance & Data Control Desk
+             </h2>
+             <p className="text-xs font-semibold text-gray-500 mb-6 leading-relaxed">
+               In accordance with India DPDPA, EU GDPR, and CCPA standards, you hold full sovereignty over your stored data. Access data portability archives or request total erasure here.
+             </p>
+
+             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+               <button
+                 onClick={handleDownloadArchive}
+                 className="bg-white hover:bg-gray-50 text-black py-4 px-6 rounded-xl border-2 border-black font-black uppercase text-xs tracking-wider transition shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5 flex items-center justify-center gap-2"
+               >
+                 Download Data Archive
+               </button>
+               <button
+                 onClick={() => setShowErasureModal(true)}
+                 className="bg-red-500 hover:bg-black text-white py-4 px-6 rounded-xl border-2 border-black font-black uppercase text-xs tracking-wider transition shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5 flex items-center justify-center gap-2"
+               >
+                 Request Data Erasure
+               </button>
+             </div>
+          </div>
 
          {/* Subscription & Plan Status Card */}
          <div className="bg-white border-4 border-black rounded-3xl p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mt-10">
@@ -451,6 +544,34 @@ export default function SettingsPage() {
                         {cancelling ? <Loader2 className="animate-spin" size={16} /> : 'Yes, Terminate Contract'}
                     </button>
                     <button disabled={cancelling} onClick={() => setSelectedAgentToCancel(null)} className="w-full bg-white text-gray-500 hover:text-black py-2 font-bold uppercase text-xs tracking-wider transition">Keep Employee</button>
+                </div>
+            </div>
+        </div>
+      )}
+
+      {/* COMPLIANCE DATA ERASURE MODAL */}
+      {showErasureModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+            <div className="bg-white border-4 border-black p-8 rounded-3xl max-w-md w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center relative">
+                <button disabled={erasing} onClick={() => setShowErasureModal(false)} className="absolute right-4 top-4 text-gray-400 hover:text-black transition">
+                    <X size={24} />
+                </button>
+                <div className="mb-6 flex justify-center">
+                    <div className="bg-red-100 p-4 rounded-2xl border-4 border-black text-red-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"><Shield size={36} /></div>
+                </div>
+                <h3 className={`text-3xl uppercase mb-3 ${oswald.className}`}>Erase Personal Data?</h3>
+                <p className="text-sm font-semibold text-gray-600 mb-8 leading-relaxed">
+                  Warning: Under GDPR and DPDPA, this triggers total erasure of your profile and deletes all hired employees from database storage. This action is permanent and cannot be undone.
+                </p>
+                <div className="flex flex-col gap-3">
+                    <button 
+                      disabled={erasing}
+                      onClick={handleRequestErasure}
+                      className="w-full bg-red-600 text-white hover:bg-black py-4 rounded-xl border-2 border-black font-black uppercase text-xs tracking-wider transition shadow-md flex items-center justify-center gap-2"
+                    >
+                        {erasing ? <Loader2 className="animate-spin" size={16} /> : 'Yes, Delete My Account'}
+                    </button>
+                    <button disabled={erasing} onClick={() => setShowErasureModal(false)} className="w-full bg-white text-gray-500 hover:text-black py-2 font-bold uppercase text-xs tracking-wider transition">Cancel</button>
                 </div>
             </div>
         </div>

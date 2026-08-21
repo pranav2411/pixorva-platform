@@ -11,6 +11,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
+  const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
@@ -18,6 +19,13 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
+
+    // Validate agreement
+    if (!agree) {
+        setMessage({ type: 'error', text: "You must agree to the Terms and Privacy Policy." });
+        setLoading(false);
+        return;
+    }
 
     const supabase = createClient();
     
@@ -76,10 +84,28 @@ export default function LoginPage() {
              </div>
            </div>
 
+           {/* Consent Checkbox */}
+           <div className="flex items-start gap-3 mt-4 text-xs font-semibold text-gray-600">
+             <input
+               type="checkbox"
+               id="agree-checkbox"
+               checked={agree}
+               onChange={(e) => setAgree(e.target.checked)}
+               className="mt-0.5 cursor-pointer w-4 h-4 border-2 border-black rounded focus:ring-0 accent-black"
+               required
+             />
+             <label htmlFor="agree-checkbox" className="cursor-pointer select-none leading-relaxed">
+               I agree to Pixorva&apos;s{" "}
+               <Link href="/terms" target="_blank" className="underline font-bold text-black hover:text-yellow-600">Terms of Service</Link>
+               {" "}and{" "}
+               <Link href="/privacy" target="_blank" className="underline font-bold text-black hover:text-yellow-600">Privacy & Policies</Link>.
+             </label>
+           </div>
+
            <button 
              type="submit" 
-             disabled={loading}
-             className="w-full bg-black text-white py-4 rounded-xl font-bold uppercase tracking-wide hover:bg-yellow-400 hover:text-black transition-all shadow-lg active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+             disabled={loading || !agree}
+             className="w-full bg-black text-white py-4 rounded-xl font-bold uppercase tracking-wide hover:bg-yellow-400 hover:text-black transition-all shadow-lg active:scale-[0.98] disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-2"
            >
              {loading ? <Loader2 className="animate-spin" /> : "Send Magic Link"}
            </button>
@@ -93,7 +119,7 @@ export default function LoginPage() {
         )}
         
         <p className="text-center text-xs text-gray-400 mt-8">
-            By clicking continue, you agree to our Terms of Service and Privacy Policy.
+            Confirm your data is processed securely under global standards (DPDPA / GDPR).
         </p>
 
       </div>

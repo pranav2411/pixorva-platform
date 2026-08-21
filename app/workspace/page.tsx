@@ -410,13 +410,21 @@ export default function WorkspacePage() {
               )}
             </div>
 
-            <div className="pt-6 border-t-2 border-gray-200 flex flex-col gap-3 flex-shrink-0">
+            <div className="pt-6 border-t-2 border-gray-200 flex flex-col gap-2 flex-shrink-0 text-center">
               <Link href="/governance" className="w-full text-center bg-black text-white hover:bg-yellow-400 hover:text-black transition py-2.5 rounded-xl border-2 border-black text-xs font-black uppercase shadow-[3px_3px_0px_0px_rgba(0,0,0,0.15)]">
                 Control Tower
               </Link>
               <Link href="/billing" className="w-full text-center bg-white text-black hover:bg-gray-100 transition py-2.5 rounded-xl border-2 border-black text-xs font-black uppercase">
                 Manage Salaries
               </Link>
+              <Link href="/settings" className="w-full text-center bg-white text-black hover:bg-gray-100 transition py-2.5 rounded-xl border-2 border-black text-xs font-black uppercase">
+                Settings & Compliance
+              </Link>
+              
+              <div className="flex justify-center gap-4 text-[9px] font-black text-gray-400 uppercase mt-1">
+                <Link href="/terms" className="hover:text-black underline">Terms</Link>
+                <Link href="/privacy" className="hover:text-black underline">Privacy & Cookie Policies</Link>
+              </div>
             </div>
           </div>
 

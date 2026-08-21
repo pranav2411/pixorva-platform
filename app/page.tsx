@@ -320,14 +320,38 @@ export default function Home() {
       </main>
 
       {/* FOOTER */}
-      <footer className="relative z-10 bg-black text-white py-16 md:py-24 text-center overflow-hidden">
+      <footer className="relative z-10 bg-black text-white py-16 md:py-20 text-center overflow-hidden border-t-4 border-black">
         <div className={`absolute top-0 left-0 right-0 text-[20vw] opacity-5 font-black leading-none select-none ${oswald.className}`}>PIXORVA</div>
-        <div className="relative z-10 px-4">
-            <h2 className={`text-4xl md:text-7xl uppercase mb-8 md:mb-10 ${oswald.className}`}>Ready to Scale?</h2>
+        <div className="relative z-10 max-w-5xl mx-auto px-6">
+            <h2 className={`text-4xl md:text-7xl uppercase mb-6 ${oswald.className}`}>Ready to Scale?</h2>
             <Link href={user ? "/employees" : "/login"}>
-                <button className="bg-yellow-400 text-black border-none px-10 py-4 md:px-12 md:py-5 rounded-2xl font-black uppercase hover:bg-white transition text-lg md:text-xl shadow-[0px_0px_20px_rgba(250,204,21,0.5)] w-full md:w-auto">Start Hiring (Free)</button>
+                <button className="bg-yellow-400 text-black border-4 border-black px-10 py-4 rounded-2xl font-black uppercase hover:bg-white transition text-lg shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-y-1 w-full md:w-auto">Start Hiring (Free)</button>
             </Link>
-            <p className="text-gray-500 mt-10 md:mt-12 text-xs md:text-sm font-mono tracking-widest">© 2026 PIXORVA INC. // SYSTEM OPERATIONAL</p>
+            
+            {/* Legal Links & Contacts */}
+            <div className="mt-12 pt-10 border-t border-gray-800 grid grid-cols-1 md:grid-cols-2 gap-8 text-left text-xs text-gray-400 font-medium">
+              <div>
+                <p className="text-white font-black uppercase tracking-wider text-sm mb-3">Compliance & Grievance Redressal</p>
+                <p className="leading-relaxed mb-3">
+                  Grievance Officer: <strong>Mr. Pranav Khandelwal</strong><br/>
+                  Email: <a href="mailto:grievance@pixorva.com" className="underline hover:text-white">grievance@pixorva.com</a> / <a href="mailto:privacy@pixorva.com" className="underline hover:text-white">privacy@pixorva.com</a>
+                </p>
+                <p className="leading-relaxed">
+                  Support Desk: <a href="mailto:support@pixorva.com" className="underline hover:text-white">support@pixorva.com</a><br/>
+                  Legal Department: <a href="mailto:legal@pixorva.com" className="underline hover:text-white">legal@pixorva.com</a>
+                </p>
+              </div>
+              <div className="md:text-right flex flex-col justify-between">
+                <div>
+                  <p className="text-white font-black uppercase tracking-wider text-sm mb-3">Legal Documents</p>
+                  <div className="space-x-4">
+                    <Link href="/terms" className="underline hover:text-white font-bold uppercase">Terms of Service</Link>
+                    <Link href="/privacy" className="underline hover:text-white font-bold uppercase">Privacy Policy</Link>
+                  </div>
+                </div>
+                <p className="text-gray-600 mt-6 md:mt-0 font-mono tracking-widest uppercase">© 2026 PIXORVA INC. // SYSTEM OPERATIONAL</p>
+              </div>
+            </div>
         </div>
       </footer>
 
