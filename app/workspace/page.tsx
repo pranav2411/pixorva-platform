@@ -65,6 +65,83 @@ function getIcon(name: string) {
   }
 }
 
+function ChatMessage({ text }: { text: string }) {
+  if (!text) return null;
+
+  // Split text by code blocks ```
+  const parts = text.split("```");
+  
+  const handleCopy = (codeText: string) => {
+    navigator.clipboard.writeText(codeText);
+    showToast("Code copied to clipboard!", "success");
+  };
+
+  return (
+    <div className="space-y-2 leading-relaxed">
+      {parts.map((part, index) => {
+        const isCodeBlock = index % 2 === 1;
+        if (isCodeBlock) {
+          // The first line might contain the language name (e.g. javascript)
+          const lines = part.split("\n");
+          let language = "";
+          let codeContent = part;
+          if (lines.length > 0 && lines[0].trim().match(/^[a-zA-Z0-9_-]+$/)) {
+            language = lines[0].trim();
+            codeContent = lines.slice(1).join("\n");
+          }
+          
+          return (
+            <div key={index} className="relative group border-2 border-black rounded-lg my-3 overflow-hidden shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] bg-gray-950 text-gray-100 font-mono text-[11px]">
+              <div className="bg-black text-gray-400 px-4 py-1.5 text-[9px] font-black uppercase flex justify-between items-center border-b border-gray-800">
+                <span>{language || "code"}</span>
+                <button
+                  onClick={() => handleCopy(codeContent)}
+                  className="bg-yellow-400 text-black border border-black px-2 py-0.5 rounded text-[8px] font-black hover:bg-white transition"
+                >
+                  Copy
+                </button>
+              </div>
+              <pre className="p-4 overflow-x-auto select-text">
+                <code>{codeContent}</code>
+              </pre>
+            </div>
+          );
+        } else {
+          // Render standard text, splitting by lines
+          return (
+            <div key={index} className="space-y-1.5">
+              {part.split("\n").map((line, lIdx) => {
+                if (!line.trim()) return <div key={lIdx} className="h-2" />;
+                // Handle bold formatting **bold**
+                const boldRegex = /\*\*([^*]+)\*\*/g;
+                const boldParts = [];
+                let lastIndex = 0;
+                let match;
+                while ((match = boldRegex.exec(line)) !== null) {
+                  if (match.index > lastIndex) {
+                    boldParts.push(line.substring(lastIndex, match.index));
+                  }
+                  boldParts.push(<strong key={match.index} className="font-black text-black">{match[1]}</strong>);
+                  lastIndex = boldRegex.lastIndex;
+                }
+                if (lastIndex < line.length) {
+                  boldParts.push(line.substring(lastIndex));
+                }
+                
+                return (
+                  <p key={lIdx} className="m-0 leading-relaxed">
+                    {boldParts.length > 0 ? boldParts : line}
+                  </p>
+                );
+              })}
+            </div>
+          );
+        }
+      })}
+    </div>
+  );
+}
+
 export default function WorkspacePage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
@@ -84,6 +161,7 @@ export default function WorkspacePage() {
   const [showAddChannel, setShowAddChannel] = useState(false);
   const [newChannelName, setNewChannelName] = useState("");
   
+  const [typingAgentName, setTypingAgentName] = useState<string | null>(null);
   const [channelMessages, setChannelMessages] = useState<Record<string, any[]>>({
     "ch-general": [
       { sender: "System", text: "Welcome to #general. Toggle which hired employees are active in this channel to collaborate.", time: "12:00 PM" }
@@ -225,7 +303,11 @@ export default function WorkspacePage() {
 
       for (let i = 0; i < channelAgents.length; i++) {
         const agent = channelAgents[i];
+        const shortName = agent.name.split('(')[0].trim();
         
+        // Set typing indicator
+        setTypingAgentName(shortName);
+
         // Brief delay for visual response sequencing
         await new Promise(res => setTimeout(res, 850));
 
@@ -253,7 +335,7 @@ export default function WorkspacePage() {
         if (data.result) {
           lastResponse = data.result;
           const agentMsg = {
-            sender: agent.name.split('(')[0].trim(),
+            sender: shortName,
             icon: agent.icon || "Zap",
             text: data.result,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -269,6 +351,7 @@ export default function WorkspacePage() {
       console.error(err);
       showToast("Collaboration relay failed.", "error");
     } finally {
+      setTypingAgentName(null);
       setSendingChannelMsg(false);
     }
   };
@@ -517,11 +600,23 @@ export default function WorkspacePage() {
                             <span className="text-[8px] text-gray-400">{msg.time}</span>
                           </div>
                           <div className={`p-3 rounded-xl border-2 border-black text-xs max-w-md ${isYou ? 'bg-yellow-100 text-black' : isSys ? 'bg-gray-100 text-gray-500 border-dashed' : 'bg-white text-black'}`}>
-                            {msg.text}
+                            <ChatMessage text={msg.text} />
                           </div>
                         </div>
                       );
                     })}
+
+                    {/* Animated Typing Indicator */}
+                    {typingAgentName && (
+                      <div className="flex items-center gap-3 bg-yellow-50 border-2 border-black p-3.5 rounded-xl text-xs font-bold text-black w-fit animate-pulse shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] mt-2">
+                        <div className="flex gap-1 items-center">
+                          <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce"></span>
+                          <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce delay-100"></span>
+                          <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce delay-200"></span>
+                        </div>
+                        <span>{typingAgentName} is thinking...</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Chat Input panel */}

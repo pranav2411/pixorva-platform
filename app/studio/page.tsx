@@ -39,22 +39,46 @@ export default function StudioPage() {
   // --- PRESETS ---
   const applyPreset = (preset: string) => {
       if (preset === 'coder') {
+          setName("Ruby");
           setRole("Senior Engineer");
           setGoal("Write bug-free code");
           setInstructions("You are a Senior Software Engineer. Always return clean, commented code. If asked for a UI, return HTML/Tailwind.");
           setIcon("Code");
       }
       if (preset === 'writer') {
+          setName("Stella");
           setRole("Viral Ghostwriter");
           setGoal("Grow Twitter audience");
           setInstructions("You are a viral content creator. Write punchy, engaging hooks. Use short sentences and no fluff.");
           setIcon("PenTool");
       }
       if (preset === 'negotiator') {
+          setName("Marcus");
           setRole("Salary Negotiator");
           setGoal("Maximize offers");
           setInstructions("You are a tough negotiator. Help the user reply to job offers to get a higher salary. Be polite but firm.");
           setIcon("DollarSign");
+      }
+      if (preset === 'github_resolver') {
+          setName("OctoFixer");
+          setRole("QA & Bug Fixer");
+          setGoal("Resolve repository bugs & draft PRs");
+          setInstructions("You are a QA Engineer. Read files, scan repositories, fix bug tickets, write unit tests, and draft code updates/Pull Requests.");
+          setIcon("Lock");
+      }
+      if (preset === 'ads_manager') {
+          setName("AdPulse");
+          setRole("Marketing Specialist");
+          setGoal("Optimize ad conversions");
+          setInstructions("You are a Marketing Copywriter. Design audience targeting segments, draft viral headlines, and write conversion-optimized copy.");
+          setIcon("Megaphone");
+      }
+      if (preset === 'retention_bot') {
+          setName("LoyaltyGuard");
+          setRole("Customer Success");
+          setGoal("Minimize customer churn");
+          setInstructions("You are a Customer Success Expert. Analyze customer friction points, offer targeted rewards, write email apologies, and resolve retention issues.");
+          setIcon("Shield");
       }
   };
 
@@ -298,12 +322,51 @@ export default function StudioPage() {
           </div>
 
           {/* PRESETS */}
-          <div className="mb-8">
-              <label className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 block">Quick Start Templates</label>
-              <div className="flex gap-2">
-                  <button onClick={() => applyPreset('coder')} className="px-4 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-xs font-bold hover:bg-blue-100 transition">Code Expert</button>
-                  <button onClick={() => applyPreset('writer')} className="px-4 py-2 bg-green-50 text-green-700 border border-green-200 rounded-lg text-xs font-bold hover:bg-green-100 transition">Viral Writer</button>
-                  <button onClick={() => applyPreset('negotiator')} className="px-4 py-2 bg-yellow-50 text-yellow-700 border border-yellow-200 rounded-lg text-xs font-bold hover:bg-yellow-100 transition">Negotiator</button>
+          <div className="mb-10">
+              <label className="text-xs font-black uppercase tracking-widest text-gray-400 mb-3 block">Quick Start Templates</label>
+              <div className="grid grid-cols-2 gap-3">
+                  <button 
+                    onClick={() => applyPreset('coder')} 
+                    className="p-3 bg-blue-50 text-blue-800 border-2 border-blue-200 rounded-xl text-[10px] font-black uppercase text-left hover:bg-blue-100 hover:border-black transition flex flex-col gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none"
+                  >
+                    <span>💻 Code Expert</span>
+                    <span className="text-[8px] text-blue-600 font-medium normal-case">Write & debug clean code.</span>
+                  </button>
+                  <button 
+                    onClick={() => applyPreset('writer')} 
+                    className="p-3 bg-green-50 text-green-800 border-2 border-green-200 rounded-xl text-[10px] font-black uppercase text-left hover:bg-green-100 hover:border-black transition flex flex-col gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none"
+                  >
+                    <span>✍️ Viral Writer</span>
+                    <span className="text-[8px] text-green-600 font-medium normal-case">Punchy hook writer.</span>
+                  </button>
+                  <button 
+                    onClick={() => applyPreset('negotiator')} 
+                    className="p-3 bg-yellow-50 text-yellow-800 border-2 border-yellow-200 rounded-xl text-[10px] font-black uppercase text-left hover:bg-yellow-100 hover:border-black transition flex flex-col gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none"
+                  >
+                    <span>💵 Negotiator</span>
+                    <span className="text-[8px] text-yellow-600 font-medium normal-case">Tough offer negotiations.</span>
+                  </button>
+                  <button 
+                    onClick={() => applyPreset('github_resolver')} 
+                    className="p-3 bg-indigo-50 text-indigo-800 border-2 border-indigo-200 rounded-xl text-[10px] font-black uppercase text-left hover:bg-indigo-100 hover:border-black transition flex flex-col gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none"
+                  >
+                    <span>🔒 QA OctoFixer</span>
+                    <span className="text-[8px] text-indigo-600 font-medium normal-case">Resolve repo bugs & PRs.</span>
+                  </button>
+                  <button 
+                    onClick={() => applyPreset('ads_manager')} 
+                    className="p-3 bg-orange-50 text-orange-800 border-2 border-orange-200 rounded-xl text-[10px] font-black uppercase text-left hover:bg-orange-100 hover:border-black transition flex flex-col gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none"
+                  >
+                    <span>📢 AdPulse Marketing</span>
+                    <span className="text-[8px] text-orange-600 font-medium normal-case">Ad conversions copy.</span>
+                  </button>
+                  <button 
+                    onClick={() => applyPreset('retention_bot')} 
+                    className="p-3 bg-red-50 text-red-800 border-2 border-red-200 rounded-xl text-[10px] font-black uppercase text-left hover:bg-red-100 hover:border-black transition flex flex-col gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none"
+                  >
+                    <span>🛡️ LoyaltyGuard CS</span>
+                    <span className="text-[8px] text-red-600 font-medium normal-case">Mitigate churn friction.</span>
+                  </button>
               </div>
           </div>
 
