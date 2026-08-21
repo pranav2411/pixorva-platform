@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Oswald, Inter } from "next/font/google";
 import { 
   ArrowLeft, Plus, Zap, Trash2, LogOut, Send, 
-  Users, Activity, Lock, FileCode, CheckCircle, RefreshCw, X, Folder, HelpCircle,
+  Users, Activity, Lock, FileCode, CheckCircle, RefreshCw, X, Folder, HelpCircle, Layout,
   Megaphone, DollarSign, ShieldCheck, User as UserIcon, Mail, MessageSquare, Play, Globe, Clock, Database, Twitter, PenTool, Target, Briefcase, PieChart, Camera, Clipboard, Video, Smartphone, Search
 } from "lucide-react";
 import { createClient } from '../utils/supabase/client';
@@ -153,22 +153,97 @@ export default function WorkspacePage() {
   const [activeTab, setActiveTab] = useState<"office" | "channels" | "vault">("office");
 
   // --- MULTI-AGENT CHANNELS ---
-  const [channels, setChannels] = useState<Channel[]>([
-    { id: "ch-general", name: "general", agents: [] },
-    { id: "ch-engineering", name: "engineering", agents: [] }
-  ]);
+  const [channels, setChannels] = useState<Channel[]>(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("pixorva_channels");
+      if (stored) {
+        try { return JSON.parse(stored); } catch (e) {}
+      }
+    }
+    return [
+      { id: "ch-general", name: "general", agents: [] },
+      { id: "ch-engineering", name: "engineering", agents: [] }
+    ];
+  });
   const [selectedChId, setSelectedChId] = useState<string>("ch-general");
   const [showAddChannel, setShowAddChannel] = useState(false);
   const [newChannelName, setNewChannelName] = useState("");
   
   const [typingAgentName, setTypingAgentName] = useState<string | null>(null);
-  const [channelMessages, setChannelMessages] = useState<Record<string, any[]>>({
-    "ch-general": [
-      { sender: "System", text: "Welcome to #general. Toggle which hired employees are active in this channel to collaborate.", time: "12:00 PM" }
-    ],
-    "ch-engineering": [
-      { sender: "System", text: "Welcome to #engineering. Enable agents in the right panel and send a prompt to watch them collaborate.", time: "12:00 PM" }
-    ]
+  const [channelViewMode, setChannelViewMode] = useState<"chat" | "preview">("chat");
+
+  const getLatestCodeInChannel = () => {
+    const msgs = channelMessages[selectedChId] || [];
+    for (let i = msgs.length - 1; i >= 0; i--) {
+      const msg = msgs[i];
+      if (msg.text && msg.text.includes("```")) {
+        const parts = msg.text.split("```");
+        for (let j = parts.length - 1; j >= 0; j--) {
+          if (j % 2 === 1) {
+            const part = parts[j];
+            const lines = part.split("\n");
+            let codeContent = part;
+            if (lines.length > 0 && lines[0].trim().match(/^[a-zA-Z0-9_-]+$/)) {
+              codeContent = lines.slice(1).join("\n");
+            }
+            if (codeContent.includes("<html") || codeContent.includes("<!DOCTYPE") || codeContent.includes("React") || codeContent.includes("const") || codeContent.includes("function")) {
+              return codeContent;
+            }
+          }
+        }
+      }
+    }
+    return null;
+  };
+
+  const getCleanedPreviewHtml = (rawCode: string) => {
+    if (!rawCode) return "";
+    let clean = rawCode;
+    if (clean.startsWith("```")) {
+        const lines = clean.split("\n");
+        clean = lines.slice(1, lines.length - 1).join("\n");
+    }
+    if (clean.includes('<html') || clean.includes('<!DOCTYPE')) {
+        return clean;
+    }
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+          body { font-family: system-ui, sans-serif; padding: 20px; background: #f9fafb; }
+        </style>
+      </head>
+      <body>
+        <div id="root"></div>
+        <script>
+          try {
+            ${clean}
+          } catch (e) {
+            document.body.innerHTML = '<div style="color: red; font-weight: bold; border: 2px solid red; padding: 15px; border-radius: 8px; background: #fef2f2;">Sandbox runtime error: ' + e.message + '</div>';
+          }
+        </script>
+      </body>
+      </html>
+    `;
+  };
+  const [channelMessages, setChannelMessages] = useState<Record<string, any[]>>(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("pixorva_channel_messages");
+      if (stored) {
+        try { return JSON.parse(stored); } catch (e) {}
+      }
+    }
+    return {
+      "ch-general": [
+        { sender: "System", text: "Welcome to #general. Toggle which hired employees are active in this channel to collaborate.", time: "12:00 PM" }
+      ],
+      "ch-engineering": [
+        { sender: "System", text: "Welcome to #engineering. Enable agents in the right panel and send a prompt to watch them collaborate.", time: "12:00 PM" }
+      ]
+    };
   });
   const [channelPrompt, setChannelPrompt] = useState("");
   const [sendingChannelMsg, setSendingChannelMsg] = useState(false);
@@ -217,6 +292,20 @@ export default function WorkspacePage() {
     };
     fetchWorkspaceData();
   }, [router]);
+
+  // Save channels to localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined" && channels.length > 0) {
+      localStorage.setItem("pixorva_channels", JSON.stringify(channels));
+    }
+  }, [channels]);
+
+  // Save channelMessages to localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("pixorva_channel_messages", JSON.stringify(channelMessages));
+    }
+  }, [channelMessages]);
 
   const confirmDelete = async () => {
     if (!deletingAgentId) return;
@@ -572,52 +661,88 @@ export default function WorkspacePage() {
                 {/* Chat window panel */}
                 <div className="flex-grow flex flex-col justify-between bg-white border-4 border-black rounded-2xl overflow-hidden shadow h-full">
                   
-                  {/* Header */}
-                  <div className="bg-black text-white p-4 flex justify-between items-center flex-shrink-0">
-                    <h3 className="font-black uppercase text-xs"># {activeChannel.name}</h3>
+                  {/* Header with Visual Preview mode switch */}
+                  <div className="bg-black text-white p-3 flex flex-col sm:flex-row justify-between items-center gap-2 flex-shrink-0 border-b-4 border-black">
+                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                      <h3 className="font-black uppercase text-xs"># {activeChannel.name}</h3>
+                      <div className="flex border border-gray-700 rounded-lg overflow-hidden bg-gray-900">
+                        <button
+                          onClick={() => setChannelViewMode("chat")}
+                          className={`px-3 py-1 text-[9px] font-black uppercase transition ${channelViewMode === 'chat' ? 'bg-yellow-400 text-black' : 'text-gray-400 hover:text-white'}`}
+                        >
+                          💬 Chat Feed
+                        </button>
+                        <button
+                          onClick={() => setChannelViewMode("preview")}
+                          className={`px-3 py-1 text-[9px] font-black uppercase transition ${channelViewMode === 'preview' ? 'bg-yellow-400 text-black' : 'text-gray-400 hover:text-white'}`}
+                        >
+                          🖥️ Live Sandbox
+                        </button>
+                      </div>
+                    </div>
                     <span className="text-[9px] font-bold text-yellow-400 uppercase">{activeChannel.agents.length} active agents</span>
                   </div>
 
-                  {/* Messages container */}
-                  <div className="p-4 flex-grow space-y-4 overflow-y-auto bg-gray-50/50 h-[calc(100vh-420px)] lg:h-[calc(100vh-380px)]">
-                    {activeChannel.agents.length === 0 && (
-                      <div className="bg-yellow-50 border-4 border-black p-6 rounded-2xl text-center max-w-sm mx-auto my-10 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                        <Users className="mx-auto text-yellow-600 mb-3" size={32}/>
-                        <h4 className="font-black text-xs uppercase text-yellow-800">No Active Agents</h4>
-                        <p className="text-[10px] text-yellow-700 leading-normal mt-2">
-                          Select which of your hired employees should participate in this channel by checking them in the sidebar on the right.
-                        </p>
-                      </div>
-                    )}
-                    {(channelMessages[activeChannel.id] || []).map((msg, idx) => {
-                      const isYou = msg.sender === "You";
-                      const isSys = msg.sender === "System";
-                      return (
-                        <div key={idx} className={`flex flex-col ${isYou ? 'items-end' : 'items-start'}`}>
-                          <div className="flex items-center gap-1.5 mb-1">
-                            {!isYou && !isSys && <span className="text-xs">{msg.icon}</span>}
-                            <span className="text-[9px] font-bold text-gray-400 uppercase">{msg.sender}</span>
-                            <span className="text-[8px] text-gray-400">{msg.time}</span>
-                          </div>
-                          <div className={`p-3 rounded-xl border-2 border-black text-xs max-w-md ${isYou ? 'bg-yellow-100 text-black' : isSys ? 'bg-gray-100 text-gray-500 border-dashed' : 'bg-white text-black'}`}>
-                            <ChatMessage text={msg.text} />
-                          </div>
+                  {/* Toggle Content Pane: Chat or Preview Sandbox */}
+                  {channelViewMode === 'chat' ? (
+                    <div className="p-4 flex-grow space-y-4 overflow-y-auto bg-gray-50/50 h-[calc(100vh-420px)] lg:h-[calc(100vh-380px)]">
+                      {activeChannel.agents.length === 0 && (
+                        <div className="bg-yellow-50 border-4 border-black p-6 rounded-2xl text-center max-w-sm mx-auto my-10 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                          <Users className="mx-auto text-yellow-600 mb-3" size={32}/>
+                          <h4 className="font-black text-xs uppercase text-yellow-800">No Active Agents</h4>
+                          <p className="text-[10px] text-yellow-700 leading-normal mt-2">
+                            Select which of your hired employees should participate in this channel by checking them in the sidebar on the right.
+                          </p>
                         </div>
-                      );
-                    })}
+                      )}
+                      {(channelMessages[activeChannel.id] || []).map((msg, idx) => {
+                        const isYou = msg.sender === "You";
+                        const isSys = msg.sender === "System";
+                        return (
+                          <div key={idx} className={`flex flex-col ${isYou ? 'items-end' : 'items-start'}`}>
+                            <div className="flex items-center gap-1.5 mb-1">
+                              {!isYou && !isSys && <span className="text-xs">{msg.icon}</span>}
+                              <span className="text-[9px] font-bold text-gray-400 uppercase">{msg.sender}</span>
+                              <span className="text-[8px] text-gray-400">{msg.time}</span>
+                            </div>
+                            <div className={`p-3 rounded-xl border-2 border-black text-xs max-w-md ${isYou ? 'bg-yellow-100 text-black' : isSys ? 'bg-gray-100 text-gray-500 border-dashed' : 'bg-white text-black'}`}>
+                              <ChatMessage text={msg.text} />
+                            </div>
+                          </div>
+                        );
+                      })}
 
-                    {/* Animated Typing Indicator */}
-                    {typingAgentName && (
-                      <div className="flex items-center gap-3 bg-yellow-50 border-2 border-black p-3.5 rounded-xl text-xs font-bold text-black w-fit animate-pulse shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] mt-2">
-                        <div className="flex gap-1 items-center">
-                          <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce"></span>
-                          <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce delay-100"></span>
-                          <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce delay-200"></span>
+                      {/* Animated Typing Indicator */}
+                      {typingAgentName && (
+                        <div className="flex items-center gap-3 bg-yellow-50 border-2 border-black p-3.5 rounded-xl text-xs font-bold text-black w-fit animate-pulse shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] mt-2">
+                          <div className="flex gap-1 items-center">
+                            <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce"></span>
+                            <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce delay-100"></span>
+                            <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce delay-200"></span>
+                          </div>
+                          <span>{typingAgentName} is thinking...</span>
                         </div>
-                        <span>{typingAgentName} is thinking...</span>
-                      </div>
-                    )}
-                  </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex-grow bg-white h-[calc(100vh-420px)] lg:h-[calc(100vh-380px)]">
+                      {getLatestCodeInChannel() ? (
+                        <iframe 
+                          srcDoc={getCleanedPreviewHtml(getLatestCodeInChannel()!)} 
+                          className="w-full h-full border-none" 
+                          sandbox="allow-scripts" 
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full p-8 text-center text-gray-400 bg-gray-50/50">
+                          <Layout size={40} className="mb-2 text-black" />
+                          <p className="text-xs font-black uppercase text-black">No Preview Available</p>
+                          <p className="text-[10px] text-gray-500 mt-1 max-w-xs leading-normal">
+                            Ask active developers in the chat feed to create webpages or interfaces, and they will compile visually right here!
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Chat Input panel */}
                   <div className="p-3 bg-white border-t-4 border-black flex gap-2 items-center flex-shrink-0">

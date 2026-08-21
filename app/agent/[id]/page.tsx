@@ -60,6 +60,83 @@ function formatMarkdownText(text: string) {
     return formattedLines.join('');
 }
 
+function ChatMessage({ text }: { text: string }) {
+  if (!text) return null;
+
+  // Split text by code blocks ```
+  const parts = text.split("```");
+  
+  const handleCopy = (codeText: string) => {
+    navigator.clipboard.writeText(codeText);
+    showToast("Code copied to clipboard!", "success");
+  };
+
+  return (
+    <div className="space-y-2 leading-relaxed">
+      {parts.map((part, index) => {
+        const isCodeBlock = index % 2 === 1;
+        if (isCodeBlock) {
+          // The first line might contain the language name (e.g. javascript)
+          const lines = part.split("\n");
+          let language = "";
+          let codeContent = part;
+          if (lines.length > 0 && lines[0].trim().match(/^[a-zA-Z0-9_-]+$/)) {
+            language = lines[0].trim();
+            codeContent = lines.slice(1).join("\n");
+          }
+          
+          return (
+            <div key={index} className="relative group border-2 border-black rounded-lg my-3 overflow-hidden shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] bg-gray-950 text-gray-100 font-mono text-[11px]">
+              <div className="bg-black text-gray-400 px-4 py-1.5 text-[9px] font-black uppercase flex justify-between items-center border-b border-gray-800">
+                <span>{language || "code"}</span>
+                <button
+                  onClick={() => handleCopy(codeContent)}
+                  className="bg-yellow-400 text-black border border-black px-2 py-0.5 rounded text-[8px] font-black hover:bg-white transition"
+                >
+                  Copy
+                </button>
+              </div>
+              <pre className="p-4 overflow-x-auto select-text">
+                <code>{codeContent}</code>
+              </pre>
+            </div>
+          );
+        } else {
+          // Render text, splitting by lines
+          return (
+            <div key={index} className="space-y-1.5 text-gray-800">
+              {part.split("\n").map((line, lIdx) => {
+                if (!line.trim()) return <div key={lIdx} className="h-2" />;
+                // Handle bold formatting **bold**
+                const boldRegex = /\*\*([^*]+)\*\*/g;
+                const boldParts = [];
+                let lastIndex = 0;
+                let match;
+                while ((match = boldRegex.exec(line)) !== null) {
+                  if (match.index > lastIndex) {
+                    boldParts.push(line.substring(lastIndex, match.index));
+                  }
+                  boldParts.push(<strong key={match.index} className="font-black text-black">{match[1]}</strong>);
+                  lastIndex = boldRegex.lastIndex;
+                }
+                if (lastIndex < line.length) {
+                  boldParts.push(line.substring(lastIndex));
+                }
+                
+                return (
+                  <p key={lIdx} className="m-0 leading-relaxed">
+                    {boldParts.length > 0 ? boldParts : line}
+                  </p>
+                );
+              })}
+            </div>
+          );
+        }
+      })}
+    </div>
+  );
+}
+
 function getCleanedPreviewHtml(code: string) {
     if (!code) return "";
     
@@ -738,23 +815,47 @@ export default function AgentWorkstation() {
                                              <div className="flex items-center gap-2 font-black uppercase text-gray-500">
                                                  <Loader2 className="animate-spin" size={14} /> thinking...
                                              </div>
-                                         ) : msg.type === 'code' ? (
-                                             <div className="space-y-3">
-                                                 <div className="font-mono bg-gray-900 text-green-400 p-3 rounded-lg overflow-x-auto max-h-48">
-                                                     {msg.result}
-                                                 </div>
-                                                 <button 
-                                                     onClick={() => {
-                                                         setCurrentResult(msg.result);
-                                                         setActiveTab('preview');
-                                                     }}
-                                                     className="bg-yellow-400 text-black border-2 border-black px-3 py-1.5 rounded-lg text-[10px] font-black uppercase hover:bg-black hover:text-white transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5 flex items-center gap-1.5"
-                                                 >
-                                                     <Layout size={12}/> Open Visual Preview
-                                                 </button>
-                                             </div>
                                          ) : (
-                                             <div className="whitespace-pre-wrap leading-relaxed markdown-content" dangerouslySetInnerHTML={{ __html: formatMarkdownText(msg.result) }} />
+                                             <div className="space-y-3">
+                                                 {/* Parsed chat text response (keeps code blocks separate and copiable) */}
+                                                 <ChatMessage text={msg.result} />
+                                                 
+                                                 {/* Options row to copy the entire response individually */}
+                                                 <div className="pt-2.5 mt-2 border-t-2 border-gray-100 flex gap-2">
+                                                     <button 
+                                                         onClick={() => {
+                                                             navigator.clipboard.writeText(msg.result);
+                                                             showToast("Full response copied to clipboard!", "success");
+                                                         }}
+                                                         className="bg-gray-100 text-gray-700 hover:bg-black hover:text-white px-2.5 py-1 rounded border border-black text-[9px] font-black uppercase transition"
+                                                     >
+                                                         Copy Response
+                                                     </button>
+                                                     
+                                                     {/* Switch sandbox visual preview tab if code matches */}
+                                                     {(msg.result.includes("```") || msg.type === 'code') && (
+                                                         <button 
+                                                             onClick={() => {
+                                                                 let codeOnly = msg.result;
+                                                                 if (msg.result.includes("```")) {
+                                                                     const parts = msg.result.split("```");
+                                                                     codeOnly = parts[1] || msg.result;
+                                                                     // strip language line if present
+                                                                     const lines = codeOnly.split("\n");
+                                                                     if (lines.length > 0 && lines[0].trim().match(/^[a-zA-Z0-9_-]+$/)) {
+                                                                         codeOnly = lines.slice(1).join("\n");
+                                                                     }
+                                                                 }
+                                                                 setCurrentResult(codeOnly);
+                                                                 setActiveTab('preview');
+                                                             }}
+                                                             className="bg-yellow-400 text-black border border-black px-2.5 py-1 rounded text-[9px] font-black uppercase hover:bg-black hover:text-white transition"
+                                                         >
+                                                             Open Visual Preview
+                                                         </button>
+                                                     )}
+                                                 </div>
+                                             </div>
                                          )}
                                      </div>
                                  </div>
