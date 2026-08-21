@@ -141,6 +141,7 @@ export async function POST(req: NextRequest) {
           const htmlContent = `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border: 4px solid black; border-radius: 24px; overflow: hidden; box-shadow: 8px 8px 0px 0px rgba(0,0,0,1);">
               <div style="background-color: #facc15; padding: 24px; text-align: center; border-bottom: 4px solid black;">
+                <img src="${process.env.NEXT_PUBLIC_BASE_URL || 'https://pixorva.com'}/favicon.ico" alt="Pixorva Logo" style="width: 48px; height: 48px; border: 3px solid black; border-radius: 10px; margin-bottom: 12px; box-shadow: 3px 3px 0px 0px rgba(0,0,0,1);" />
                 <h1 style="margin: 0; font-size: 28px; text-transform: uppercase; font-weight: 900; letter-spacing: -1px; color: black;">Pixorva AI Workforce</h1>
               </div>
               <div style="padding: 24px; background-color: white; color: black;">
