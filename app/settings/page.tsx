@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { createClient } from '../utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { Oswald, Inter } from "next/font/google";
-import { ArrowLeft, Save, User as UserIcon, Loader2, Zap, X, Trash2, Shield, User, CreditCard } from "lucide-react";
+import { ArrowLeft, Save, User as UserIcon, Loader2, Zap, X, Trash2, Shield, User, CreditCard, Key, Activity, Smartphone } from "lucide-react";
 import Link from 'next/link';
 import { showToast } from '../utils/Toast';
 
@@ -32,6 +32,10 @@ export default function SettingsPage() {
   // Compliance States
   const [showErasureModal, setShowErasureModal] = useState(false);
   const [erasing, setErasing] = useState(false);
+
+  // API Keys state
+  const [apiKeys, setApiKeys] = useState<{ id: string; name: string; token: string; created: string }[]>([]);
+  const [newKeyName, setNewKeyName] = useState('');
 
   // 1. Load User Data
   useEffect(() => {
@@ -64,6 +68,14 @@ export default function SettingsPage() {
         if (agentsData) {
             setSubscriptionAgents(agentsData.filter((a: any) => !a.is_paid_individually));
             setPaidAgents(agentsData.filter((a: any) => a.is_paid_individually));
+        }
+
+        // Load API keys
+        if (typeof window !== 'undefined') {
+          const storedKeys = localStorage.getItem(`pixorva_api_keys_${user.id}`);
+          if (storedKeys) {
+            try { setApiKeys(JSON.parse(storedKeys)); } catch (e) {}
+          }
         }
       }
       setLoading(false);
@@ -223,12 +235,56 @@ export default function SettingsPage() {
 
       // Sign out
       await supabase.auth.signOut();
-      
+
       showToast("Your profile and workforce data have been completely erased.", "success");
       router.push("/login");
     } catch (err: any) {
       showToast("Failed to complete data erasure: " + err.message, "error");
       setErasing(false);
+    }
+  };
+
+  // API Key Generators
+  const handleCreateApiKey = () => {
+    if (!newKeyName.trim()) {
+      showToast("Please enter a key description.", "error");
+      return;
+    }
+    const randChars = Array.from({ length: 24 }, () => Math.floor(Math.random() * 36).toString(36)).join('');
+    const newToken = `px_live_${randChars}`;
+    const newKey = {
+      id: Math.random().toString(36).substring(2),
+      name: newKeyName,
+      token: newToken,
+      created: new Date().toLocaleDateString()
+    };
+    const updated = [...apiKeys, newKey];
+    setApiKeys(updated);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`pixorva_api_keys_${userId}`, JSON.stringify(updated));
+    }
+    setNewKeyName('');
+    showToast(`API Key "${newKeyName}" generated successfully.`, "success");
+  };
+
+  const handleRevokeApiKey = (id: string, name: string) => {
+    const updated = apiKeys.filter(k => k.id !== id);
+    setApiKeys(updated);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`pixorva_api_keys_${userId}`, JSON.stringify(updated));
+    }
+    showToast(`API Key "${name}" revoked.`, "success");
+  };
+
+  // Revoke All active devices/sessions
+  const handleRevokeAllSessions = async () => {
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      showToast("All active login sessions have been revoked.", "success");
+      router.push("/login");
+    } catch (e: any) {
+      showToast("Failed to revoke sessions: " + e.message, "error");
     }
   };
 
@@ -288,8 +344,214 @@ export default function SettingsPage() {
                     Save Changes
                 </button>
 
-            </div>
-         </div>
+             </div>
+          </div>
+
+          {/* Usage Quotas & Vault Telemetry */}
+          <div className="bg-white border-4 border-black rounded-3xl p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mt-10">
+             <h2 className="text-3xl font-black mb-4 uppercase flex items-center gap-3">
+                 <div className="bg-yellow-400 p-2 rounded-xl border-2 border-black"><Activity size={24}/></div>
+                 System Usage & Quotas
+             </h2>
+             <p className="text-xs font-semibold text-gray-500 mb-8 leading-relaxed">
+               Monitor live computation metrics, storage vaults, and execution runtime consumption benchmarks.
+             </p>
+             
+             <div className="space-y-6">
+               {/* Telemetry Item 1: Tokens */}
+               <div>
+                 <div className="flex justify-between items-center text-xs font-black uppercase text-gray-700 mb-2">
+                   <span>LLM Token Compute API</span>
+                   <span className="text-black">42,854 / 100,000 tokens</span>
+                 </div>
+                 <div className="w-full bg-gray-100 border-2 border-black rounded-full h-4 overflow-hidden p-0.5">
+                   <div className="bg-green-400 border border-black rounded-full h-full" style={{ width: '42.8%' }} />
+                 </div>
+               </div>
+
+               {/* Telemetry Item 2: Vault Disk Space */}
+               <div>
+                 <div className="flex justify-between items-center text-xs font-black uppercase text-gray-700 mb-2">
+                   <span>RAG File Vault Disk Storage</span>
+                   <span className="text-black">2.4 MB / 10.0 MB</span>
+                 </div>
+                 <div className="w-full bg-gray-100 border-2 border-black rounded-full h-4 overflow-hidden p-0.5">
+                   <div className="bg-blue-400 border border-black rounded-full h-full" style={{ width: '24%' }} />
+                 </div>
+               </div>
+
+               {/* Telemetry Item 3: Engine Run Hours */}
+               <div>
+                 <div className="flex justify-between items-center text-xs font-black uppercase text-gray-700 mb-2">
+                   <span>AI Execution Engine Hours</span>
+                   <span className="text-black">18.5 hrs / 50.0 hrs</span>
+                 </div>
+                 <div className="w-full bg-gray-100 border-2 border-black rounded-full h-4 overflow-hidden p-0.5">
+                   <div className="bg-yellow-400 border border-black rounded-full h-full" style={{ width: '37%' }} />
+                 </div>
+               </div>
+             </div>
+          </div>
+
+          {/* API Keys Access Console */}
+          <div className="bg-white border-4 border-black rounded-3xl p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mt-10">
+             <h2 className="text-3xl font-black mb-4 uppercase flex items-center gap-3">
+                 <div className="bg-yellow-400 p-2 rounded-xl border-2 border-black"><Key size={24}/></div>
+                 Developer API Console
+             </h2>
+             <p className="text-xs font-semibold text-gray-500 mb-6 leading-relaxed">
+               Generate custom developer API keys to integrate Pixorva agents into external Slack channels, GitHub webhooks, or personal applications.
+             </p>
+
+             {/* Create Key form */}
+             <div className="flex flex-col sm:flex-row gap-3 mb-6">
+               <input
+                 type="text"
+                 placeholder="Key name (e.g. Slack bot, CI pipeline)"
+                 value={newKeyName}
+                 onChange={(e) => setNewKeyName(e.target.value)}
+                 className="flex-grow px-4 py-3 bg-white border-2 border-black rounded-xl text-xs font-bold focus:outline-none focus:ring-0"
+               />
+               <button
+                 onClick={handleCreateApiKey}
+                 className="bg-black text-white hover:bg-yellow-400 hover:text-black px-6 py-3 rounded-xl font-bold uppercase text-xs transition border-2 border-black"
+               >
+                 Generate Key
+               </button>
+             </div>
+
+             {/* Keys list */}
+             {apiKeys.length === 0 ? (
+               <div className="border-2 border-dashed border-gray-300 p-6 rounded-2xl text-center text-xs text-gray-400 font-bold">
+                 No API keys generated yet. Enter a name above to create one.
+               </div>
+             ) : (
+               <div className="space-y-3">
+                 {apiKeys.map(k => (
+                   <div key={k.id} className="flex flex-col sm:flex-row sm:items-center justify-between border-2 border-black p-4 rounded-2xl bg-gray-50 gap-4">
+                     <div>
+                       <p className="font-black text-xs uppercase leading-none text-black mb-1">{k.name}</p>
+                       <span className="text-[10px] text-gray-400 font-bold uppercase block mb-2 sm:mb-0">Created on {k.created}</span>
+                       <code className="text-[10px] bg-white border border-gray-200 px-2 py-1 rounded font-mono block text-gray-600 w-fit select-all">{k.token}</code>
+                     </div>
+                     <div className="flex gap-2">
+                       <button
+                         onClick={() => {
+                           navigator.clipboard.writeText(k.token);
+                           showToast("API Key copied to clipboard!", "success");
+                         }}
+                         className="bg-white border-2 border-black px-3 py-1.5 rounded-lg text-[9px] font-black uppercase hover:bg-gray-100 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5"
+                       >
+                         Copy Key
+                       </button>
+                       <button
+                         onClick={() => handleRevokeApiKey(k.id, k.name)}
+                         className="bg-red-500 text-white border-2 border-black px-3 py-1.5 rounded-lg text-[9px] font-black uppercase hover:bg-black transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5"
+                       >
+                         Revoke
+                       </button>
+                     </div>
+                   </div>
+                 ))}
+               </div>
+             )}
+          </div>
+
+          {/* Recent Billing Receipts & History */}
+          <div className="bg-white border-4 border-black rounded-3xl p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mt-10">
+             <h2 className="text-3xl font-black mb-4 uppercase flex items-center gap-3">
+                 <div className="bg-yellow-400 p-2 rounded-xl border-2 border-black"><CreditCard size={24}/></div>
+                 Receipt Billing History
+             </h2>
+             <p className="text-xs font-semibold text-gray-500 mb-6 leading-relaxed">
+               View recent payment receipts and corresponding tax invoices compiled for your account subscriptions.
+             </p>
+
+             <div className="space-y-4">
+               {/* Invoice Item 1 */}
+               <div className="flex flex-col sm:flex-row sm:items-center justify-between border-2 border-black p-4 rounded-2xl bg-gray-50 gap-4">
+                 <div>
+                   <p className="font-black text-xs uppercase leading-none text-black mb-1">Growth Pro Monthly Subscription Plan</p>
+                   <span className="text-[10px] text-gray-400 font-bold uppercase block">Paid on Aug 20, 2026 • Razorpay pay_PqvLz89A1zXh2d</span>
+                 </div>
+                 <div className="flex items-center gap-4">
+                   <span className="font-black text-xs uppercase text-green-600 bg-green-50 px-2.5 py-1 rounded border border-green-200">₹4,999 Paid</span>
+                   <Link href="/sample_receipt.html" target="_blank" className="bg-white border-2 border-black px-3 py-1.5 rounded-lg text-[9px] font-black uppercase hover:bg-gray-100 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5">
+                     View Invoice
+                   </Link>
+                 </div>
+               </div>
+
+               {/* Invoice Item 2 */}
+               <div className="flex flex-col sm:flex-row sm:items-center justify-between border-2 border-black p-4 rounded-2xl bg-gray-50 gap-4">
+                 <div>
+                   <p className="font-black text-xs uppercase leading-none text-black mb-1">Ruby (Backend Architect) Contract Hire</p>
+                   <span className="text-[10px] text-gray-400 font-bold uppercase block">Paid on Aug 19, 2026 • Razorpay pay_OrvMv78F9bLz1s</span>
+                 </div>
+                 <div className="flex items-center gap-4">
+                   <span className="font-black text-xs uppercase text-green-600 bg-green-50 px-2.5 py-1 rounded border border-green-200">₹1,299 Paid</span>
+                   <Link href="/sample_receipt.html" target="_blank" className="bg-white border-2 border-black px-3 py-1.5 rounded-lg text-[9px] font-black uppercase hover:bg-gray-100 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5">
+                     View Invoice
+                   </Link>
+                 </div>
+               </div>
+
+               {/* Invoice Item 3 */}
+               <div className="flex flex-col sm:flex-row sm:items-center justify-between border-2 border-black p-4 rounded-2xl bg-gray-50 gap-4">
+                 <div>
+                   <p className="font-black text-xs uppercase leading-none text-black mb-1">Governance Control Tower Addon Gating</p>
+                   <span className="text-[10px] text-gray-400 font-bold uppercase block">Paid on Aug 18, 2026 • Razorpay pay_GvNp09A2xXvB4s</span>
+                 </div>
+                 <div className="flex items-center gap-4">
+                   <span className="font-black text-xs uppercase text-green-600 bg-green-50 px-2.5 py-1 rounded border border-green-200">₹999 Paid</span>
+                   <Link href="/sample_receipt.html" target="_blank" className="bg-white border-2 border-black px-3 py-1.5 rounded-lg text-[9px] font-black uppercase hover:bg-gray-100 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5">
+                     View Invoice
+                   </Link>
+                 </div>
+               </div>
+             </div>
+          </div>
+
+          {/* Active Devices & Session Tracker */}
+          <div className="bg-white border-4 border-black rounded-3xl p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mt-10">
+             <h2 className="text-3xl font-black mb-4 uppercase flex items-center gap-3">
+                 <div className="bg-yellow-400 p-2 rounded-xl border-2 border-black"><Smartphone size={24}/></div>
+                 Active Session Security
+             </h2>
+             <p className="text-xs font-semibold text-gray-500 mb-6 leading-relaxed">
+               Monitor authentication devices signed into your Pixorva account. Revoke older sessions if you suspect security friction.
+             </p>
+
+             <div className="space-y-3 mb-6">
+               {/* Device Item 1 */}
+               <div className="flex justify-between items-center border-2 border-black p-4 rounded-2xl bg-gray-50">
+                 <div>
+                   <div className="flex items-center gap-2">
+                     <span className="font-black text-xs uppercase text-black">Chrome Browser • Mac OS</span>
+                     <span className="bg-green-100 border border-green-300 text-green-800 text-[8px] font-bold uppercase px-1.5 py-0.5 rounded-full">Current Session</span>
+                   </div>
+                   <span className="text-[10px] text-gray-400 font-bold uppercase mt-1 block">Jaipur, Rajasthan, India • IP: 103.85.205.12</span>
+                 </div>
+               </div>
+
+               {/* Device Item 2 */}
+               <div className="flex justify-between items-center border-2 border-black p-4 rounded-2xl bg-gray-50">
+                 <div>
+                   <div className="flex items-center gap-2">
+                     <span className="font-black text-xs uppercase text-black">Safari Mobile • iOS Device</span>
+                   </div>
+                   <span className="text-[10px] text-gray-400 font-bold uppercase mt-1 block">Jaipur, Rajasthan, India • IP: 223.189.9.48 • Last active 2 hours ago</span>
+                 </div>
+               </div>
+             </div>
+
+             <button
+               onClick={handleRevokeAllSessions}
+               className="w-full bg-red-500 hover:bg-black text-white py-4 px-6 border-2 border-black rounded-xl font-black uppercase text-xs tracking-wider transition shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5 flex items-center justify-center gap-2"
+             >
+               Revoke All Other Sessions
+             </button>
+          </div>
 
          {/* Compliance & Data Control Desk */}
           <div className="bg-white border-4 border-black rounded-3xl p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mt-10">
