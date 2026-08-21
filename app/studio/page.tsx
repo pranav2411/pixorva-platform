@@ -11,6 +11,7 @@ import Link from "next/link";
 import { createClient } from '../utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { showToast } from '../utils/Toast';
+import { triggerRazorpayCheckout } from '../utils/RazorpayCheckout';
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -114,29 +115,24 @@ export default function StudioPage() {
         // Price is ₹999/mo (99900 paise)
         const parsedAmount = 999 * 100;
 
-        const response = await fetch('/api/checkout', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                userId: user.id,
-                agentName: `${name} (${role})`,
-                icon: icon,
-                steps: [{ name: "Custom Logic", icon: "Brain" }],
-                amount: parsedAmount
-            })
+        await triggerRazorpayCheckout({
+          userId: user.id,
+          agentName: `${name} (${role})`,
+          icon: icon,
+          steps: [{ name: "Custom Logic", icon: "Brain" }],
+          amount: parsedAmount,
+          email: user.email || "",
+          isSubscription: true,
+          onSuccess: () => {
+            setConfirmModal({ isOpen: false, type: 'trial' });
+            router.push("/workspace");
+          },
+          onFailure: () => {
+            setModalLoading(false);
+          }
         });
-
-        const data = await response.json();
-        if (data.url) {
-            window.location.href = data.url;
-        } else {
-            throw new Error(data.error || "Failed to create checkout session");
-        }
     } catch (e: any) {
         showToast("Deploy failed: " + e.message, "error");
-    } finally {
         setModalLoading(false);
     }
   };
@@ -262,30 +258,26 @@ export default function StudioPage() {
             return;
         }
 
-        // Otherwise, redirect to Stripe checkout directly for standard paid purchase of 999 INR
+        // Otherwise, redirect to Razorpay checkout directly for standard paid purchase of 999 INR
         setLoading(true);
         const parsedAmount = 999 * 100;
 
-        const response = await fetch('/api/checkout', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                userId: user.id,
-                agentName: `${name} (${role})`,
-                icon: icon,
-                steps: [{ name: "Custom Logic", icon: "Brain" }],
-                amount: parsedAmount
-            })
+        await triggerRazorpayCheckout({
+          userId: user.id,
+          agentName: `${name} (${role})`,
+          icon: icon,
+          steps: [{ name: "Custom Logic", icon: "Brain" }],
+          amount: parsedAmount,
+          email: user.email || "",
+          isSubscription: true,
+          onSuccess: () => {
+            setLoading(false);
+            router.push("/workspace");
+          },
+          onFailure: () => {
+            setLoading(false);
+          }
         });
-
-        const data = await response.json();
-        if (data.url) {
-            window.location.href = data.url;
-        } else {
-            throw new Error(data.error || "Failed to create checkout session");
-        }
 
     } catch (e: any) {
         showToast("Deploy failed: " + e.message, "error");

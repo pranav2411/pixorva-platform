@@ -8,6 +8,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "../utils/supabase/client";
 import { showToast } from "../utils/Toast";
+import { triggerRazorpayCheckout } from "../utils/RazorpayCheckout";
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -25,24 +26,21 @@ export default function PricingPage() {
     }
 
     try {
-      const response = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: user.id,
-          planName: plan === 'growth_pro' ? 'Growth Pro Plan' : 'Enterprise Plan',
-          amount: price * 100, // price in paise (INR subunit)
-          isPlan: true,
-          planCode: plan
-        })
+      await triggerRazorpayCheckout({
+        userId: user.id,
+        agentName: plan === 'growth_pro' ? 'Growth Pro Plan' : 'Enterprise Plan',
+        icon: plan === 'growth_pro' ? 'Zap' : 'Crown',
+        steps: [],
+        amount: price * 100,
+        email: user.email || "",
+        isSubscription: true,
+        isPlan: true,
+        planCode: plan,
+        onSuccess: () => {
+          router.push("/employees");
+        },
+        onFailure: () => {}
       });
-
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error(data.error || "Failed to create subscription session");
-      }
     } catch (err: any) {
       showToast("Subscription failed: " + err.message, "error");
     }

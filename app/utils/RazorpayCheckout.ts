@@ -27,6 +27,9 @@ interface CheckoutParams {
   email: string;
   onSuccess: () => void;
   onFailure: () => void;
+  isSubscription?: boolean;
+  isPlan?: boolean;
+  planCode?: string;
 }
 
 export const triggerRazorpayCheckout = async (params: CheckoutParams) => {
@@ -44,11 +47,14 @@ export const triggerRazorpayCheckout = async (params: CheckoutParams) => {
       body: JSON.stringify({
         amount: params.amount,
         currency: "INR",
+        isSubscription: params.isSubscription !== false,
         notes: {
           userId: params.userId,
           agentName: params.agentName ? params.agentName.replace(/[^\x00-\x7F]/g, "") : "",
           icon: params.icon ? params.icon.replace(/[^\x00-\x7F]/g, "") : "",
-          steps: params.steps ? JSON.stringify(params.steps).replace(/[^\x00-\x7F]/g, "") : "[]"
+          steps: params.steps ? JSON.stringify(params.steps).replace(/[^\x00-\x7F]/g, "") : "[]",
+          isPlan: params.isPlan ? "true" : "false",
+          planCode: params.planCode || ""
         }
       })
     });
@@ -60,20 +66,30 @@ export const triggerRazorpayCheckout = async (params: CheckoutParams) => {
       return;
     }
 
-    const options = {
+    const options: any = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-      amount: data.amount,
-      currency: data.currency,
       name: "Pixorva Platform",
       description: `Hire Agent: ${params.agentName.split('(')[0]}`,
-      order_id: data.order_id,
+      prefill: {
+        email: params.email
+      },
+      theme: {
+        color: "#FACC15"
+      },
+      modal: {
+        ondismiss: function () {
+          showToast("Payment cancelled by user.", "error");
+          params.onFailure();
+        }
+      },
       handler: async function (response: any) {
         try {
           const verifyRes = await fetch("/api/verify-payment", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              razorpay_order_id: response.razorpay_order_id,
+              razorpay_order_id: response.razorpay_order_id || null,
+              razorpay_subscription_id: response.razorpay_subscription_id || null,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature
             })
@@ -92,20 +108,17 @@ export const triggerRazorpayCheckout = async (params: CheckoutParams) => {
           showToast("Payment verification server error.", "error");
           params.onFailure();
         }
-      },
-      prefill: {
-        email: params.email
-      },
-      theme: {
-        color: "#FACC15"
-      },
-      modal: {
-        ondismiss: function () {
-          showToast("Payment cancelled by user.", "error");
-          params.onFailure();
-        }
       }
     };
+
+    // Inject either subscription ID or order ID parameters dynamically
+    if (data.subscription_id) {
+      options.subscription_id = data.subscription_id;
+    } else {
+      options.amount = data.amount;
+      options.currency = data.currency;
+      options.order_id = data.order_id;
+    }
 
     const rzp = new (window as any).Razorpay(options);
     rzp.on("payment.failed", function (response: any) {

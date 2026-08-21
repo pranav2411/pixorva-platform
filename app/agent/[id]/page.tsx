@@ -13,6 +13,7 @@ import { createClient } from '../../utils/supabase/client';
 import Link from "next/link";
 import { showToast } from '../../utils/Toast';
 import { EMPLOYEES } from '../../employees/page';
+import { triggerRazorpayCheckout } from '../../utils/RazorpayCheckout';
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -286,24 +287,21 @@ export default function AgentWorkstation() {
         
         const parsedAmount = parseInt(price.replace(/[^\d]/g, ""), 10) * 100;
 
-        const response = await fetch('/api/checkout', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                userId: user.id,
-                agentName: finalName,
-                icon: finalIcon,
-                steps: finalSteps,
-                amount: parsedAmount
-            })
+        await triggerRazorpayCheckout({
+          userId: user.id,
+          agentName: finalName,
+          icon: finalIcon,
+          steps: finalSteps,
+          amount: parsedAmount,
+          email: user.email || "",
+          isSubscription: true,
+          onSuccess: () => {
+            router.push("/workspace");
+          },
+          onFailure: () => {
+            setLoading(false);
+          }
         });
-
-        const data = await response.json();
-        if (data.url) {
-            window.location.href = data.url;
-        } else {
-            throw new Error(data.error || "Failed to create checkout session");
-        }
     } catch (err: unknown) {
         showToast("Failed to initiate purchase: " + (err as Error).message, "error");
         setLoading(false);

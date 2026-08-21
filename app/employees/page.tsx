@@ -7,6 +7,7 @@ import Link from "next/link";
 import { createClient } from '../utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { showToast } from '../utils/Toast';
+import { triggerRazorpayCheckout } from '../utils/RazorpayCheckout';
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -216,29 +217,24 @@ export default function EmployeesPage() {
         // Parse price (e.g. "₹999/mo" -> 99900 paise)
         const parsedAmount = parseInt(employee.price.replace(/[^\d]/g, ""), 10) * 100;
 
-        const response = await fetch('/api/checkout', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                userId: user.id,
-                agentName: `${employee.name} (${employee.role})`,
-                icon: employee.icon,
-                steps: employee.steps,
-                amount: parsedAmount
-            })
+        await triggerRazorpayCheckout({
+          userId: user.id,
+          agentName: `${employee.name} (${employee.role})`,
+          icon: employee.icon,
+          steps: employee.steps,
+          amount: parsedAmount,
+          email: user.email || "",
+          isSubscription: true,
+          onSuccess: () => {
+            setConfirmModal({ isOpen: false, employee: null, type: 'trial' });
+            router.push("/workspace");
+          },
+          onFailure: () => {
+            setModalLoading(false);
+          }
         });
-
-        const data = await response.json();
-        if (data.url) {
-            window.location.href = data.url;
-        } else {
-            throw new Error(data.error || "Failed to create checkout session");
-        }
     } catch (e: any) {
         showToast("Hiring failed: " + e.message, "error");
-    } finally {
         setModalLoading(false);
     }
   };
@@ -366,29 +362,25 @@ export default function EmployeesPage() {
             return;
         }
 
-        // Redirect to Stripe checkout directly for standard paid purchase if no trial / plans active
+        // Redirect to Razorpay checkout directly for standard paid purchase if no trial / plans active
         const parsedAmount = parseInt(employee.price.replace(/[^\d]/g, ""), 10) * 100;
 
-        const response = await fetch('/api/checkout', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                userId: user.id,
-                agentName: `${employee.name} (${employee.role})`,
-                icon: employee.icon,
-                steps: employee.steps,
-                amount: parsedAmount
-            })
+        await triggerRazorpayCheckout({
+          userId: user.id,
+          agentName: `${employee.name} (${employee.role})`,
+          icon: employee.icon,
+          steps: employee.steps,
+          amount: parsedAmount,
+          email: user.email || "",
+          isSubscription: true,
+          onSuccess: () => {
+            setHiring(null);
+            router.push("/workspace");
+          },
+          onFailure: () => {
+            setHiring(null);
+          }
         });
-
-        const data = await response.json();
-        if (data.url) {
-            window.location.href = data.url;
-        } else {
-            throw new Error(data.error || "Failed to create checkout session");
-        }
 
     } catch (e: unknown) {
         showToast("Hiring failed: " + (e as Error).message, "error");
