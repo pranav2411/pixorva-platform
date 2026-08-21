@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       const cookieStore = await cookies();
       const earlySupabase = createServerClient(
           process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
           {
             cookies: {
               getAll() { return cookieStore.getAll(); },
@@ -52,7 +52,10 @@ export async function POST(req: Request) {
       const { LocalDb } = require('../../utils/LocalDatabase');
       const apiKeyRecord = await LocalDb.validateKey(earlySupabase, activeKeyToken);
       if (!apiKeyRecord) {
-        return NextResponse.json({ success: false, result: "❌ Unauthorized: Invalid API Key." }, { status: 401 });
+        return NextResponse.json({ 
+          success: false, 
+          result: "❌ Unauthorized: Invalid API Key. If testing externally, please configure SUPABASE_SERVICE_ROLE_KEY in .env.local to authorize requests." 
+        }, { status: 401 });
       }
       resolvedUserId = apiKeyRecord.userId;
     }
@@ -60,7 +63,7 @@ export async function POST(req: Request) {
     const cookieStore = await cookies();
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
           cookies: {
             getAll() {
