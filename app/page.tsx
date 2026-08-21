@@ -308,10 +308,10 @@ export default function Home() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                <AgentCard name="EVA" role="Exec. Assistant" color="bg-orange-500" icon={<Briefcase size={64} className="text-white" />} desc="Manages your calendar & inbox." />
-                <AgentCard name="SONNY" role="Social Media" color="bg-green-500" icon={<Megaphone size={64} className="text-white" />} desc="Writes & posts viral content." />
-                <AgentCard name="PENNY" role="SEO Writer" color="bg-blue-600" icon={<PenTool size={64} className="text-white" />} desc="Ranks your blog #1 on Google." />
-                <AgentCard name="STAN" role="Lead Gen" color="bg-red-600" icon={<Target size={64} className="text-white" />} desc="Finds & closes new clients." />
+                <AgentCard name="DEVON" role="React Developer" color="bg-blue-600" icon={<Code size={64} className="text-white" />} desc="Builds UI components, fixes React hooks, and Next.js projects." />
+                <AgentCard name="RUBY" role="Backend Architect" color="bg-green-500" icon={<Database size={64} className="text-white" />} desc="Designs database schemas and generates optimal SQL queries." />
+                <AgentCard name="STELLA" role="Social Media Mgr" color="bg-orange-500" icon={<Camera size={64} className="text-white" />} desc="Drafts viral post descriptions and designs visual captures." />
+                <AgentCard name="GORDON" role="SEO Blog Writer" color="bg-red-600" icon={<PenTool size={64} className="text-white" />} desc="Ranks your articles #1 on Google search using targeted keywords." />
                 <CustomAgentCard />
               </div>
             </>
