@@ -128,6 +128,14 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      // Log payment in our local DB to make receipts history dynamically real!
+      try {
+        const { LocalDb } = require('../../utils/LocalDatabase');
+        LocalDb.addPayment(notes.userId, itemName, amountTotal, razorpay_payment_id);
+      } catch (dbErr) {
+        console.error("Local DB billing log error:", dbErr);
+      }
+
       // 3. Send receipt email via Resend
       if (userEmail && process.env.RESEND_API_KEY) {
         try {

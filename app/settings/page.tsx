@@ -37,6 +37,13 @@ export default function SettingsPage() {
   const [apiKeys, setApiKeys] = useState<{ id: string; name: string; token: string; created: string }[]>([]);
   const [newKeyName, setNewKeyName] = useState('');
 
+  // Real server-side dynamic states
+  const [tokensUsed, setTokensUsed] = useState(0);
+  const [runHours, setRunHours] = useState(0);
+  const [activeSession, setActiveSession] = useState<{ device: string; ip: string; location: string } | null>(null);
+  const [payments, setPayments] = useState<any[]>([]);
+  const [vaultMegaBytes, setVaultMegaBytes] = useState("0.00");
+
   // 1. Load User Data
   useEffect(() => {
     const getProfile = async () => {
@@ -70,12 +77,34 @@ export default function SettingsPage() {
             setPaidAgents(agentsData.filter((a: any) => a.is_paid_individually));
         }
 
-        // Load API keys
-        if (typeof window !== 'undefined') {
-          const storedKeys = localStorage.getItem(`pixorva_api_keys_${user.id}`);
-          if (storedKeys) {
-            try { setApiKeys(JSON.parse(storedKeys)); } catch (e) {}
+        // Load API Keys, Payments, Usage telemetry from Server
+        try {
+          const res = await fetch('/api/settings/data');
+          const serverData = await res.json();
+          if (serverData.success) {
+            setApiKeys(serverData.apiKeys || []);
+            setPayments(serverData.payments || []);
+            if (serverData.usage) {
+              setTokensUsed(serverData.usage.tokensUsed || 0);
+              setRunHours(serverData.usage.runHours || 0);
+            }
+            if (serverData.session) {
+              setActiveSession(serverData.session);
+            }
           }
+        } catch (serverErr) {
+          console.error("Failed to load settings data from server:", serverErr);
+        }
+
+        // Load RAG File Vault dynamically from local storage files
+        try {
+          const { getVaultFiles } = require('../utils/VaultStorage');
+          const files = getVaultFiles(user.id);
+          const totalBytes = files.reduce((acc: number, f: any) => acc + (f.content ? f.content.length : 0), 0);
+          const mb = (totalBytes / (1024 * 1024)).toFixed(2);
+          setVaultMegaBytes(mb);
+        } catch (vaultErr) {
+          console.error("Failed to load vault files telemetry:", vaultErr);
         }
       }
       setLoading(false);
@@ -245,35 +274,47 @@ export default function SettingsPage() {
   };
 
   // API Key Generators
-  const handleCreateApiKey = () => {
+  const handleCreateApiKey = async () => {
     if (!newKeyName.trim()) {
       showToast("Please enter a key description.", "error");
       return;
     }
-    const randChars = Array.from({ length: 24 }, () => Math.floor(Math.random() * 36).toString(36)).join('');
-    const newToken = `px_live_${randChars}`;
-    const newKey = {
-      id: Math.random().toString(36).substring(2),
-      name: newKeyName,
-      token: newToken,
-      created: new Date().toLocaleDateString()
-    };
-    const updated = [...apiKeys, newKey];
-    setApiKeys(updated);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(`pixorva_api_keys_${userId}`, JSON.stringify(updated));
+    try {
+      const res = await fetch('/api/settings/keys', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newKeyName })
+      });
+      const data = await res.json();
+      if (data.success && data.key) {
+        setApiKeys(prev => [...prev, data.key]);
+        setNewKeyName('');
+        showToast(`API Key "${newKeyName}" generated successfully.`, "success");
+      } else {
+        showToast(data.error || "Failed to generate API Key.", "error");
+      }
+    } catch (e) {
+      showToast("Failed to generate API Key.", "error");
     }
-    setNewKeyName('');
-    showToast(`API Key "${newKeyName}" generated successfully.`, "success");
   };
 
-  const handleRevokeApiKey = (id: string, name: string) => {
-    const updated = apiKeys.filter(k => k.id !== id);
-    setApiKeys(updated);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(`pixorva_api_keys_${userId}`, JSON.stringify(updated));
+  const handleRevokeApiKey = async (id: string, name: string) => {
+    try {
+      const res = await fetch('/api/settings/keys', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setApiKeys(prev => prev.filter(k => k.id !== id));
+        showToast(`API Key "${name}" revoked.`, "success");
+      } else {
+        showToast(data.error || "Failed to revoke API Key.", "error");
+      }
+    } catch (e) {
+      showToast("Failed to revoke API Key.", "error");
     }
-    showToast(`API Key "${name}" revoked.`, "success");
   };
 
   // Revoke All active devices/sessions
@@ -362,10 +403,10 @@ export default function SettingsPage() {
                <div>
                  <div className="flex justify-between items-center text-xs font-black uppercase text-gray-700 mb-2">
                    <span>LLM Token Compute API</span>
-                   <span className="text-black">42,854 / 100,000 tokens</span>
+                   <span className="text-black">{tokensUsed.toLocaleString()} / 100,000 tokens</span>
                  </div>
                  <div className="w-full bg-gray-100 border-2 border-black rounded-full h-4 overflow-hidden p-0.5">
-                   <div className="bg-green-400 border border-black rounded-full h-full" style={{ width: '42.8%' }} />
+                   <div className="bg-green-400 border border-black rounded-full h-full" style={{ width: `${Math.min((tokensUsed / 100000) * 100, 100)}%` }} />
                  </div>
                </div>
 
@@ -373,10 +414,10 @@ export default function SettingsPage() {
                <div>
                  <div className="flex justify-between items-center text-xs font-black uppercase text-gray-700 mb-2">
                    <span>RAG File Vault Disk Storage</span>
-                   <span className="text-black">2.4 MB / 10.0 MB</span>
+                   <span className="text-black">{vaultMegaBytes} MB / 10.0 MB</span>
                  </div>
                  <div className="w-full bg-gray-100 border-2 border-black rounded-full h-4 overflow-hidden p-0.5">
-                   <div className="bg-blue-400 border border-black rounded-full h-full" style={{ width: '24%' }} />
+                   <div className="bg-blue-400 border border-black rounded-full h-full" style={{ width: `${Math.min(parseFloat(vaultMegaBytes) * 10, 100)}%` }} />
                  </div>
                </div>
 
@@ -384,10 +425,10 @@ export default function SettingsPage() {
                <div>
                  <div className="flex justify-between items-center text-xs font-black uppercase text-gray-700 mb-2">
                    <span>AI Execution Engine Hours</span>
-                   <span className="text-black">18.5 hrs / 50.0 hrs</span>
+                   <span className="text-black">{runHours.toFixed(2)} hrs / 50.0 hrs</span>
                  </div>
                  <div className="w-full bg-gray-100 border-2 border-black rounded-full h-4 overflow-hidden p-0.5">
-                   <div className="bg-yellow-400 border border-black rounded-full h-full" style={{ width: '37%' }} />
+                   <div className="bg-yellow-400 border border-black rounded-full h-full" style={{ width: `${Math.min((runHours / 50) * 100, 100)}%` }} />
                  </div>
                </div>
              </div>
@@ -468,47 +509,30 @@ export default function SettingsPage() {
              </p>
 
              <div className="space-y-4">
-               {/* Invoice Item 1 */}
-               <div className="flex flex-col sm:flex-row sm:items-center justify-between border-2 border-black p-4 rounded-2xl bg-gray-50 gap-4">
-                 <div>
-                   <p className="font-black text-xs uppercase leading-none text-black mb-1">Growth Pro Monthly Subscription Plan</p>
-                   <span className="text-[10px] text-gray-400 font-bold uppercase block">Paid on Aug 20, 2026 • Razorpay pay_PqvLz89A1zXh2d</span>
+               {payments.length === 0 ? (
+                 <div className="border-2 border-dashed border-gray-300 p-6 rounded-2xl text-center text-xs text-gray-400 font-bold">
+                   No payments recorded yet. Active plans invoices will map right here once billing completes.
                  </div>
-                 <div className="flex items-center gap-4">
-                   <span className="font-black text-xs uppercase text-green-600 bg-green-50 px-2.5 py-1 rounded border border-green-200">₹4,999 Paid</span>
-                   <Link href="/sample_receipt.html" target="_blank" className="bg-white border-2 border-black px-3 py-1.5 rounded-lg text-[9px] font-black uppercase hover:bg-gray-100 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5">
-                     View Invoice
-                   </Link>
-                 </div>
-               </div>
-
-               {/* Invoice Item 2 */}
-               <div className="flex flex-col sm:flex-row sm:items-center justify-between border-2 border-black p-4 rounded-2xl bg-gray-50 gap-4">
-                 <div>
-                   <p className="font-black text-xs uppercase leading-none text-black mb-1">Ruby (Backend Architect) Contract Hire</p>
-                   <span className="text-[10px] text-gray-400 font-bold uppercase block">Paid on Aug 19, 2026 • Razorpay pay_OrvMv78F9bLz1s</span>
-                 </div>
-                 <div className="flex items-center gap-4">
-                   <span className="font-black text-xs uppercase text-green-600 bg-green-50 px-2.5 py-1 rounded border border-green-200">₹1,299 Paid</span>
-                   <Link href="/sample_receipt.html" target="_blank" className="bg-white border-2 border-black px-3 py-1.5 rounded-lg text-[9px] font-black uppercase hover:bg-gray-100 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5">
-                     View Invoice
-                   </Link>
-                 </div>
-               </div>
-
-               {/* Invoice Item 3 */}
-               <div className="flex flex-col sm:flex-row sm:items-center justify-between border-2 border-black p-4 rounded-2xl bg-gray-50 gap-4">
-                 <div>
-                   <p className="font-black text-xs uppercase leading-none text-black mb-1">Governance Control Tower Addon Gating</p>
-                   <span className="text-[10px] text-gray-400 font-bold uppercase block">Paid on Aug 18, 2026 • Razorpay pay_GvNp09A2xXvB4s</span>
-                 </div>
-                 <div className="flex items-center gap-4">
-                   <span className="font-black text-xs uppercase text-green-600 bg-green-50 px-2.5 py-1 rounded border border-green-200">₹999 Paid</span>
-                   <Link href="/sample_receipt.html" target="_blank" className="bg-white border-2 border-black px-3 py-1.5 rounded-lg text-[9px] font-black uppercase hover:bg-gray-100 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5">
-                     View Invoice
-                   </Link>
-                 </div>
-               </div>
+               ) : (
+                 payments.map(p => (
+                   <div key={p.id} className="flex flex-col sm:flex-row sm:items-center justify-between border-2 border-black p-4 rounded-2xl bg-gray-50 gap-4">
+                     <div>
+                       <p className="font-black text-xs uppercase leading-none text-black mb-1">{p.planName}</p>
+                       <span className="text-[10px] text-gray-400 font-bold uppercase block">Paid on {p.created} • Razorpay {p.razorpayId}</span>
+                     </div>
+                     <div className="flex items-center gap-4">
+                       <span className="font-black text-xs uppercase text-green-600 bg-green-50 px-2.5 py-1 rounded border border-green-200">₹{p.amount.toLocaleString()} Paid</span>
+                       <Link 
+                         href={`/sample_receipt.html?amount=${p.amount}&plan=${encodeURIComponent(p.planName)}&razorpayId=${p.razorpayId}`} 
+                         target="_blank" 
+                         className="bg-white border-2 border-black px-3 py-1.5 rounded-lg text-[9px] font-black uppercase hover:bg-gray-100 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5"
+                       >
+                         View Invoice
+                       </Link>
+                     </div>
+                   </div>
+                 ))
+               )}
              </div>
           </div>
 
@@ -523,26 +547,21 @@ export default function SettingsPage() {
              </p>
 
              <div className="space-y-3 mb-6">
-               {/* Device Item 1 */}
-               <div className="flex justify-between items-center border-2 border-black p-4 rounded-2xl bg-gray-50">
-                 <div>
-                   <div className="flex items-center gap-2">
-                     <span className="font-black text-xs uppercase text-black">Chrome Browser • Mac OS</span>
-                     <span className="bg-green-100 border border-green-300 text-green-800 text-[8px] font-bold uppercase px-1.5 py-0.5 rounded-full">Current Session</span>
+               {activeSession ? (
+                 <div className="flex justify-between items-center border-2 border-black p-4 rounded-2xl bg-gray-50">
+                   <div>
+                     <div className="flex items-center gap-2">
+                       <span className="font-black text-xs uppercase text-black">{activeSession.device}</span>
+                       <span className="bg-green-100 border border-green-300 text-green-800 text-[8px] font-bold uppercase px-1.5 py-0.5 rounded-full">Current Session</span>
+                     </div>
+                     <span className="text-[10px] text-gray-400 font-bold uppercase mt-1 block">{activeSession.location} • IP: {activeSession.ip}</span>
                    </div>
-                   <span className="text-[10px] text-gray-400 font-bold uppercase mt-1 block">Jaipur, Rajasthan, India • IP: 103.85.205.12</span>
                  </div>
-               </div>
-
-               {/* Device Item 2 */}
-               <div className="flex justify-between items-center border-2 border-black p-4 rounded-2xl bg-gray-50">
-                 <div>
-                   <div className="flex items-center gap-2">
-                     <span className="font-black text-xs uppercase text-black">Safari Mobile • iOS Device</span>
-                   </div>
-                   <span className="text-[10px] text-gray-400 font-bold uppercase mt-1 block">Jaipur, Rajasthan, India • IP: 223.189.9.48 • Last active 2 hours ago</span>
+               ) : (
+                 <div className="border-2 border-dashed border-gray-300 p-4 rounded-2xl text-center text-xs text-gray-400 font-bold">
+                   Loading session logs...
                  </div>
-               </div>
+               )}
              </div>
 
              <button

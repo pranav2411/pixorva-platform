@@ -30,6 +30,21 @@ async function searchWeb(query: string) {
 
 export async function POST(req: Request) {
   try {
+    // --- API KEY AUTHORIZATION CHECK ---
+    const authHeader = req.headers.get("Authorization");
+    let activeKeyToken = null;
+    let resolvedUserId = null;
+    
+    if (authHeader && authHeader.startsWith("Bearer px_live_")) {
+      activeKeyToken = authHeader.replace("Bearer ", "").trim();
+      const { LocalDb } = require('../../utils/LocalDatabase');
+      const apiKeyRecord = LocalDb.validateKey(activeKeyToken);
+      if (!apiKeyRecord) {
+        return NextResponse.json({ success: false, result: "❌ Unauthorized: Invalid API Key." }, { status: 401 });
+      }
+      resolvedUserId = apiKeyRecord.userId;
+    }
+
     const cookieStore = await cookies();
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -53,14 +68,15 @@ export async function POST(req: Request) {
     );
 
     const { input, agentId, userId, agentRole, fileData } = await req.json();
+    const finalUserId = resolvedUserId || userId;
 
     // --- 1. GET HISTORY ---
     let historyContext = "";
-    if (userId && agentId) {
+    if (finalUserId && agentId) {
         const { data: history } = await supabase
             .from('tasks')
             .select('input, result')
-            .eq('user_id', userId)
+            .eq('user_id', finalUserId)
             .eq('agent_id', agentId)
             .order('created_at', { ascending: false })
             .limit(6);
@@ -89,11 +105,11 @@ export async function POST(req: Request) {
             customInstructions = agentData.instructions || agentData.goal || "";
         }
 
-        if (userId) {
+        if (finalUserId) {
             const { data: profile } = await supabase
                 .from('profiles')
                 .select('trial_agent_id, trial_ends_at')
-                .eq('id', userId)
+                .eq('id', finalUserId)
                 .single();
 
             if (profile && profile.trial_agent_id === agentId) {
@@ -109,7 +125,6 @@ export async function POST(req: Request) {
     }
 
     // --- 4. THE ACTION PROTOCOL (STRICT) ---
-    // We put this LAST in the prompt so it overrides everything else.
     const ACTION_PROTOCOL = `
     🔴 CRITICAL SYSTEM RULE (OVERRIDE ALL OTHER INSTRUCTIONS):
     If the user request contains the word "Send" (e.g. "Send email", "Send this"), you MUST NOT write plain text.
@@ -129,11 +144,11 @@ export async function POST(req: Request) {
 
     // Fetch user's other agents for collaboration
     let collaborationPrompt = "";
-    if (userId) {
+    if (finalUserId) {
         const { data: hiredAgents } = await supabase
             .from('agents')
             .select('id, name, goal')
-            .eq('user_id', userId);
+            .eq('user_id', finalUserId);
 
         const allTemplates = [
             { name: "Devon", role: "React Developer", goal: "Builds UI components, fixes React hooks, and sets up Next.js projects." },
@@ -228,7 +243,7 @@ export async function POST(req: Request) {
                         .from('agents')
                         .select('*')
                         .eq('id', parsed.agentId)
-                        .eq('user_id', userId)
+                        .eq('user_id', finalUserId)
                         .maybeSingle();
                     targetAgent = data;
                 }
@@ -266,19 +281,32 @@ export async function POST(req: Request) {
     }
 
     // --- 7. SAVE ---
-    if (userId && agentId) {
+    if (finalUserId && agentId) {
         // Detect if it's an action (JSON) or Code or Text
         let type = 'text';
         if (finalResult.includes('"tool": "email"') || finalResult.includes('"tool": "delegate"')) type = 'action';
         else if (finalResult.includes('<html') || finalResult.includes('function')) type = 'code';
         
         await supabase.from('tasks').insert({
-            user_id: userId,
+            user_id: finalUserId,
             agent_id: agentId,
             input: fileData ? `[File] ${input}` : input,
             result: finalResult,
             type: type
         });
+    }
+
+    // --- 8. TELEMETRY LOGGING ---
+    try {
+        const estimatedTokens = Math.ceil(finalResult.length / 4) + Math.ceil(input.length / 4);
+        const { LocalDb } = require('../../utils/LocalDatabase');
+        if (activeKeyToken) {
+            LocalDb.incrementKeyUsage(activeKeyToken, estimatedTokens);
+        } else if (finalUserId) {
+            LocalDb.incrementUserUsage(finalUserId, estimatedTokens, 0.05);
+        }
+    } catch (telemetryError) {
+        console.error("Telemetry increment failed:", telemetryError);
     }
 
     return NextResponse.json({ success: true, result: finalResult });
