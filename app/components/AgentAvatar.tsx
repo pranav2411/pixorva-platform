@@ -117,7 +117,7 @@ export default function AgentAvatar({ id, className = "w-14 h-14" }: AgentAvatar
           )
         };
 
-      case 'sec-1': // Cy (Security Compliance)
+      case 'dev-4': // Cy (Security Compliance)
         return {
           bgColor: '#14B8A6', // Teal
           svg: (
@@ -169,7 +169,7 @@ export default function AgentAvatar({ id, className = "w-14 h-14" }: AgentAvatar
           )
         };
 
-      case 'sal-2': // Sarah (Cold SDR Outreach)
+      case 'sales-1': // Sarah (Cold SDR Outreach)
         return {
           bgColor: '#EC4899', // Pink
           svg: (
@@ -185,7 +185,7 @@ export default function AgentAvatar({ id, className = "w-14 h-14" }: AgentAvatar
           )
         };
 
-      case 'sal-1': // Larry (Leads B2B Miner)
+      case 'sales-2': // Larry (Leads B2B Miner)
         return {
           bgColor: '#06B6D4', // Cyan
           svg: (
@@ -202,7 +202,7 @@ export default function AgentAvatar({ id, className = "w-14 h-14" }: AgentAvatar
           )
         };
 
-      case 'ops-2': // Holly (HR Specialist)
+      case 'ops-1': // Holly (HR Specialist)
         return {
           bgColor: '#F43F5E', // Rose
           svg: (
@@ -221,7 +221,7 @@ export default function AgentAvatar({ id, className = "w-14 h-14" }: AgentAvatar
           )
         };
 
-      case 'ops-1': // Finn (EBITDA Optimizer)
+      case 'ops-2': // Finn (EBITDA Optimizer)
         return {
           bgColor: '#64748B', // Slate
           svg: (
@@ -266,7 +266,7 @@ export default function AgentAvatar({ id, className = "w-14 h-14" }: AgentAvatar
           )
         };
 
-      case 'ops-5': // Sam (Customer Tickets)
+      case 'sup-1': // Sam (Customer Tickets)
         return {
           bgColor: '#8B5CF6', // Violet
           svg: (

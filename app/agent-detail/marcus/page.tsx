@@ -32,6 +32,7 @@ export default function AgentDetailPage() {
   const [user, setUser] = useState<any>(null);
   const [agreeHire, setAgreeHire] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -42,6 +43,11 @@ export default function AgentDetailPage() {
       }
     };
     checkUser();
+
+    const timer = setInterval(() => {
+      setSeconds(prev => prev + 1);
+    }, 1000);
+    return () => clearInterval(timer);
   }, []);
 
   const employee = {
@@ -52,6 +58,24 @@ export default function AgentDetailPage() {
     price: "₹899/mo",
     steps: [{"type":"trigger","name":"Topic","icon":"Zap"},{"type":"action","name":"Write Thread","icon":"Twitter"}]
   };
+
+  const teamList = [
+    { name: 'Devon', id: 'dev-1', path: '/agent-detail/devon' },
+    { name: 'Ruby', id: 'dev-2', path: '/agent-detail/ruby' },
+    { name: 'Quinn', id: 'dev-3', path: '/agent-detail/quinn' },
+    { name: 'Cy', id: 'dev-4', path: '/agent-detail/cy' },
+    { name: 'Marcus', id: 'mkt-1', path: '/agent-detail/marcus' },
+    { name: 'Stella', id: 'mkt-2', path: '/agent-detail/stella' },
+    { name: 'Gordon', id: 'mkt-3', path: '/agent-detail/gordon' },
+    { name: 'Vic', id: 'mkt-4', path: '/agent-detail/vic' },
+    { name: 'Sarah', id: 'sales-1', path: '/agent-detail/sarah' },
+    { name: 'Larry', id: 'sales-2', path: '/agent-detail/larry' },
+    { name: 'Holly', id: 'ops-1', path: '/agent-detail/holly' },
+    { name: 'Finn', id: 'ops-2', path: '/agent-detail/finn' },
+    { name: 'Lawson', id: 'ops-3', path: '/agent-detail/lawson' },
+    { name: 'Pat', id: 'ops-4', path: '/agent-detail/pat' },
+    { name: 'Sam', id: 'sup-1', path: '/agent-detail/sam' }
+  ];
 
   const handleHireNow = async () => {
     if (!user) {
@@ -234,7 +258,7 @@ export default function AgentDetailPage() {
       <section className="bg-white border-b-4 border-black py-16 px-6">
         <div className="max-w-4xl mx-auto text-center space-y-6">
           <div className="flex justify-center mb-4">
-            <AgentAvatar id="${employee.id}" className="w-24 h-24 rounded-full" />
+            <AgentAvatar id={employee.id} className="w-24 h-24 rounded-full" />
           </div>
           <h2 className={`text-3xl md:text-5xl uppercase font-black leading-none ${oswald.className}`}>
             Meet Marcus.
@@ -457,11 +481,13 @@ export default function AgentDetailPage() {
             Marcus Loves to work with a team
           </h2>
           <div className="flex gap-4 justify-center items-center flex-wrap pt-4">
-            {['devon', 'ruby', 'quinn', 'cy', 'marcus', 'stella', 'gordon', 'vic', 'sarah', 'larry', 'holly', 'finn', 'lawson', 'pat', 'sam'].map((name, i) => (
-              <div key={i} className="bg-white border-2 border-black p-2 rounded-2xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex flex-col items-center gap-1.5 w-20">
-                <AgentAvatar id={name === 'devon' ? 'dev-1' : name === 'ruby' ? 'dev-2' : name === 'cy' ? 'sec-1' : 'ops-1'} className="w-8 h-8 rounded-full" />
-                <span className="text-[8px] font-black uppercase text-gray-400">{name}</span>
-              </div>
+            {teamList.map((item, i) => (
+              <Link key={i} href={item.path} className="block transition transform hover:scale-105 active:scale-95">
+                <div className="bg-white border-2 border-black p-2 rounded-2xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex flex-col items-center gap-1.5 w-20">
+                  <AgentAvatar id={item.id} className="w-8 h-8 rounded-full" />
+                  <span className="text-[8px] font-black uppercase text-gray-400">{item.name}</span>
+                </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -472,10 +498,10 @@ export default function AgentDetailPage() {
         <div className="max-w-4xl mx-auto space-y-8 border-4 border-black p-10 rounded-3xl bg-yellow-50 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] relative">
           <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(circle,_black_1.5px,_transparent_1.5px)] bg-[length:15px_15px]"></div>
           <h3 className={`text-3xl md:text-5xl uppercase font-black leading-[0.9] tracking-tight ${oswald.className} relative z-10`}>
-            In the <span className="bg-black text-white px-3 py-1 inline-block border-4 border-black transform rotate-1">120 seconds</span> it took you to get here,
+            In the <span className="bg-black text-white px-3 py-1 inline-block border-4 border-black transform rotate-1">{seconds} seconds</span> you have been on this page,
           </h3>
           <p className="text-lg md:text-xl font-bold text-gray-800 leading-snug relative z-10 max-w-xl mx-auto">
-            Marcus could have structured 4 viral referral loops, outbound-invited 800 leads, and boosted conversions +15%.
+            Marcus could have structured {(seconds * 0.03).toFixed(2)} viral referral loops, outbound-invited {(seconds * 6.6).toFixed(0)} leads, and boosted conversions +15%.
           </p>
           <div className="pt-4 relative z-10">
             <button 
