@@ -12,6 +12,8 @@ import { createClient } from '../utils/supabase/client';
 import { useRouter } from "next/navigation";
 import { showToast } from '../utils/Toast';
 import { getVaultFiles, saveVaultFile, deleteVaultFile, VaultFile } from "../utils/VaultStorage";
+import AgentAvatar from '../components/AgentAvatar';
+import { EMPLOYEES } from '../employees/page';
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -624,9 +626,14 @@ export default function WorkspacePage() {
                         <div key={agent.id} className="border-4 border-black bg-white rounded-2xl p-5 flex flex-col justify-between hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition">
                           <div>
                             <div className="flex justify-between items-start mb-3">
-                              <div className="w-10 h-10 bg-black text-white rounded-lg flex items-center justify-center border-2 border-black">
-                                {getIcon(agent.steps?.[0]?.icon || agent.icon || "Zap")}
-                              </div>
+                              <AgentAvatar 
+                                id={(() => {
+                                  const cleanName = agent.name.split('(')[0].trim().toLowerCase();
+                                  const found = EMPLOYEES.find(emp => emp.name.toLowerCase() === cleanName);
+                                  return found ? found.id : 'custom';
+                                })()} 
+                                className="w-10 h-10" 
+                              />
                               <button onClick={() => setDeletingAgentId(agent.id)} className="text-gray-300 hover:text-red-600 transition">
                                 <Trash2 size={16}/>
                               </button>

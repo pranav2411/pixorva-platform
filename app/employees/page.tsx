@@ -8,6 +8,7 @@ import { createClient } from '../utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { showToast } from '../utils/Toast';
 import { triggerRazorpayCheckout } from '../utils/RazorpayCheckout';
+import AgentAvatar from '../components/AgentAvatar';
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -440,10 +441,8 @@ export default function EmployeesPage() {
                     {/* CARD CONTENT */}
                     <div>
                         <div className="flex justify-between items-start mb-6">
-                            <div className={`w-14 h-14 ${emp.color} border-2 border-black rounded-lg flex items-center justify-center text-black`}>
-                                {getIcon(emp.icon)}
-                            </div>
-                            <span className="bg-black text-white px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide border border-black">
+                            <AgentAvatar id={emp.id} className="w-14 h-14" />
+                            <span className="bg-black text-white px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide border border-black text-xs">
                                 {emp.category}
                             </span>
                         </div>

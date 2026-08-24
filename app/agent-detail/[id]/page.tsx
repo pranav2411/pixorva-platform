@@ -22,6 +22,7 @@ import { EMPLOYEES } from '../../employees/page';
 import { createClient } from '../../utils/supabase/client';
 import { triggerRazorpayCheckout } from '../../utils/RazorpayCheckout';
 import { showToast } from '../../utils/Toast';
+import AgentAvatar from '../../components/AgentAvatar';
 
 const oswald = Oswald({ subsets: ['latin'], weight: ['400', '700'] });
 const inter = Inter({ subsets: ['latin'] });
@@ -311,8 +312,8 @@ export default function AgentDetailPage() {
       {/* MEET AGENT BIO */}
       <section className="bg-white border-b-4 border-black py-16 px-6">
         <div className="max-w-4xl mx-auto text-center space-y-6">
-          <div className="w-24 h-24 rounded-full border-4 border-black bg-yellow-400 mx-auto flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <Cpu size={40} className="text-black" />
+          <div className="flex justify-center mb-4">
+            <AgentAvatar id={employee.id} className="w-24 h-24 rounded-full" />
           </div>
           
           <h2 className={`text-3xl md:text-5xl uppercase font-black leading-none ${oswald.className}`}>
