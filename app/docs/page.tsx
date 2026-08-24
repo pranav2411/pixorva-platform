@@ -737,27 +737,27 @@ export default function DocsPage() {
       <div className="flex-grow flex flex-col md:flex-row max-w-7xl mx-auto w-full p-4 md:p-8 gap-6">
         
         {/* Left Sidebar */}
-        <aside className="w-full md:w-64 shrink-0 space-y-6">
+        <aside className="w-full md:w-64 shrink-0 md:sticky md:top-24 md:max-h-[calc(100vh-140px)] flex flex-col overflow-hidden">
           {/* Search box */}
-          <div className="relative">
+          <div className="relative shrink-0 mb-4">
             <input 
               type="text"
               placeholder="Search documentation..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 bg-white border-2 border-black rounded-xl text-xs font-bold focus:outline-none placeholder-gray-400"
+              className="w-full pl-9 pr-4 py-2.5 bg-white border-2 border-black rounded-xl text-xs font-bold focus:outline-none placeholder-gray-400 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-none transition-all"
             />
             <Search size={14} className="absolute left-3 top-3.5 text-gray-400" />
           </div>
 
           {/* Navigation Links list */}
-          <nav className="space-y-6">
+          <nav className="flex-grow overflow-y-auto pr-1 space-y-6 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-400">
             {categories.map(cat => {
               const catArticles = filteredArticles.filter(art => art.category === cat.id);
               if (catArticles.length === 0) return null;
 
               return (
-                <div key={cat.id}>
+                <div key={cat.id} className="pr-1">
                   <h4 className="text-[10px] font-black uppercase tracking-wider text-gray-400 mb-2 flex items-center gap-1.5">
                     {cat.icon}
                     {cat.name}
