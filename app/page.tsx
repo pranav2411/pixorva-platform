@@ -196,12 +196,7 @@ export default function Home() {
             "name": "Pixorva",
             "url": "https://pixorva.com",
             "logo": "https://pixorva.com/favicon.ico",
-            "description": "Hire your next AI Employee. Browse, inspect, and provision specialized AI agents for your business team.",
-            "sameAs": [
-              "https://twitter.com/pixorva",
-              "https://github.com/pixorva",
-              "https://www.linkedin.com/company/pixorva"
-            ]
+            "description": "Hire your next AI Employee. Browse, inspect, and provision specialized AI agents for your business team."
           })
         }}
       />
