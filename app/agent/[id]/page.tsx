@@ -1072,7 +1072,7 @@ export default function AgentWorkstation() {
   }
 
   return (
-    <div className={`min-h-screen bg-gray-50 text-black ${inter.className} flex flex-col md:flex-row relative overflow-hidden`}>
+    <div className={`h-screen bg-gray-50 text-black ${inter.className} flex flex-col md:flex-row relative overflow-hidden`}>
       
       {/* SIDEBAR Backdrop overlay on mobile */}
       {sidebarOpen && (
