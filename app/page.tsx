@@ -185,6 +185,26 @@ export default function Home() {
 
   return (
     <div className={`min-h-screen bg-white text-black selection:bg-yellow-400 selection:text-black ${inter.className}`}>
+      
+      {/* JSON-LD Structured Data for Brand Indexing */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "Pixorva",
+            "url": "https://pixorva.com",
+            "logo": "https://pixorva.com/favicon.ico",
+            "description": "Hire your next AI Employee. Browse, inspect, and provision specialized AI agents for your business team.",
+            "sameAs": [
+              "https://twitter.com/pixorva",
+              "https://github.com/pixorva",
+              "https://www.linkedin.com/company/pixorva"
+            ]
+          })
+        }}
+      />
 
       {/* NAVBAR */}
       <nav className="flex items-center justify-between px-6 md:px-12 py-5 sticky top-0 bg-white/95 backdrop-blur-sm z-50 border-b-4 border-black">
