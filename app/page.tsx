@@ -178,72 +178,12 @@ export default function Home() {
 
         {/* Desktop Links (Hidden on Mobile) */}
         <div className="hidden lg:flex gap-8 items-center justify-center flex-grow mx-6 text-sm font-bold uppercase tracking-wide py-1 relative">
-          <div 
-            className="relative"
-            onMouseEnter={() => setAiDropdown(true)}
-          >
-            <button 
-              className="hover:text-yellow-600 transition flex items-center gap-1 font-bold uppercase text-sm"
-              onClick={() => setAiDropdown(!aiDropdown)}
-            >
-              AI Employees {aiDropdown ? <ChevronUp size={14}/> : <ChevronDown size={14}/>}
-            </button>
-          </div>
           <Link href="/employees" className="hover:text-yellow-600 transition">Marketplace</Link>
           <Link href="/pricing" className="hover:text-yellow-600 transition">Pricing</Link>
           <Link href="/studio" className="hover:text-yellow-600 transition">Studio</Link>
           <Link href="/workspace" className="hover:text-yellow-600 transition">Workspace</Link>
           <Link href="/governance" className="hover:text-yellow-600 transition">Governance</Link>
           <Link href="/docs" className="hover:text-yellow-600 transition">Docs</Link>
-
-          {/* Desktop Dropdown */}
-          {aiDropdown && (
-            <div 
-              onMouseLeave={() => setAiDropdown(false)}
-              className="absolute left-0 top-[38px] w-[560px] bg-white border-4 border-black rounded-3xl p-5 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-50 grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-150 text-black text-left"
-            >
-              <div className="border-2 border-black p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition flex flex-col justify-between">
-                <div>
-                  <span className="bg-blue-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">DEVON</span>
-                  <h4 className="font-black text-xs uppercase mt-2">React Builder</h4>
-                  <p className="text-[10px] text-gray-500 font-bold mt-1">Builds frontend templates, fits Next.js routes, reviews components.</p>
-                </div>
-                <Link href="/agent-detail/dev-1" className="text-[10px] font-black text-blue-600 underline mt-2">View profile →</Link>
-              </div>
-
-              <div className="border-2 border-black p-3 rounded-xl bg-green-50 hover:bg-green-100 transition flex flex-col justify-between">
-                <div>
-                  <span className="bg-green-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">RUBY</span>
-                  <h4 className="font-black text-xs uppercase mt-2">DB Architect</h4>
-                  <p className="text-[10px] text-gray-500 font-bold mt-1">Connects Supabase databases, generates query lists, creates APIs.</p>
-                </div>
-                <Link href="/agent-detail/dev-2" className="text-[10px] font-black text-green-600 underline mt-2">View profile →</Link>
-              </div>
-
-              <div className="border-2 border-black p-3 rounded-xl bg-orange-50 hover:bg-orange-100 transition flex flex-col justify-between">
-                <div>
-                  <span className="bg-orange-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">STELLA</span>
-                  <h4 className="font-black text-xs uppercase mt-2">Social Manager</h4>
-                  <p className="text-[10px] text-gray-500 font-bold mt-1">Drafts captions, coordinates campaign workflows, structures Reels.</p>
-                </div>
-                <Link href="/agent-detail/mkt-2" className="text-[10px] font-black text-orange-600 underline mt-2">View profile →</Link>
-              </div>
-
-              <div className="border-2 border-black p-3 rounded-xl bg-red-50 hover:bg-red-100 transition flex flex-col justify-between">
-                <div>
-                  <span className="bg-red-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">GORDON</span>
-                  <h4 className="font-black text-xs uppercase mt-2">SEO Blog Writer</h4>
-                  <p className="text-[10px] text-gray-500 font-bold mt-1">Researches semantic target tags and generates ranking pages.</p>
-                </div>
-                <Link href="/agent-detail/mkt-3" className="text-[10px] font-black text-red-600 underline mt-2">View profile →</Link>
-              </div>
-
-              <div className="col-span-2 border-t-2 border-black pt-3 flex justify-between items-center text-[10px] font-black uppercase text-gray-400">
-                <span>15+ Active AI recruits available</span>
-                <Link href="/employees" className="text-black bg-yellow-400 px-3 py-1 border-2 border-black rounded shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition">Go to Marketplace →</Link>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Desktop Right Panel (Hidden on Mobile) */}

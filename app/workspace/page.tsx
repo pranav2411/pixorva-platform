@@ -630,7 +630,7 @@ export default function WorkspacePage() {
                                 id={(() => {
                                   const cleanName = agent.name.split('(')[0].trim().toLowerCase();
                                   const found = EMPLOYEES.find(emp => emp.name.toLowerCase() === cleanName);
-                                  return found ? found.id : 'custom';
+                                  return found ? found.id : agent.id;
                                 })()} 
                                 className="w-10 h-10" 
                               />
