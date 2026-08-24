@@ -121,25 +121,25 @@ export default function AgentDetailPage() {
           <div className="text-left space-y-6">
             <div className="inline-flex items-center gap-2 bg-black border-2 border-white px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transform -rotate-1 text-white">
               <Sparkles size={12} className="text-yellow-400" />
-              Meet ${employee.name}
+              Meet Ruby
             </div>
 
             <h1 className={`text-5xl md:text-7xl font-black uppercase leading-[0.9] tracking-tight ${oswald.className}`} style={{ color: "#FFFFFF" }}>
               YOUR AI <br />
               <span className="text-black bg-yellow-400 px-3 py-1 inline-block border-4 border-black transform rotate-1 mt-2">
-                ${employee.role}
+                Backend Architect
               </span>
             </h1>
 
             <p className="text-lg md:text-xl font-medium leading-relaxed max-w-xl" style={{ color: "rgba(255,255,255,0.95)" }}>
-              &ldquo;${employee.name === 'Sam' ? 'I manage customer support tickets, answer help center queries, and audit customer SLA satisfaction scores.' : 'I write optimized SQL queries, construct Node.js APIs, and configure Supabase schemas.'}&rdquo;
+              &ldquo;I write optimized SQL queries, construct Node.js APIs, and configure Supabase schemas.&rdquo;
             </p>
 
             {/* Price Box */}
             <div className="bg-black/25 border-2 border-white p-4 rounded-2xl max-w-sm flex justify-between items-center text-white">
               <div>
                 <span className="text-[10px] font-black uppercase text-white/70 block">Monthly Rate</span>
-                <span className="text-3xl font-black text-yellow-400">${employee.price}</span>
+                <span className="text-3xl font-black text-yellow-400">₹1,299/mo</span>
               </div>
               <span className="bg-white text-black text-[9px] font-black uppercase px-2.5 py-1 rounded">24/7 AVAILABILITY</span>
             </div>
@@ -163,7 +163,7 @@ export default function AgentDetailPage() {
                 disabled={loading}
                 className="w-full bg-yellow-400 text-black hover:bg-black hover:text-white border-4 border-black text-xs font-black uppercase py-4 rounded-2xl tracking-wider transition-all shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-1 disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {loading ? 'Processing Transaction...' : `⚡ Hire ${employee.name.toUpperCase()} NOW`}
+                {loading ? 'Processing Transaction...' : '⚡ Hire RUBY NOW'}
               </button>
             </div>
           </div>
@@ -177,7 +177,7 @@ export default function AgentDetailPage() {
                 <div className="w-3.5 h-3.5 rounded-full bg-green-500 border border-black"></div>
               </div>
               <div className="text-[10px] font-bold text-gray-400">DB Schema Console</div>
-              <span className="bg-green-600 text-white text-[8px] font-black px-2 py-0.5 rounded border border-black">
+              <span className="bg-green-600 text-white text-[8px] font-black px-2 py-0.5 rounded border border-black font-sans">
                 SQL READY
               </span>
             </div>
@@ -187,7 +187,7 @@ export default function AgentDetailPage() {
               <div><span className="text-yellow-400">FROM</span> users</div>
               <div><span className="text-yellow-400">JOIN</span> profiles <span className="text-yellow-400">ON</span> users.id = profiles.user_id</div>
               <div><span className="text-yellow-400">WHERE</span> profiles.active = <span className="text-purple-400">true</span>;</div>
-              <div className="pt-4 border-t border-gray-800 text-[10px] text-green-400">
+              <div className="pt-4 border-t border-gray-800 text-[10px] text-green-400 font-sans">
                 <span>✓ 149 records retrieved. Indexing optimized. Latency: 12ms.</span>
               </div>
             </div>
@@ -222,15 +222,15 @@ export default function AgentDetailPage() {
             Does It Sound Familiar?
           </h2>
           <div className="flex flex-col items-center gap-6">
-            ${["Our database queries are slow and bottlenecking user traffic.","Designing relational schemas is confusing and leads to server errors.","Setting up Supabase tables and migrations takes up half our sprint."].map((pt, idx) => (
+            {["Our database queries are slow and bottlenecking user traffic.","Designing relational schemas is confusing and leads to server errors.","Setting up Supabase tables and migrations takes up half our sprint."].map((pt, idx) => (
               <div 
                 key={idx} 
-                className="bg-white border-4 border-black px-6 py-4 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-xl text-left relative transform rotate-[-0.5deg] hover:rotate-0 transition-transform"
+                className="bg-white border-4 border-black px-6 py-4 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-xl text-left relative transform rotate-[-0.5deg] hover:rotate-0 transition-transform w-full"
               >
                 <div className="flex items-start gap-3">
                   <span className="text-xl text-red-500 font-bold shrink-0">💬</span>
                   <p className="text-xs md:text-sm font-bold text-gray-800 leading-snug">
-                    &ldquo;${pt}&rdquo;
+                    &ldquo;{pt}&rdquo;
                   </p>
                 </div>
               </div>
@@ -246,33 +246,258 @@ export default function AgentDetailPage() {
             <AgentAvatar id="${employee.id}" className="w-24 h-24 rounded-full" />
           </div>
           <h2 className={`text-3xl md:text-5xl uppercase font-black leading-none ${oswald.className}`}>
-            Meet ${employee.name}.
+            Meet Ruby.
           </h2>
           <p className="text-base md:text-lg font-bold text-gray-500 uppercase tracking-wide">
-            They&apos;ll make your life way easier.
+            She&apos;ll make your life way easier.
+          </p>
+          <p className="text-sm md:text-base text-gray-600 max-w-2xl mx-auto leading-relaxed font-medium">
+            Ruby is your AI Backend Architect, a tireless teammate who lives inside your workspace channels.
+            She clears the clutter, drafts outputs in your voice, compiles code, and automates pipelines.
+            Think of her as the digital chief of staff you always wished you had: handling the busywork in the background
+            so you can focus on the decisions only you can make. She works around the clock, never drops a thread, and learns
+            the way you work the longer you collaborate together.
           </p>
         </div>
       </section>
 
-      {/* FOOTER EXPLORE */}
-      <section className="bg-gray-100 border-t-4 border-black py-12 text-center">
-        <div className="max-w-4xl mx-auto space-y-6">
-          <h3 className={`text-3xl uppercase font-black ${oswald.className}`}>Scale your team today</h3>
-          <p className="text-xs text-gray-500 font-bold uppercase">Explore more AI experts in our Marketplace</p>
-          <div className="flex justify-center gap-4">
-            <Link href="/employees">
-              <button className="bg-yellow-400 text-black border-4 border-black px-8 py-3.5 rounded-xl font-black uppercase text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5">
-                Explore Marketplace
-              </button>
-            </Link>
+      {/* FEATURE DETAILS SECTIONS */}
+      <section className="bg-gray-50 py-16 px-6 border-b-4 border-black">
+        <div className="max-w-5xl mx-auto space-y-20">
+          
+            <div 
+              key={0} 
+              className="flex flex-col md:flex-row gap-12 items-center justify-between "
+            >
+              {/* Text */}
+              <div className="w-full md:w-1/2 space-y-4">
+                <span className="bg-yellow-400 text-black border-2 border-black px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-widest inline-block shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  FEATURE 01
+                </span>
+                <h3 className={`text-3xl uppercase font-black leading-none ${oswald.className}`}>
+                  RELATIONAL SQL OUTLINES
+                </h3>
+                <p className="text-xs text-gray-500 font-bold leading-relaxed">
+                  Ruby builds structured, relational tables with index keys, avoiding high-latency request loops.
+                </p>
+                <ul className="space-y-2 pt-2">
+                  
+                    <li className="flex items-center gap-2 text-xs font-bold text-gray-700">
+                      <CheckCircle size={14} className="text-green-600 shrink-0" />
+                      <span>Primary & Foreign Key bindings</span>
+                    </li>
+                  
+                    <li className="flex items-center gap-2 text-xs font-bold text-gray-700">
+                      <CheckCircle size={14} className="text-green-600 shrink-0" />
+                      <span>Automated indexed queries</span>
+                    </li>
+                  
+                    <li className="flex items-center gap-2 text-xs font-bold text-gray-700">
+                      <CheckCircle size={14} className="text-green-600 shrink-0" />
+                      <span>Optimizes slow search loops</span>
+                    </li>
+                  
+                </ul>
+              </div>
+
+              {/* Visual Box Mockup */}
+              <div className="w-full md:w-5/12">
+                <div className="w-full bg-[#1E1E1E] border-4 border-black p-5 rounded-3xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-white text-left font-mono">
+            <h4 className="font-black text-xs uppercase text-green-400 border-b-2 border-black pb-2 font-sans">SQL Table Plan</h4>
+            <pre className="text-[10px] pt-3 leading-normal font-mono">
+              {`CREATE TABLE profiles (
+  id UUID REFERENCES auth.users,
+  plan TEXT DEFAULT 'Trial'
+);`}
+            </pre>
+          </div>
+              </div>
+            </div>
+          
+            <div 
+              key={1} 
+              className="flex flex-col md:flex-row gap-12 items-center justify-between md:flex-row-reverse"
+            >
+              {/* Text */}
+              <div className="w-full md:w-1/2 space-y-4">
+                <span className="bg-yellow-400 text-black border-2 border-black px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-widest inline-block shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  FEATURE 02
+                </span>
+                <h3 className={`text-3xl uppercase font-black leading-none ${oswald.className}`}>
+                  SCHEMA MIGRATIONS
+                </h3>
+                <p className="text-xs text-gray-500 font-bold leading-relaxed">
+                  Ruby constructs structured Supabase configuration schemas and migration statements on demand.
+                </p>
+                <ul className="space-y-2 pt-2">
+                  
+                    <li className="flex items-center gap-2 text-xs font-bold text-gray-700">
+                      <CheckCircle size={14} className="text-green-600 shrink-0" />
+                      <span>Supabase config maps</span>
+                    </li>
+                  
+                    <li className="flex items-center gap-2 text-xs font-bold text-gray-700">
+                      <CheckCircle size={14} className="text-green-600 shrink-0" />
+                      <span>ACID migrations log</span>
+                    </li>
+                  
+                    <li className="flex items-center gap-2 text-xs font-bold text-gray-700">
+                      <CheckCircle size={14} className="text-green-600 shrink-0" />
+                      <span>Generates safe test files</span>
+                    </li>
+                  
+                </ul>
+              </div>
+
+              {/* Visual Box Mockup */}
+              <div className="w-full md:w-5/12">
+                <div className="w-full bg-white border-4 border-black p-5 rounded-3xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-black text-left">
+            <h4 className="font-black text-xs uppercase text-blue-600 border-b-2 border-black pb-2">Supabase Sync</h4>
+            <div className="text-[10px] font-bold text-gray-500 pt-3 leading-relaxed">
+              ✓ Database triggers configured successfully.<br />
+              ✓ RLS policies active for authenticated.
+            </div>
+          </div>
+              </div>
+            </div>
+          
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section className="bg-white py-16 px-6 border-b-4 border-black text-center">
+        <div className="max-w-5xl mx-auto space-y-12">
+          <h2 className={`text-4xl md:text-5xl uppercase font-black leading-none ${oswald.className}`}>
+            How Ruby Works
+          </h2>
+          <p className="text-xs text-gray-500 font-bold uppercase max-w-xl mx-auto">
+            Up and running in minutes. Ruby handles the operational busywork so you can spend your day on what matters.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6">
+            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+              <div className="w-10 h-10 rounded-lg bg-blue-100 border-2 border-black flex items-center justify-center font-black text-lg">1</div>
+              <h4 className="font-black text-sm uppercase">Connect Workspace</h4>
+              <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                Link Ruby to your Slack, email, or repository in a couple of clicks. Setup is fully automated.
+              </p>
+            </div>
+            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+              <div className="w-10 h-10 rounded-lg bg-yellow-100 border-2 border-black flex items-center justify-center font-black text-lg">2</div>
+              <h4 className="font-black text-sm uppercase">Executes Daily Audits</h4>
+              <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                She scans files, compiles tasks, and writes output drafts in your channels around the clock.
+              </p>
+            </div>
+            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+              <div className="w-10 h-10 rounded-lg bg-green-100 border-2 border-black flex items-center justify-center font-black text-lg">3</div>
+              <h4 className="font-black text-sm uppercase">You Stay in Control</h4>
+              <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                Nothing is deployed or finalized without your approval. Review drafts with a single click.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="border-t-4 border-black bg-white py-6 text-center text-xs font-black uppercase">
-        Pixorva AI Workforce Registry © 2026.
-      </footer>
+      {/* TESTIMONIALS */}
+      <section className="bg-gray-50 py-16 px-6 border-b-4 border-black text-center">
+        <div className="max-w-6xl mx-auto space-y-12">
+          <h2 className={`text-3.5xl md:text-5xl uppercase font-black leading-none ${oswald.className}`}>
+            Ruby is the most ❤️ loved AI employee
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6">
+            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+              <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
+              <h4 className="font-black text-xs uppercase text-black">&quot;Huge time savings&quot;</h4>
+              <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                &quot;${employee.name} quickly learned my style and workflow. It is like having a full-time expert on call.&quot;
+              </p>
+              <span className="text-[10px] font-black text-gray-400 uppercase">— Luke Birch, Founder</span>
+            </div>
+            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+              <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
+              <h4 className="font-black text-xs uppercase text-black">&quot;Absolutely Game Changer&quot;</h4>
+              <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                &quot;I check in with her like a real colleague. She saves me hours every single week.&quot;
+              </p>
+              <span className="text-[10px] font-black text-gray-400 uppercase">— Cari Kaufman, COO</span>
+            </div>
+            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+              <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
+              <h4 className="font-black text-xs uppercase text-black">&quot;Saves hours of stress&quot;</h4>
+              <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                &quot;She runs autonomous loops and lints everything perfectly. Best digital recruitment ever.&quot;
+              </p>
+              <span className="text-[10px] font-black text-gray-400 uppercase">— Steve Harris, Engineer</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ SECTION */}
+      <section className="bg-white py-16 px-6 border-b-4 border-black">
+        <div className="max-w-4xl mx-auto space-y-12">
+          <h2 className={`text-4xl md:text-5xl uppercase font-black leading-none text-center ${oswald.className}`}>
+            Questions?
+          </h2>
+          <div className="space-y-4">
+            {[
+              { q: "What exactly can Ruby do?", a: "I write optimized SQL queries, construct Node.js APIs, and configure Supabase schemas. She executes autonomous steps based on your triggers." },
+              { q: "Is my company data private and secure?", a: "Yes. All credentials, database details, and files are encrypted end-to-end. We never sell or share data." },
+              { q: "How does she learn our workflows?", a: "She evaluates historical logs, patterns, and code specs to match your layout style and requirements." },
+              { q: "Can I cancel or change plans anytime?", a: "Absolutely. You can hire, pause, or upgrade plans inside your Pixorva workspace console at any time." }
+            ].map((faq, idx) => (
+              <details key={idx} className="group border-4 border-black bg-white rounded-2xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] [&_summary::-webkit-details-marker]:hidden">
+                <summary className="flex items-center justify-between cursor-pointer focus:outline-none">
+                  <h4 className="font-black text-sm uppercase text-black">{faq.q}</h4>
+                  <span className="font-black text-lg transition group-open:rotate-180">+</span>
+                </summary>
+                <p className="text-xs text-gray-500 font-medium mt-3 leading-relaxed border-t border-black/10 pt-3">
+                  {faq.a}
+                </p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* TEAM LOVES TO COLLABORATE */}
+      <section className="bg-gray-50 py-16 px-6 border-b-4 border-black text-center overflow-hidden">
+        <div className="max-w-5xl mx-auto space-y-10">
+          <h2 className={`text-3xl md:text-5xl uppercase font-black leading-none ${oswald.className}`}>
+            Ruby Loves to work with a team
+          </h2>
+          <div className="flex gap-4 justify-center items-center flex-wrap pt-4">
+            {['devon', 'ruby', 'quinn', 'cy', 'marcus', 'stella', 'gordon', 'vic', 'sarah', 'larry', 'holly', 'finn', 'lawson', 'pat', 'sam'].map((name, i) => (
+              <div key={i} className="bg-white border-2 border-black p-2 rounded-2xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex flex-col items-center gap-1.5 w-20">
+                <AgentAvatar id={name === 'devon' ? 'dev-1' : name === 'ruby' ? 'dev-2' : name === 'cy' ? 'sec-1' : 'ops-1'} className="w-8 h-8 rounded-full" />
+                <span className="text-[8px] font-black uppercase text-gray-400">{name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* TIME ELAPSED BANNER */}
+      <section className="bg-white py-16 px-6 text-center border-b-4 border-black">
+        <div className="max-w-4xl mx-auto space-y-8 border-4 border-black p-10 rounded-3xl bg-yellow-50 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] relative">
+          <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(circle,_black_1.5px,_transparent_1.5px)] bg-[length:15px_15px]"></div>
+          <h3 className={`text-3xl md:text-5xl uppercase font-black leading-[0.9] tracking-tight ${oswald.className} relative z-10`}>
+            In the <span className="bg-black text-white px-3 py-1 inline-block border-4 border-black transform rotate-1">120 seconds</span> it took you to get here,
+          </h3>
+          <p className="text-lg md:text-xl font-bold text-gray-800 leading-snug relative z-10 max-w-xl mx-auto">
+            Ruby could have indexed 1,500 Postgres tables, optimized 24 nested queries, and written 5 Node.js database configurations.
+          </p>
+          <div className="pt-4 relative z-10">
+            <button 
+              onClick={handleHireNow}
+              className="bg-yellow-400 text-black border-4 border-black px-8 py-3.5 rounded-xl font-black uppercase text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5"
+            >
+              Hire Ruby Now
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
