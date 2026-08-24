@@ -4,19 +4,20 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { Oswald, Inter } from 'next/font/google';
-import { 
-  ArrowLeft, 
-  Check, 
-  Sparkles, 
-  CreditCard, 
-  Cpu, 
-  MessageSquare, 
-  Send, 
-  CornerDownRight, 
-  Clock, 
+import {
+  ArrowLeft,
+  Check,
+  Sparkles,
+  CreditCard,
+  Cpu,
+  MessageSquare,
+  Send,
+  CornerDownRight,
+  Clock,
   CheckCircle,
-  FileText, 
-  ExternalLink 
+  FileText,
+  ExternalLink,
+  Briefcase
 } from 'lucide-react';
 import { EMPLOYEES } from '../../employees/page';
 import { createClient } from '../../utils/supabase/client';
@@ -75,7 +76,7 @@ export default function AgentDetailPage() {
     setLoading(true);
     try {
       const amountVal = parseInt(employee.price.replace(/[^\d]/g, ""), 10) * 100;
-      
+
       await triggerRazorpayCheckout({
         userId: user.id,
         agentName: `${employee.name} (${employee.role})`,
@@ -158,9 +159,154 @@ export default function AgentDetailPage() {
 
   const dynamic = getDynamicContent();
 
+  const renderMockup = (category: string) => {
+    switch (category) {
+      case 'Engineering':
+        return (
+          <div className="w-full max-w-lg mx-auto bg-[#1E1E1E] border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-white text-left font-mono">
+            {/* Editor Top Tabs Bar */}
+            <div className="bg-[#2D2D2D] border-b-4 border-black px-4 py-2.5 flex items-center justify-between">
+              <div className="flex gap-2">
+                <div className="w-3.5 h-3.5 rounded-full bg-red-500 border border-black"></div>
+                <div className="w-3.5 h-3.5 rounded-full bg-yellow-500 border border-black"></div>
+                <div className="w-3.5 h-3.5 rounded-full bg-green-500 border border-black"></div>
+              </div>
+              <div className="flex gap-2 text-[10px] font-bold">
+                <span className="bg-[#1E1E1E] px-3 py-1 border-t-2 border-yellow-400 text-yellow-400 rounded-t-md">index.tsx</span>
+                <span className="opacity-40 px-3 py-1">schema.sql</span>
+                <span className="opacity-40 px-3 py-1">agent.config</span>
+              </div>
+              <span className="bg-blue-600 text-white text-[8px] font-black px-2 py-0.5 rounded border border-black">
+                TS ACTIVE
+              </span>
+            </div>
+
+            {/* Code Workspace */}
+            <div className="p-5 text-xs space-y-2 leading-relaxed min-h-[220px]">
+              <div><span className="text-purple-400">import</span> {'{ runBuild }'} <span className="text-purple-400">from</span> <span className="text-green-300">&apos;@pixorva/compiler&apos;</span>;</div>
+              <div><span className="text-purple-400">const</span> <span className="text-blue-300">agent</span> = <span className="text-yellow-300">createAgent</span>({'{'}</div>
+              <div className="pl-4"><span className="text-gray-400">name:</span> <span className="text-green-300">&quot;{employee.name}&quot;</span>,</div>
+              <div className="pl-4"><span className="text-gray-400">role:</span> <span className="text-green-300">&quot;{employee.role}&quot;</span>,</div>
+              <div className="pl-4"><span className="text-gray-400">status:</span> <span className="text-green-400">&apos;COMPILING_GATEWAY&apos;</span></div>
+              <div>{'})'};</div>
+              <div className="pt-4 border-t border-gray-800 text-[10px] text-green-400 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-green-400 animate-ping"></span>
+                <span>✓ Pipeline compiled successfully in 0.8s. 0 errors.</span>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'Marketing':
+        // Sonny-style social media grid feed layout
+        return (
+          <div className="w-full max-w-lg mx-auto bg-gray-100 border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-black relative min-h-[300px] p-4">
+            {/* Grid of background post mockups */}
+            <div className="grid grid-cols-3 gap-2 opacity-30 select-none pointer-events-none">
+              <div className="bg-blue-200 border-2 border-black rounded-lg aspect-square p-2 text-[6px] font-bold">Post 1<br />Likes: 1.2k</div>
+              <div className="bg-yellow-200 border-2 border-black rounded-lg aspect-square p-2 text-[6px] font-bold">Post 2<br />Shares: 490</div>
+              <div className="bg-red-200 border-2 border-black rounded-lg aspect-square p-2 text-[6px] font-bold">Post 3<br />Saves: 231</div>
+              <div className="bg-green-200 border-2 border-black rounded-lg aspect-square p-2 text-[6px] font-bold">Post 4<br />Reach: 14k</div>
+              <div className="bg-purple-200 border-2 border-black rounded-lg aspect-square p-2 text-[6px] font-bold">Post 5<br />Engagement</div>
+              <div className="bg-pink-200 border-2 border-black rounded-lg aspect-square p-2 text-[6px] font-bold">Post 6<br />Comments</div>
+            </div>
+
+            {/* Floating Pop-up Modal in center (Sonny style!) */}
+            <div className="absolute inset-x-6 top-1/2 -translate-y-1/2 bg-white border-4 border-black p-5 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-center space-y-3 z-20">
+              <div className="flex justify-center mb-1">
+                <AgentAvatar id={employee.id} className="w-12 h-12" />
+              </div>
+              <span className="text-[8px] font-black uppercase tracking-wider text-gray-400">Active Campaign Manager</span>
+              <h4 className="font-black text-sm uppercase leading-none">Your AI Content Generator</h4>
+              <p className="text-[10px] text-gray-500 font-bold leading-normal">
+                &ldquo;I draft threads, Reels scripts, and ad layouts on autopilot to grow your user metrics.&rdquo;
+              </p>
+              <div className="bg-green-100 text-green-800 text-[8px] font-black px-2 py-1 rounded-md border border-green-300 inline-block uppercase">
+                🚀 CTR Growth +240%
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'Sales':
+        // Stan-style floating leads map layout
+        return (
+          <div className="w-full max-w-lg mx-auto bg-yellow-100 border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-black relative min-h-[300px] p-6 flex flex-col justify-center items-center">
+            {/* Center Avatar */}
+            <div className="z-10 bg-white p-2 rounded-full border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-4">
+              <AgentAvatar id={employee.id} className="w-14 h-14 rounded-full" />
+            </div>
+
+            {/* Floating lead bubbles (Stan style!) */}
+            <div className="absolute top-4 left-4 bg-white border-2 border-black px-2.5 py-1 rounded-xl text-[9px] font-black uppercase tracking-wide shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transform rotate-[-2deg]">
+              💼 SaaS Founders <span className="bg-yellow-400 text-black px-1 rounded ml-1">240k</span>
+            </div>
+            <div className="absolute top-6 right-4 bg-white border-2 border-black px-2.5 py-1 rounded-xl text-[9px] font-black uppercase tracking-wide shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transform rotate-[1deg]">
+              🦷 Dental Clinics <span className="bg-yellow-400 text-black px-1 rounded ml-1">9.2k</span>
+            </div>
+            <div className="absolute bottom-16 left-3 bg-white border-2 border-black px-2.5 py-1 rounded-xl text-[9px] font-black uppercase tracking-wide shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transform rotate-[3deg]">
+              🔧 HVAC Techs <span className="bg-yellow-400 text-black px-1 rounded ml-1">5.3k</span>
+            </div>
+            <div className="absolute bottom-6 right-3 bg-white border-2 border-black px-2.5 py-1 rounded-xl text-[9px] font-black uppercase tracking-wide shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transform rotate-[-1deg]">
+              ⚖️ Law Firms <span className="bg-yellow-400 text-black px-1 rounded ml-1">1.2k</span>
+            </div>
+
+            {/* Subtitle outreach booker */}
+            <div className="mt-4 bg-white border-2 border-black px-4 py-2 rounded-xl text-[10px] font-bold text-center max-w-[240px]">
+              <span className="text-blue-600 font-black">✓ Email sequences ready</span>
+              <p className="text-[9px] text-gray-500 font-medium mt-0.5">Customized pitches book appointments directly to your calendar.</p>
+            </div>
+          </div>
+        );
+
+      default:
+        // Eva-style Executive Assistant Planner checklist layout
+        return (
+          <div className="w-full max-w-lg mx-auto bg-white border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-black text-left">
+            {/* Header */}
+            <div className="bg-rose-50 border-b-4 border-black px-4 py-3 flex items-center justify-between">
+              <div className="flex gap-1.5">
+                <div className="w-3.5 h-3.5 rounded-full bg-red-500 border border-black"></div>
+                <div className="w-3.5 h-3.5 rounded-full bg-yellow-500 border border-black"></div>
+                <div className="w-3.5 h-3.5 rounded-full bg-green-500 border border-black"></div>
+              </div>
+              <span className="text-[9px] font-black uppercase tracking-wider text-rose-700 bg-rose-100 px-2 py-0.5 rounded border border-rose-300">
+                LIVE TASK TICKETS
+              </span>
+            </div>
+
+            {/* Task list list */}
+            <div className="p-5 space-y-4">
+              <div className="border-2 border-black p-3 rounded-xl bg-gray-50 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="w-5 h-5 rounded border-2 border-black bg-yellow-400 flex items-center justify-center text-xs font-black">✓</span>
+                  <div>
+                    <h5 className="text-[11px] font-black uppercase">Mutual Corporate NDA</h5>
+                    <p className="text-[8px] text-gray-500 font-bold">Auto-drafted and verified legal compliance</p>
+                  </div>
+                </div>
+                <span className="bg-green-100 text-green-800 text-[8px] font-black px-2 py-0.5 rounded border border-green-300 uppercase">Passed</span>
+              </div>
+
+              <div className="border-2 border-black p-3 rounded-xl bg-gray-50 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="w-5 h-5 rounded border-2 border-black bg-yellow-400 flex items-center justify-center text-xs font-black">✓</span>
+                  <div>
+                    <h5 className="text-[11px] font-black uppercase">Q3 Finance Ledger</h5>
+                    <p className="text-[8px] text-gray-500 font-bold">Optimized payroll EBITDA parameters</p>
+                  </div>
+                </div>
+                <span className="bg-yellow-100 text-yellow-800 text-[8px] font-black px-2 py-0.5 rounded border border-yellow-300 uppercase">Set</span>
+              </div>
+            </div>
+          </div>
+        );
+    }
+  };
+
   return (
     <div className={`min-h-screen bg-white text-black ${inter.className} flex flex-col`}>
-      
+
       {/* HEADER */}
       <header className="bg-white border-b-4 border-black px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-3">
@@ -168,7 +314,7 @@ export default function AgentDetailPage() {
             <ArrowLeft size={16} />
           </Link>
           <span className={`text-2xl font-black uppercase tracking-wider ${oswald.className}`}>
-            Pixorva Registry
+            Pixorva
           </span>
         </div>
         <Link href="/employees" className="text-xs font-black uppercase border-2 border-black px-4 py-2 rounded-xl hover:bg-gray-50 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5">
@@ -180,14 +326,14 @@ export default function AgentDetailPage() {
       <section className="bg-[#FF5A36] border-b-4 border-black px-6 py-12 md:py-20 text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle,_black_1.5px,_transparent_1.5px)] bg-[length:15px_15px]"></div>
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
-          
+
           {/* Left Text */}
           <div className="text-left space-y-6">
             <div className="inline-flex items-center gap-2 bg-black border-2 border-white px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transform -rotate-1">
               <Sparkles size={12} className="text-yellow-400" />
               Meet {employee.name}
             </div>
-            
+
             <h1 className={`text-5xl md:text-7xl font-black uppercase leading-[0.9] tracking-tight ${oswald.className}`}>
               YOUR AI <br />
               <span className="text-black bg-yellow-400 px-3 py-1 inline-block border-4 border-black transform rotate-1 mt-2">
@@ -211,8 +357,8 @@ export default function AgentDetailPage() {
             {/* Consent checkbox and HIRE CTA */}
             <div className="space-y-4 pt-4 max-w-md">
               <label className="flex items-start gap-2.5 cursor-pointer select-none">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={agreeHire}
                   onChange={(e) => setAgreeHire(e.target.checked)}
                   className="mt-1 border-2 border-black rounded text-black bg-white accent-yellow-400"
@@ -232,29 +378,7 @@ export default function AgentDetailPage() {
             </div>
           </div>
 
-          {/* Right Visual Browser Mockup */}
-          <div className="w-full max-w-lg mx-auto bg-white border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-black">
-            {/* Browser Header */}
-            <div className="bg-gray-100 border-b-4 border-black px-4 py-3 flex items-center justify-between">
-              <div className="flex gap-1.5">
-                <div className="w-3.5 h-3.5 rounded-full bg-red-500 border border-black"></div>
-                <div className="w-3.5 h-3.5 rounded-full bg-yellow-500 border border-black"></div>
-                <div className="w-3.5 h-3.5 rounded-full bg-green-500 border border-black"></div>
-              </div>
-              <div className="text-[10px] font-black uppercase tracking-wider text-gray-400">
-                {dynamic.mockupTitle}
-              </div>
-              <span className="bg-green-100 text-green-800 text-[8px] font-black px-2 py-0.5 rounded uppercase border border-green-300">
-                {dynamic.mockupBadge}
-              </span>
-            </div>
-            
-            {/* Mockup Editor Content */}
-            <div className="p-6 bg-[#1A1A1A] text-green-400 font-mono text-xs min-h-[220px] overflow-x-auto text-left relative">
-              <div className="absolute top-2 right-3 text-[9px] text-gray-500 uppercase font-black font-sans">WORKSPACE PREVIEW</div>
-              <pre className="whitespace-pre-wrap">{dynamic.mockupText}</pre>
-            </div>
-          </div>
+          {renderMockup(employee.category)}
 
         </div>
       </section>
@@ -262,7 +386,7 @@ export default function AgentDetailPage() {
       {/* METRICS BAR SECTION */}
       <section className="bg-white border-b-4 border-black py-10 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-          
+
           <div className="border-4 border-black p-6 rounded-2xl bg-yellow-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center space-y-1">
             <span className={`text-4xl font-black text-black block ${oswald.className}`}>{dynamic.metrics.val1}</span>
             <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">{dynamic.metrics.label1}</span>
@@ -285,15 +409,15 @@ export default function AgentDetailPage() {
       <section className="bg-gray-50 border-b-4 border-black py-16 px-6 relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle,_black_1.5px,_transparent_1.5px)] bg-[length:12px_12px]"></div>
         <div className="max-w-4xl mx-auto text-center space-y-12 relative z-10">
-          
+
           <h2 className={`text-4xl md:text-6xl uppercase font-black leading-none ${oswald.className}`}>
             Does It Sound Familiar?
           </h2>
 
           <div className="flex flex-col items-center gap-6">
             {dynamic.painPoints.map((pt, idx) => (
-              <div 
-                key={idx} 
+              <div
+                key={idx}
                 className="bg-white border-4 border-black px-6 py-4 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-xl text-left relative transform rotate-[-0.5deg] hover:rotate-0 transition-transform"
               >
                 <div className="flex items-start gap-3">
@@ -315,7 +439,7 @@ export default function AgentDetailPage() {
           <div className="flex justify-center mb-4">
             <AgentAvatar id={employee.id} className="w-24 h-24 rounded-full" />
           </div>
-          
+
           <h2 className={`text-3xl md:text-5xl uppercase font-black leading-none ${oswald.className}`}>
             Meet {employee.name}.
           </h2>
@@ -324,10 +448,10 @@ export default function AgentDetailPage() {
           </p>
 
           <p className="text-sm md:text-base text-gray-600 max-w-2xl mx-auto leading-relaxed font-medium">
-            {employee.name} is your AI {employee.role}, a tireless teammate who lives inside your workspace channels. 
-            She clears the clutter, drafts outputs in your voice, compiles code, and automates pipelines. 
-            Think of her as the digital chief of staff you always wished you had: handling the busywork in the background 
-            so you can focus on the decisions only you can make. She works around the clock, never drops a thread, and learns 
+            {employee.name} is your AI {employee.role}, a tireless teammate who lives inside your workspace channels.
+            She clears the clutter, drafts outputs in your voice, compiles code, and automates pipelines.
+            Think of her as the digital chief of staff you always wished you had: handling the busywork in the background
+            so you can focus on the decisions only you can make. She works around the clock, never drops a thread, and learns
             the way you work the longer you collaborate together.
           </p>
         </div>
@@ -336,7 +460,7 @@ export default function AgentDetailPage() {
       {/* SKILLS & PIPELINE ALTERNATING DETAILS */}
       <section className="bg-gray-50 py-16 px-6">
         <div className="max-w-5xl mx-auto space-y-16">
-          
+
           {/* Highlight 1: Core Skills */}
           <div className="flex flex-col md:flex-row gap-8 items-center justify-between">
             <div className="w-full md:w-1/2 space-y-4">
@@ -349,7 +473,7 @@ export default function AgentDetailPage() {
               <p className="text-xs text-gray-500 font-bold leading-relaxed">
                 We equip our agents with state-of-the-art context mappings so they run correct specifications and parameters.
               </p>
-              
+
               <div className="flex flex-wrap gap-2 pt-2">
                 {employee.skills.map((skill, i) => (
                   <span key={i} className="text-[10px] font-black border border-black px-2.5 py-1 rounded bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
