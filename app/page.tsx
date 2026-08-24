@@ -162,7 +162,7 @@ export default function Home() {
 
       {/* NAVBAR */}
       <nav className="flex items-center justify-between px-6 md:px-12 py-5 sticky top-0 bg-white/95 backdrop-blur-sm z-50 border-b-4 border-black">
-        <div className={`text-2xl md:text-3xl tracking-tighter uppercase italic ${oswald.className} flex items-center gap-2`}>
+        <div className={`text-2xl md:text-3xl tracking-tighter uppercase italic ${oswald.className} flex items-center gap-2 shrink-0`}>
           <Image
             src="/favicon.ico"
             alt="Pixorva Logo"
@@ -170,10 +170,10 @@ export default function Home() {
             height={36}
             className="w-8 h-8 md:w-9 md:h-9 rounded-lg"
           />
-          Pixorva
+          <span className="hidden md:inline">Pixorva</span>
         </div>
 
-        <div className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar max-w-[150px] sm:max-w-sm md:max-w-none text-[10px] md:text-sm font-bold uppercase tracking-wide py-1">
+        <div className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar flex-grow justify-center mx-2 md:mx-6 md:max-w-none text-[10px] md:text-sm font-bold uppercase tracking-wide py-1">
           <Link href="/employees" className="hover:text-yellow-600 transition shrink-0">Marketplace</Link>
           <Link href="/pricing" className="hover:text-yellow-600 transition shrink-0">Pricing</Link>
           <Link href="/studio" className="hover:text-yellow-600 transition shrink-0">Studio</Link>
