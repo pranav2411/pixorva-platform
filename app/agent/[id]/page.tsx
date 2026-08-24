@@ -260,6 +260,7 @@ export default function AgentWorkstation() {
   const [placeholderValues, setPlaceholderValues] = useState<Record<string, string>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
   const logsEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (pendingAction && pendingAction.body) {
@@ -822,7 +823,7 @@ export default function AgentWorkstation() {
       if (activeTab === 'terminal') {
           const chatMessages = getActiveChatMessages();
           return (
-             <div className="flex flex-col h-full bg-gray-50 overflow-y-auto p-6 md:p-8">
+             <div ref={chatContainerRef} className="flex flex-col h-full bg-gray-50 overflow-y-auto p-6 md:p-8">
                  {chatMessages.length === 0 ? (
                      <div className="flex-1 flex flex-col items-center justify-center text-gray-400 opacity-50 h-full">
                          <Zap size={48} className="mb-4 text-black animate-bounce"/>
@@ -1031,10 +1032,15 @@ export default function AgentWorkstation() {
 
   // Scroll to bottom of chat
   useEffect(() => {
-      if (activeTab === 'terminal') {
-          setTimeout(() => {
-              logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-          }, 100);
+      if (activeTab === 'terminal' && chatContainerRef.current) {
+          const container = chatContainerRef.current;
+          container.scrollTop = container.scrollHeight;
+          const t1 = setTimeout(() => { container.scrollTop = container.scrollHeight; }, 50);
+          const t2 = setTimeout(() => { container.scrollTop = container.scrollHeight; }, 250);
+          return () => {
+              clearTimeout(t1);
+              clearTimeout(t2);
+          };
       }
   }, [tasks, activeTab, activeSessionIndex]);
 
