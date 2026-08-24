@@ -407,10 +407,12 @@ export default function SettingsPage() {
     <div className={`min-h-screen bg-gray-50 text-black pb-20 ${inter.className}`}>
       
       {/* Navbar */}
-      <nav className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-         <div className="flex items-center gap-4">
-            <Link href="/" className="p-2 hover:bg-gray-100 rounded-full transition"><ArrowLeft size={20}/></Link>
-            <h1 className={`text-xl uppercase ${oswald.className}`}>Settings</h1>
+      <nav className="bg-white border-b-4 border-black px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+         <div className="flex items-center gap-3">
+            <Link href="/" className="bg-black text-white p-2 rounded-lg border-2 border-black hover:bg-yellow-400 hover:text-black transition shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-y-0.5 flex items-center justify-center shrink-0">
+              <ArrowLeft size={16} />
+            </Link>
+            <h1 className={`text-2xl font-black uppercase tracking-wider ${oswald.className}`}>Settings</h1>
          </div>
       </nav>
 
