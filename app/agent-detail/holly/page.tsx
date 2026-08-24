@@ -125,7 +125,7 @@ export default function AgentDetailPage() {
             <ArrowLeft size={16} />
           </Link>
           <span className={`text-2xl font-black uppercase tracking-wider ${oswald.className}`}>
-            Pixorva Registry
+            Pixorva Marketplace
           </span>
         </div>
         <Link href="/employees" className="text-xs font-black uppercase border-2 border-black px-4 py-2 rounded-xl hover:bg-gray-50 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5">
