@@ -310,7 +310,13 @@ export default function AgentWorkstation() {
             .order('created_at', { ascending: false })
             .limit(50); 
 
-          if (taskData) setTasks(taskData);
+          if (taskData) {
+              setTasks(taskData);
+              if (typeof window !== 'undefined') {
+                  const clearTimes = JSON.parse(localStorage.getItem('chat_sessions_' + params.id) || '[]');
+                  setActiveSessionIndex(clearTimes.length);
+              }
+          }
 
           // Check trial state
           const { data: profile } = await supabase
@@ -414,7 +420,8 @@ export default function AgentWorkstation() {
     if (!inputText.trim() && !selectedFile) return;
     setRunning(true);
     setPendingAction(null); // Clear previous actions
-    setActiveSessionIndex(null); // Reset to active session view
+    const clearTimes = JSON.parse(localStorage.getItem('chat_sessions_' + params.id) || '[]');
+    setActiveSessionIndex(clearTimes.length);
     setActiveTab('terminal'); 
     setTaskInput(""); 
     
@@ -935,7 +942,17 @@ export default function AgentWorkstation() {
 
       return groups
           .map((groupTasks, index) => {
-              if (groupTasks.length === 0) return null;
+              if (groupTasks.length === 0) {
+                  if (index === sortedClearTimes.length) {
+                      return {
+                          index,
+                          tasks: [],
+                          title: "New Chat Session",
+                          lastUpdateTime: sortedClearTimes[sortedClearTimes.length - 1] || new Date().toISOString()
+                      };
+                  }
+                  return null;
+              }
               
               const firstMsg = groupTasks[0];
               const title = firstMsg.input.length > 25 
@@ -972,10 +989,13 @@ export default function AgentWorkstation() {
           const sessions = JSON.parse(localStorage.getItem('chat_sessions_' + params.id) || '[]');
           sessions.push(new Date().toISOString());
           localStorage.setItem('chat_sessions_' + params.id, JSON.stringify(sessions));
+          setActiveSessionIndex(sessions.length);
+      } else {
+          setActiveSessionIndex(null);
       }
       setCurrentResult("");
-      setActiveSessionIndex(null);
-      setTasks(prev => [...prev]);
+      setActiveTab('terminal');
+      setSidebarOpen(false);
       showToast("Started a new chat session.", "success");
   };
 
