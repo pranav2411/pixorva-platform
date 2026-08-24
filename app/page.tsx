@@ -15,9 +15,32 @@ import {
 import { createClient } from './utils/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { showToast } from './utils/Toast';
+import AgentAvatar from "./components/AgentAvatar";
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
+
+const getRegistryIdByName = (name: string): string => {
+  const cleanName = name.split('(')[0].trim().toLowerCase();
+  const map: Record<string, string> = {
+    devon: 'dev-1',
+    ruby: 'dev-2',
+    quinn: 'dev-3',
+    cy: 'dev-4',
+    marcus: 'mkt-1',
+    stella: 'mkt-2',
+    gordon: 'mkt-3',
+    vic: 'mkt-4',
+    sarah: 'sales-1',
+    larry: 'sales-2',
+    holly: 'ops-1',
+    finn: 'ops-2',
+    lawson: 'ops-3',
+    pat: 'ops-4',
+    sam: 'sup-1'
+  };
+  return map[cleanName] || 'custom';
+};
 
 interface Profile {
   full_name?: string;
@@ -376,9 +399,7 @@ export default function Home() {
                     <div key={agent.id} className="group relative h-[300px] border-4 border-black bg-white rounded-2xl p-6 flex flex-col justify-between hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-y-1">
                       <div>
                         <div className="flex justify-between items-start mb-4">
-                          <div className="w-12 h-12 bg-black text-white rounded-lg flex items-center justify-center border-2 border-black">
-                            {getIcon(agent.steps?.[0]?.icon || agent.icon || "Zap")}
-                          </div>
+                          <AgentAvatar id={getRegistryIdByName(agent.name)} className="w-12 h-12 border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" />
                           <button onClick={() => setDeletingAgentId(agent.id)} className="text-gray-300 hover:text-red-600 transition p-1">
                             <Trash2 size={18} />
                           </button>

@@ -7,16 +7,39 @@ import {
   ArrowLeft, Play, Terminal, Code, Megaphone, ShieldCheck, 
   DollarSign, User as UserIcon, Layout, FileText, Zap, Loader2,
   Users, PieChart, Camera, Database, Lock, Clipboard, Video, Target, 
-  CheckCircle, Smartphone, Paperclip, X, Download, Mail, Send, Plus, Trash2
+  CheckCircle, Smartphone, Paperclip, X, Download, Mail, Send, Plus, Trash2, Twitter
 } from "lucide-react";
 import { createClient } from '../../utils/supabase/client';
 import Link from "next/link";
 import { showToast } from '../../utils/Toast';
 import { EMPLOYEES } from '../../employees/page';
 import { triggerRazorpayCheckout } from '../../utils/RazorpayCheckout';
+import AgentAvatar from "../../components/AgentAvatar";
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
+
+const getRegistryIdByName = (name: string): string => {
+  const cleanName = name.split('(')[0].trim().toLowerCase();
+  const map: Record<string, string> = {
+    devon: 'dev-1',
+    ruby: 'dev-2',
+    quinn: 'dev-3',
+    cy: 'dev-4',
+    marcus: 'mkt-1',
+    stella: 'mkt-2',
+    gordon: 'mkt-3',
+    vic: 'mkt-4',
+    sarah: 'sales-1',
+    larry: 'sales-2',
+    holly: 'ops-1',
+    finn: 'ops-2',
+    lawson: 'ops-3',
+    pat: 'ops-4',
+    sam: 'sup-1'
+  };
+  return map[cleanName] || 'custom';
+};
 
 function formatMarkdownText(text: string) {
     if (!text) return "";
@@ -229,6 +252,7 @@ export default function AgentWorkstation() {
   const [activeTab, setActiveTab] = useState<'terminal' | 'preview'>('terminal');
   const [currentResult, setCurrentResult] = useState(""); 
   const [activeSessionIndex, setActiveSessionIndex] = useState<number | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   
   // --- FILE & ACTION STATE ---
   const [selectedFile, setSelectedFile] = useState<{ name: string, type: string, base64: string } | null>(null);
@@ -798,7 +822,7 @@ export default function AgentWorkstation() {
                          <div className="font-bold uppercase tracking-wider text-xs">Start a conversation with {agent.name.split('(')[0]}</div>
                      </div>
                  ) : (
-                     <div className="space-y-6">
+                     <div className="flex-grow flex flex-col justify-end min-h-full space-y-6">
                          {chatMessages.map((msg) => (
                              <div key={msg.id} className="space-y-3">
                                  {/* User Message Bubble */}
@@ -987,9 +1011,11 @@ export default function AgentWorkstation() {
   // Scroll to bottom of chat
   useEffect(() => {
       if (activeTab === 'terminal') {
-          logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+          setTimeout(() => {
+              logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
       }
-  }, [tasks, activeTab]);
+  }, [tasks, activeTab, activeSessionIndex]);
 
   // --- 6. HELPERS ---
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1011,7 +1037,20 @@ export default function AgentWorkstation() {
       if (role.includes('react')) return ["Build Landing Page", "Create React Component"];
       if (role.includes('marketing')) return ["Write Email Campaign", "Draft Tweet Thread"];
       return ["Write an Email", "Analyze Data", "Summarize File"];
-  }
+  };
+
+  const getSuggestionIcon = (suggestion: string) => {
+      const text = suggestion.toLowerCase();
+      if (text.includes('email') || text.includes('mail')) return <Mail size={14} className="shrink-0" />;
+      if (text.includes('data') || text.includes('analyze')) return <PieChart size={14} className="shrink-0" />;
+      if (text.includes('file') || text.includes('summarize')) return <FileText size={14} className="shrink-0" />;
+      if (text.includes('sql') || text.includes('schema') || text.includes('database')) return <Database size={14} className="shrink-0" />;
+      if (text.includes('api') || text.includes('node') || text.includes('terminal')) return <Terminal size={14} className="shrink-0" />;
+      if (text.includes('landing') || text.includes('page') || text.includes('layout')) return <Layout size={14} className="shrink-0" />;
+      if (text.includes('react') || text.includes('component') || text.includes('code')) return <Code size={14} className="shrink-0" />;
+      if (text.includes('tweet') || text.includes('thread') || text.includes('twitter')) return <Twitter size={14} className="shrink-0" />;
+      return <Zap size={14} className="shrink-0" />;
+  };
 
   if (loading) return <div className="h-screen flex items-center justify-center font-bold gap-2"><Loader2 className="animate-spin"/> Loading Workstation...</div>;
   
@@ -1033,16 +1072,29 @@ export default function AgentWorkstation() {
   }
 
   return (
-    <div className={`min-h-screen bg-gray-50 text-black ${inter.className} flex flex-col md:flex-row`}>
+    <div className={`min-h-screen bg-gray-50 text-black ${inter.className} flex flex-col md:flex-row relative overflow-hidden`}>
       
+      {/* SIDEBAR Backdrop overlay on mobile */}
+      {sidebarOpen && (
+          <div 
+              className="fixed inset-0 bg-black/45 z-35 md:hidden"
+              onClick={() => setSidebarOpen(false)}
+          />
+      )}
+
       {/* SIDEBAR */}
-      <div className="w-full md:w-[320px] bg-white border-r border-gray-200 flex flex-col h-auto md:h-screen z-20">
-         <div className="p-6 border-b border-gray-100">
+      <div className={`fixed md:sticky top-0 right-0 md:left-0 h-screen w-[320px] bg-white border-l md:border-l-0 md:border-r border-gray-200 flex flex-col z-40 transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}`}>
+         <div className="p-6 border-b border-gray-100 relative">
+             {/* Close button on mobile */}
+             <button 
+                 onClick={() => setSidebarOpen(false)}
+                 className="absolute top-4 right-4 text-gray-400 hover:text-black md:hidden"
+             >
+                 <X size={20} />
+             </button>
              <Link href="/" className="flex items-center gap-2 text-gray-500 hover:text-black mb-6 font-bold text-sm"><ArrowLeft size={16}/> Back to HQ</Link>
              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-black text-white rounded-xl flex items-center justify-center shadow-lg">
-                    {getIcon(agent.steps?.[0]?.icon || agent.icon || 'Zap')}
-                </div>
+                <AgentAvatar id={getRegistryIdByName(agent.name)} className="w-16 h-16 rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] shrink-0" />
                 <div>
                     <h1 className={`text-xl uppercase leading-none mb-1 ${oswald.className}`}>{agent.name.split('(')[0]}</h1>
                     <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-2">{agent.name.split('(')[1]?.replace(')', '') || 'Agent'}</div>
@@ -1056,7 +1108,7 @@ export default function AgentWorkstation() {
          {/* NEW CHAT BUTTON */}
          <div className="p-4 border-b border-gray-150 bg-gray-50/50">
              <button 
-                 onClick={handleNewChat}
+                 onClick={() => { handleNewChat(); setSidebarOpen(false); }}
                  className="w-full bg-black hover:bg-yellow-400 text-white hover:text-black py-3 rounded-xl border-2 border-black font-black uppercase text-xs tracking-wider transition shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5 flex items-center justify-center gap-2"
              >
                  <Plus size={16} /> New Chat
@@ -1068,8 +1120,14 @@ export default function AgentWorkstation() {
              <h3 className="text-xs font-bold text-yellow-700 uppercase tracking-widest mb-3">Capabilities</h3>
              <div className="flex flex-wrap gap-2">
                  {getSuggestions().map((suggestion, i) => (
-                     <button key={i} onClick={() => setTaskInput(suggestion)} className="text-xs bg-white border border-yellow-200 text-yellow-800 px-3 py-1.5 rounded-lg hover:bg-yellow-400 hover:text-black transition font-medium text-left">
-                         + {suggestion}
+                     <button 
+                         key={i} 
+                         onClick={() => { setTaskInput(suggestion); setSidebarOpen(false); }} 
+                         className="p-2 md:px-3 md:py-1.5 bg-white border border-yellow-250 text-yellow-800 rounded-lg hover:bg-yellow-400 hover:text-black transition font-semibold text-left flex items-center gap-1.5 text-xs shadow-sm"
+                         title={suggestion}
+                     >
+                         {getSuggestionIcon(suggestion)}
+                         <span className="hidden md:inline">+ {suggestion}</span>
                      </button>
                  ))}
              </div>
@@ -1134,15 +1192,25 @@ export default function AgentWorkstation() {
                  </button>
              </div>
              
-             {/* THE SMART DOWNLOAD BUTTON */}
-             {currentResult && !pendingAction && (
+             <div className="flex items-center gap-3">
+                 {/* THE SMART DOWNLOAD BUTTON */}
+                 {currentResult && !pendingAction && (
+                     <button 
+                        onClick={handleDownload}
+                        className="mb-3 bg-black text-white px-4 py-2 rounded-lg text-xs font-bold uppercase flex items-center gap-2 hover:bg-yellow-400 hover:text-black transition shadow-md"
+                     >
+                         <Download size={16}/> <span className="hidden sm:inline">Download</span>
+                     </button>
+                 )}
+
+                 {/* Mobile Menu Toggle */}
                  <button 
-                    onClick={handleDownload}
-                    className="mb-3 bg-black text-white px-4 py-2 rounded-lg text-xs font-bold uppercase flex items-center gap-2 hover:bg-yellow-400 hover:text-black transition shadow-md"
+                     onClick={() => setSidebarOpen(prev => !prev)}
+                     className="mb-3 md:hidden bg-white border-2 border-black text-black px-3.5 py-2 rounded-lg text-xs font-black uppercase flex items-center gap-1.5 hover:bg-gray-50 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5"
                  >
-                     <Download size={16}/> Download Output
+                     Menu
                  </button>
-             )}
+             </div>
          </div>
 
          {isTrial && !trialExpired && (

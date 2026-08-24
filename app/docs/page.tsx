@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
+import AgentAvatar from '../components/AgentAvatar';
 import { 
   BookOpen, 
   Terminal, 
@@ -205,12 +206,12 @@ export default function DocsPage() {
           </div>
 
           <div className="bg-yellow-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] space-y-4">
-            <h4 className="font-black text-xs uppercase text-black">✉️ Outbound Email & Resend Integrations</h4>
+            <h4 className="font-black text-xs uppercase text-black">✉️ Outbound Email Services</h4>
             <p className="text-xs text-gray-600 leading-relaxed">
               Pixorva agents hook directly into outbound notification loops:
             </p>
             <ul className="list-disc pl-4 text-xs text-gray-700 space-y-1">
-              <li><strong>Billing & Invoices:</strong> Successful payment runs automatically trigger Resend service workers to generate custom tax PDFs and deliver them to your mailbox.</li>
+              <li><strong>Billing & Invoices:</strong> Successful payment runs automatically trigger secure email gateway service workers to generate custom tax PDFs and deliver them to your mailbox.</li>
               <li><strong>Outreach Automation:</strong> SDR agents like Sarah draft multi-step outbound email sequences to targeted domains.</li>
               <li><strong>Support Desks:</strong> Customer Support agents like Sam analyze customer complaints to design empathetic email responses.</li>
             </ul>
@@ -225,17 +226,20 @@ export default function DocsPage() {
       category: 'agents',
       title: 'Devon (React Developer)',
       subtitle: 'The primary frontend engineer workforce agent.',
-      icon: <Cpu size={20} className="text-orange-500" />,
+      icon: <AgentAvatar id="dev-1" className="w-8 h-8 rounded-xl border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0" />,
       content: (
         <div className="space-y-6">
           <p className="text-gray-700 leading-relaxed">
-            <strong>Devon</strong> is optimized to construct rich HTML structures, CSS styling templates, and React component blocks.
+            <strong>Devon</strong> is optimized to construct rich HTML structures, CSS styling templates, and React component blocks. She is highly proficient in Tailwind utility structures, TypeScript definitions, React hooks state orchestration, and Next.js dynamic routing structures.
+          </p>
+          <p className="text-gray-700 leading-relaxed">
+            Devon can sandbox UI ideas rapidly, verify CSS responsiveness across viewports, compile typescript configurations, and write drop-in reusable components for your layouts.
           </p>
 
           <div className="bg-yellow-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
             <div className="flex flex-wrap gap-2 mb-4">
-              {['React', 'Next.js', 'Tailwind CSS', 'TypeScript', 'State Management', 'Neobrutalist UI'].map(s => (
+              {['React', 'Next.js', 'Tailwind CSS', 'TypeScript', 'State Management', 'Neobrutalist UI', 'Responsive Design', 'Babel Sandbox'].map(s => (
                 <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
               ))}
             </div>
@@ -258,17 +262,20 @@ export default function DocsPage() {
       category: 'agents',
       title: 'Ruby (Backend Architect)',
       subtitle: 'The database schema and API route designer.',
-      icon: <Cpu size={20} className="text-red-500" />,
+      icon: <AgentAvatar id="dev-2" className="w-8 h-8 rounded-xl border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0" />,
       content: (
         <div className="space-y-6">
           <p className="text-gray-700 leading-relaxed">
-            <strong>Ruby</strong> specializes in database architecture, backend SQL data manipulation routines, and API route controllers.
+            <strong>Ruby</strong> specializes in database architecture, backend SQL data manipulation routines, and API route controllers. She excels at writing highly-optimized PostgreSQL queries, designing relational database schemas, setting indexing parameters to reduce query latency, and drafting Express/Node.js backend service frameworks.
+          </p>
+          <p className="text-gray-700 leading-relaxed">
+            Ruby maps foreign key relationships, writes database migrations, structures trigger events, and designs secure route endpoints.
           </p>
 
           <div className="bg-blue-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
             <div className="flex flex-wrap gap-2 mb-4">
-              {['PostgreSQL', 'Node.js', 'SQL Schema Design', 'API Route Handlers', 'Query Optimization', 'Supabase'].map(s => (
+              {['PostgreSQL', 'Node.js', 'SQL Schema Design', 'API Route Handlers', 'Query Optimization', 'Relational Databases', 'Database Migrations', 'Foreign Keys'].map(s => (
                 <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
               ))}
             </div>
@@ -290,17 +297,20 @@ export default function DocsPage() {
       category: 'agents',
       title: 'Quinn (QA Tester)',
       subtitle: 'The primary quality assurance and test automation engineer.',
-      icon: <Cpu size={20} className="text-blue-500" />,
+      icon: <AgentAvatar id="dev-3" className="w-8 h-8 rounded-xl border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0" />,
       content: (
         <div className="space-y-6">
           <p className="text-gray-700 leading-relaxed">
-            <strong>Quinn</strong> writes Jest unit tests, Cypress end-to-end integration tests, and identifies logical edge cases inside codebases.
+            <strong>Quinn</strong> writes Jest unit tests, Cypress end-to-end integration tests, and identifies logical edge cases inside codebases. She focuses on securing 100% test coverage parameters, setting up network call mocks, tracking variable outputs, and finding hidden logic glitches.
+          </p>
+          <p className="text-gray-700 leading-relaxed">
+            Quinn runs test assertions on form inputs, tracks authentication state shifts, and validates page rendering conditions.
           </p>
 
           <div className="bg-gray-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
             <div className="flex flex-wrap gap-2 mb-4">
-              {['Jest', 'Cypress', 'Unit Testing', 'Regression Testing', 'CI/CD Pipelines', 'Logical Edge Cases'].map(s => (
+              {['Jest', 'Cypress', 'Unit Testing', 'Regression Testing', 'CI/CD Pipelines', 'Logical Edge Cases', 'Mock Assertions', 'Test Coverage'].map(s => (
                 <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
               ))}
             </div>
@@ -322,17 +332,20 @@ export default function DocsPage() {
       category: 'agents',
       title: 'Cy (Security Analyst)',
       subtitle: 'The audit and compliance security specialist.',
-      icon: <Cpu size={20} className="text-purple-500" />,
+      icon: <AgentAvatar id="dev-4" className="w-8 h-8 rounded-xl border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0" />,
       content: (
         <div className="space-y-6">
           <p className="text-gray-700 leading-relaxed">
-            <strong>Cy</strong> audits source codes, database structures, and environment policies to prevent vulnerabilities.
+            <strong>Cy</strong> audits source codes, database structures, and environment policies to prevent vulnerabilities. She checks for OWASP top vulnerabilities, audits Row-Level Security (RLS) configurations, secures authorization variables, and writes clear threat analysis reports.
+          </p>
+          <p className="text-gray-700 leading-relaxed">
+            Cy is your secure gates protector, helping you lock down open ports, scan dependencies for security leaks, and pass compliance checks.
           </p>
 
           <div className="bg-purple-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
             <div className="flex flex-wrap gap-2 mb-4">
-              {['Security Auditing', 'Vulnerability Assessments', 'GDPR / HIPAA', 'Penetration Testing', 'Row Level Security'].map(s => (
+              {['Security Auditing', 'Vulnerability Assessments', 'GDPR / HIPAA', 'Penetration Testing', 'Row Level Security', 'Compliance Gates', 'Dependency Audits', 'OWASP Rules'].map(s => (
                 <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
               ))}
             </div>
@@ -354,17 +367,20 @@ export default function DocsPage() {
       category: 'agents',
       title: 'Marcus (Growth Hacker)',
       subtitle: 'The content marketer and viral growth campaign strategist.',
-      icon: <Cpu size={20} className="text-green-500" />,
+      icon: <AgentAvatar id="mkt-1" className="w-8 h-8 rounded-xl border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0" />,
       content: (
         <div className="space-y-6">
           <p className="text-gray-700 leading-relaxed">
-            <strong>Marcus</strong> designs LinkedIn hooks, Twitter launch threads, ad copy, and general organic marketing funnels.
+            <strong>Marcus</strong> designs LinkedIn hooks, Twitter launch threads, ad copy, and general organic marketing funnels. He studies conversion metrics, structures targeted email campaigns, and optimizes lead-generation loops.
+          </p>
+          <p className="text-gray-700 leading-relaxed">
+            Marcus understands conversion coefficients, dynamic referral pipelines, and helps you convert landing page traffic into active clients.
           </p>
 
           <div className="bg-green-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
             <div className="flex flex-wrap gap-2 mb-4">
-              {['Viral Marketing', 'LinkedIn Hooks', 'Twitter Threads', 'Ad Copy', 'Copywriting', 'Conversion Funnels'].map(s => (
+              {['Viral Marketing', 'LinkedIn Hooks', 'Twitter Threads', 'Ad Copy', 'Copywriting', 'Conversion Funnels', 'Growth Coefficient', 'Referrals Log'].map(s => (
                 <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
               ))}
             </div>
@@ -381,17 +397,20 @@ export default function DocsPage() {
       category: 'agents',
       title: 'Stella (Social Media Mgr)',
       subtitle: 'The audience engagement and visual brand script designer.',
-      icon: <Cpu size={20} className="text-green-500" />,
+      icon: <AgentAvatar id="mkt-2" className="w-8 h-8 rounded-xl border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0" />,
       content: (
         <div className="space-y-6">
           <p className="text-gray-700 leading-relaxed">
-            <strong>Stella</strong> creates structured scripts for Reels, YouTube Shorts, TikToks, and captions.
+            <strong>Stella</strong> creates structured scripts for Reels, YouTube Shorts, TikToks, and captions. She researches peak engagement parameters, monitors algorithmic updates, and schedules posts to maximize social media reach.
+          </p>
+          <p className="text-gray-700 leading-relaxed">
+            Stella drafts engaging copy, selects high-impact tags, and manages monthly posting schedules.
           </p>
 
           <div className="bg-green-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
             <div className="flex flex-wrap gap-2 mb-4">
-              {['Short Video Scripting', 'Instagram Captions', 'Audience Growth', 'Content Calendar Outline', 'Trend Optimization'].map(s => (
+              {['Short Video Scripting', 'Instagram Captions', 'Audience Growth', 'Content Calendar Outline', 'Trend Optimization', 'Algorithmic Pacing', 'Engagement KPIs'].map(s => (
                 <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
               ))}
             </div>
@@ -408,17 +427,20 @@ export default function DocsPage() {
       category: 'agents',
       title: 'Gordon (SEO Blog Writer)',
       subtitle: 'The content optimization and search blog post writer.',
-      icon: <Cpu size={20} className="text-green-500" />,
+      icon: <AgentAvatar id="mkt-3" className="w-8 h-8 rounded-xl border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0" />,
       content: (
         <div className="space-y-6">
           <p className="text-gray-700 leading-relaxed">
-            <strong>Gordon</strong> researches high-ranking keywords, organizes articles using proper heading structures, and drafts SEO blogs.
+            <strong>Gordon</strong> researches high-ranking keywords, organizes articles using proper heading structures, and drafts SEO blogs. He focuses on keyword search difficulty indices, designs semantic header hierarchies, and writes engaging content that ranks at the top.
+          </p>
+          <p className="text-gray-700 leading-relaxed">
+            Gordon ensures your blog matches search engine queries, writes clear meta summaries, and boosts organic CTR profiles.
           </p>
 
           <div className="bg-green-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
             <div className="flex flex-wrap gap-2 mb-4">
-              {['SEO Optimization', 'Long Form Writing', 'Keyword Density', 'Meta Descriptions', 'Content Strategy'].map(s => (
+              {['SEO Optimization', 'Long Form Writing', 'Keyword Density', 'Meta Descriptions', 'Content Strategy', 'SERP Ranking', 'Semantic Headers'].map(s => (
                 <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
               ))}
             </div>
@@ -435,23 +457,26 @@ export default function DocsPage() {
       category: 'agents',
       title: 'Vic (Video Scripter)',
       subtitle: 'The video scripting and storyboard structure compiler.',
-      icon: <Cpu size={20} className="text-green-500" />,
+      icon: <AgentAvatar id="mkt-4" className="w-8 h-8 rounded-xl border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0" />,
       content: (
         <div className="space-y-6">
           <p className="text-gray-700 leading-relaxed">
-            <strong>Vic</strong> maps video flow, details visual actions, and writes technical storyboards.
+            <strong>Vic</strong> maps video flow, details visual actions, and writes technical storyboards. He structures pacing guides, outlines text overlay locations, and designs short-form scripts that optimize audience retention metrics.
+          </p>
+          <p className="text-gray-700 leading-relaxed">
+            Vic helps you compile storyboards, organize voiceover sequences, and script promo clips for your SaaS features.
           </p>
 
           <div className="bg-green-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
             <div className="flex flex-wrap gap-2 mb-4">
-              {['YouTube Scripting', 'Storyboarding', 'Creative Pacing', 'Visual Cues', 'Educational Tech Scripts'].map(s => (
+              {['YouTube Scripting', 'Storyboarding', 'Creative Pacing', 'Visual Cues', 'Educational Tech Scripts', 'Video Overlay Map', 'Retention Hooks'].map(s => (
                 <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
               ))}
             </div>
             <h5 className="font-black text-[10px] uppercase text-black mb-1">Sample Prompt:</h5>
             <pre className="p-3 bg-black text-green-400 font-mono text-[9px] rounded-lg overflow-x-auto">
-"Turn our documentation on 'Setting Up Supabase Service Keys' into a step-by-step YouTube script with narration."
+"Turn our documentation on 'Setting Up Secure Database Service Keys' into a step-by-step YouTube script with narration."
             </pre>
           </div>
         </div>
@@ -462,17 +487,20 @@ export default function DocsPage() {
       category: 'agents',
       title: 'Sarah (SDR / Outreach)',
       subtitle: 'The client outreach and business development email designer.',
-      icon: <Cpu size={20} className="text-red-500" />,
+      icon: <AgentAvatar id="sales-1" className="w-8 h-8 rounded-xl border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0" />,
       content: (
         <div className="space-y-6">
           <p className="text-gray-700 leading-relaxed">
-            <strong>Sarah</strong> researches customer profiles and designs high-conversion cold email outreach sequences.
+            <strong>Sarah</strong> researches customer profiles and designs high-conversion cold email outreach sequences. She focuses on writing non-spammy subject headers, personalizing outreach to target domains, and structuring follow-up schedules.
+          </p>
+          <p className="text-gray-700 leading-relaxed">
+            Sarah sets up email trigger pathways, automates B2B sequences, and books meetings for your sales representatives.
           </p>
 
           <div className="bg-red-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
             <div className="flex flex-wrap gap-2 mb-4">
-              {['Cold Outreach', 'Email Sequencing', 'Lead Conversion', 'B2B Sales Copy', 'Call to Action Optimization'].map(s => (
+              {['Cold Outreach', 'Email Sequencing', 'Lead Conversion', 'B2B Sales Copy', 'Call to Action Optimization', 'SDR Workflows', 'Domain Research'].map(s => (
                 <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
               ))}
             </div>
@@ -489,17 +517,20 @@ export default function DocsPage() {
       category: 'agents',
       title: 'Larry (Lead Enricher)',
       subtitle: 'The business list research and lead enrichment specialist.',
-      icon: <Cpu size={20} className="text-red-500" />,
+      icon: <AgentAvatar id="sales-2" className="w-8 h-8 rounded-xl border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0" />,
       content: (
         <div className="space-y-6">
           <p className="text-gray-700 leading-relaxed">
-            <strong>Larry</strong> gathers business data parameters and formats lead sheets for outbound targets.
+            <strong>Larry</strong> gathers business data parameters and formats lead sheets for outbound targets. He validates emails, checks decision-maker direct lines, filters contacts by industry size, and cleans list details.
+          </p>
+          <p className="text-gray-700 leading-relaxed">
+            Larry minimizes B2B bounce rates, extracts target contact maps, and builds clean Excel lists for outbound tools.
           </p>
 
           <div className="bg-red-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
             <div className="flex flex-wrap gap-2 mb-4">
-              {['Lead List Enrichment', 'Data Aggregation', 'B2B Research', 'Formatting Excel/CSV Schemas', 'Market Segmentation'].map(s => (
+              {['Lead List Enrichment', 'Data Aggregation', 'B2B Research', 'Formatting Excel/CSV Schemas', 'Market Segmentation', 'Email Verification', 'List Cleaning'].map(s => (
                 <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
               ))}
             </div>
@@ -516,17 +547,20 @@ export default function DocsPage() {
       category: 'agents',
       title: 'Holly (HR Manager)',
       subtitle: 'The hiring workflow and human resources analyst.',
-      icon: <Cpu size={20} className="text-yellow-500" />,
+      icon: <AgentAvatar id="ops-1" className="w-8 h-8 rounded-xl border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0" />,
       content: (
         <div className="space-y-6">
           <p className="text-gray-700 leading-relaxed">
-            <strong>Holly</strong> compiles corporate policies, designs job descriptions, and structures candidate screening checksheets.
+            <strong>Holly</strong> compiles corporate policies, designs job descriptions, and structures candidate screening checksheets. She designs onboarding guides, formats HR policy manuals, and sets up employee benefit outlines.
+          </p>
+          <p className="text-gray-700 leading-relaxed">
+            Holly helps you automate candidate screening filters, coordinates company handbooks, and saves HR operations hours.
           </p>
 
           <div className="bg-yellow-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
             <div className="flex flex-wrap gap-2 mb-4">
-              {['Job Description Design', 'Policy Drafting', 'Screening Checklists', 'Interview Templates', 'HR Checksheets'].map(s => (
+              {['Job Description Design', 'Policy Drafting', 'Screening Checklists', 'Interview Templates', 'HR Checksheets', 'Onboarding Guides', 'Employee Handbooks'].map(s => (
                 <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
               ))}
             </div>
@@ -543,17 +577,20 @@ export default function DocsPage() {
       category: 'agents',
       title: 'Finn (Finance Analyst)',
       subtitle: 'The corporate P&L and tax metrics analyst.',
-      icon: <Cpu size={20} className="text-yellow-500" />,
+      icon: <AgentAvatar id="ops-2" className="w-8 h-8 rounded-xl border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0" />,
       content: (
         <div className="space-y-6">
           <p className="text-gray-700 leading-relaxed">
-            <strong>Finn</strong> reviews costing ledgers, details EBITDA percentages, and creates cost-optimization sheets.
+            <strong>Finn</strong> reviews costing ledgers, details EBITDA percentages, and creates cost-optimization sheets. He analyzes bank data, identifies duplicate subscriptions, tracks cash burn rates, and suggests margin optimizations.
+          </p>
+          <p className="text-gray-700 leading-relaxed">
+            Finn calculates cost parameters, models EBITDA projection metrics, and automates balance ledger auditing.
           </p>
 
           <div className="bg-yellow-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
             <div className="flex flex-wrap gap-2 mb-4">
-              {['P&L Analysis', 'Expense Categorization', 'EBITDA Projections', 'Tax Checklists', 'Cost Optimization'].map(s => (
+              {['P&L Analysis', 'Expense Categorization', 'EBITDA Projections', 'Tax Checklists', 'Cost Optimization', 'Ledger Auditing', 'Cash Burn Track'].map(s => (
                 <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
               ))}
             </div>
@@ -570,17 +607,20 @@ export default function DocsPage() {
       category: 'agents',
       title: 'Lawson (Legal Assistant)',
       subtitle: 'The agreement templates and compliance document compiler.',
-      icon: <Cpu size={20} className="text-yellow-500" />,
+      icon: <AgentAvatar id="ops-3" className="w-8 h-8 rounded-xl border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0" />,
       content: (
         <div className="space-y-6">
           <p className="text-gray-700 leading-relaxed">
-            <strong>Lawson</strong> drafts contracts, Non-Disclosure Agreements (NDAs), and reviews terms frameworks.
+            <strong>Lawson</strong> drafts contracts, Non-Disclosure Agreements (NDAs), and reviews terms frameworks. He identifies liability risks inside vendor agreements, suggests protection clauses, and structures standard template layouts.
+          </p>
+          <p className="text-gray-700 leading-relaxed">
+            Lawson provides clean boilerplates, structures custom consulting charters, and audits legal terms for accuracy.
           </p>
 
           <div className="bg-yellow-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
             <div className="flex flex-wrap gap-2 mb-4">
-              {['NDA Templates', 'Contract Drafting', 'Service Level Agreements', 'Compliance Reviews', 'Liabilities Checklists'].map(s => (
+              {['NDA Templates', 'Contract Drafting', 'Service Level Agreements', 'Compliance Reviews', 'Liabilities Checklists', 'Risk Audits', 'Boilerplate Design'].map(s => (
                 <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
               ))}
             </div>
@@ -597,17 +637,20 @@ export default function DocsPage() {
       category: 'agents',
       title: 'Pat (Product Manager)',
       subtitle: 'The agile roadmap and product story compiler.',
-      icon: <Cpu size={20} className="text-yellow-500" />,
+      icon: <AgentAvatar id="ops-4" className="w-8 h-8 rounded-xl border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0" />,
       content: (
         <div className="space-y-6">
           <p className="text-gray-700 leading-relaxed">
-            <strong>Pat</strong> compiles user stories, prioritizes roadmap milestones, and writes requirements docs (PRDs).
+            <strong>Pat</strong> compiles user stories, prioritizes roadmap milestones, and writes requirements docs (PRDs). He tracks sprint deliverables, logs team action items, sets up Jira tickets, and ensures agile roadmap alignment.
+          </p>
+          <p className="text-gray-700 leading-relaxed">
+            Pat translates feature concepts into dev requirements, structures backlog priorities, and monitors project execution velocity.
           </p>
 
           <div className="bg-yellow-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
             <div className="flex flex-wrap gap-2 mb-4">
-              {['Product Spec Design', 'User Stories mapping', 'Agile Roadmaps', 'UX Requirements', 'Feature Backlog Priority'].map(s => (
+              {['Product Spec Design', 'User Stories mapping', 'Agile Roadmaps', 'UX Requirements', 'Feature Backlog Priority', 'Scrum Velocity', 'Sprint Action Logs'].map(s => (
                 <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
               ))}
             </div>
@@ -624,17 +667,20 @@ export default function DocsPage() {
       category: 'agents',
       title: 'Sam (Customer Support)',
       subtitle: 'The conflict resolution and support ticket reply designer.',
-      icon: <Cpu size={20} className="text-orange-500" />,
+      icon: <AgentAvatar id="sup-1" className="w-8 h-8 rounded-xl border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0" />,
       content: (
         <div className="space-y-6">
           <p className="text-gray-700 leading-relaxed">
-            <strong>Sam</strong> reviews user complaints and generates polite, helpful support email drafts.
+            <strong>Sam</strong> reviews user complaints and generates polite, helpful support email drafts. He focuses on customer satisfaction scoring (CSAT), tracks resolution speed parameters, and handles SLA billing questions.
+          </p>
+          <p className="text-gray-700 leading-relaxed">
+            Sam helps you draft empathetic help desk responses, structures FAQ articles, and maintains SLA compliance.
           </p>
 
           <div className="bg-orange-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
             <div className="flex flex-wrap gap-2 mb-4">
-              {['Customer Empathy', 'Conflict Resolution', 'Support Response Checklists', 'SLA Inquiries', 'Account Status Updates'].map(s => (
+              {['Customer Empathy', 'Conflict Resolution', 'Support Response Checklists', 'SLA Inquiries', 'Account Status Updates', 'FAQ Drafting', 'CSAT Optimization'].map(s => (
                 <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
               ))}
             </div>
@@ -664,11 +710,11 @@ export default function DocsPage() {
           <div className="space-y-4">
             <h4 className="font-black text-xs uppercase text-black">Configuring Service Keys</h4>
             <p className="text-xs text-gray-500 leading-relaxed">
-              Because external terminal calls are executed outside user browser sessions, Supabase's Row-Level Security (RLS) blocks anonymous selects by default. 
-              To validate keys externally, copy your project secret `service_role` key from Supabase Dashboard and set it inside your environment variables:
+              Because external terminal calls are executed outside user browser sessions, the database's Row-Level Security (RLS) blocks anonymous selects by default. 
+              To validate keys externally, copy your project secret `service_role` key from your database dashboard and set it inside your environment variables:
             </p>
             <code className="text-xs bg-black text-green-400 p-4 rounded-xl block select-all font-mono">
-              SUPABASE_SERVICE_ROLE_KEY=your_copied_secret_service_role_key
+              DATABASE_SERVICE_ROLE_KEY=your_copied_secret_service_role_key
             </code>
           </div>
         </div>
