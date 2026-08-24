@@ -1066,23 +1066,68 @@ export default function AgentWorkstation() {
 
   const getSuggestions = () => {
       if (!agent) return [];
-      const role = agent.name?.toLowerCase() || "";
-      if (role.includes('backend')) return ["Design SQL Schema", "Write Node.js API"];
-      if (role.includes('react')) return ["Build Landing Page", "Create React Component"];
-      if (role.includes('marketing')) return ["Write Email Campaign", "Draft Tweet Thread"];
+      const name = agent.name?.toLowerCase() || "";
+      
+      if (name.includes('devon') || name.includes('react')) {
+          return ["Build Landing Page", "Create React Component", "Design CSS Theme"];
+      }
+      if (name.includes('ruby') || name.includes('backend') || name.includes('architect')) {
+          return ["Design SQL Schema", "Write Node.js API", "Optimize Query Speed"];
+      }
+      if (name.includes('quinn') || name.includes('tester') || name.includes('testing')) {
+          return ["Write Jest Test", "Run Cypress Test", "Audit Code Safety"];
+      }
+      if (name.includes('cy') || name.includes('security') || name.includes('compliance')) {
+          return ["Audit RLS Policy", "Check Security Leaks", "Compliance Check"];
+      }
+      if (name.includes('marcus') || name.includes('growth') || name.includes('twitter')) {
+          return ["Draft Tweet Thread", "Write LinkedIn Hook", "Design Funnel Ads"];
+      }
+      if (name.includes('stella') || name.includes('social') || name.includes('media')) {
+          return ["Write Reels Script", "Plan Posting Schedule", "Create Tag List"];
+      }
+      if (name.includes('gordon') || name.includes('seo') || name.includes('blog')) {
+          return ["Write SEO Blog Post", "Do Keyword Research", "Create Outline"];
+      }
+      if (name.includes('vic') || name.includes('video') || name.includes('scripter')) {
+          return ["Draft Storyboard", "Write Video Script", "Retention Hook Idea"];
+      }
+      if (name.includes('sarah') || name.includes('sdr') || name.includes('outreach')) {
+          return ["Draft Cold Email", "Build Email Sequence", "Outreach Strategy"];
+      }
+      if (name.includes('larry') || name.includes('enricher') || name.includes('leads')) {
+          return ["Format Excel Schema", "Enrich Lead List", "Filter B2B Contacts"];
+      }
+      if (name.includes('holly') || name.includes('hr') || name.includes('specialist')) {
+          return ["Write Job Description", "Create HR Handbook", "Screening Questions"];
+      }
+      if (name.includes('finn') || name.includes('finance') || name.includes('ebitda')) {
+          return ["EBITDA Cost Audit", "Verify Expense sheet", "Reduce Server Costs"];
+      }
+      if (name.includes('lawson') || name.includes('legal') || name.includes('boilerplates')) {
+          return ["Draft NDA Template", "Consulting Contract", "Check Liability Risk"];
+      }
+      if (name.includes('pat') || name.includes('product') || name.includes('agile')) {
+          return ["Write User Story", "Build Feature Roadmap", "Compile PRD Doc"];
+      }
+      if (name.includes('sam') || name.includes('support') || name.includes('tickets')) {
+          return ["Empathetic SLA Reply", "FAQ Document Outline", "Resolve Ticket Query"];
+      }
+      
       return ["Write an Email", "Analyze Data", "Summarize File"];
   };
 
   const getSuggestionIcon = (suggestion: string) => {
       const text = suggestion.toLowerCase();
       if (text.includes('email') || text.includes('mail')) return <Mail size={14} className="shrink-0" />;
-      if (text.includes('data') || text.includes('analyze')) return <PieChart size={14} className="shrink-0" />;
-      if (text.includes('file') || text.includes('summarize')) return <FileText size={14} className="shrink-0" />;
+      if (text.includes('data') || text.includes('analyze') || text.includes('ebitda') || text.includes('cost') || text.includes('expense')) return <PieChart size={14} className="shrink-0" />;
+      if (text.includes('file') || text.includes('summarize') || text.includes('outline') || text.includes('post') || text.includes('handbook') || text.includes('prd') || text.includes('doc') || text.includes('story') || text.includes('roadmap') || text.includes('template') || text.includes('contract')) return <FileText size={14} className="shrink-0" />;
       if (text.includes('sql') || text.includes('schema') || text.includes('database')) return <Database size={14} className="shrink-0" />;
       if (text.includes('api') || text.includes('node') || text.includes('terminal')) return <Terminal size={14} className="shrink-0" />;
-      if (text.includes('landing') || text.includes('page') || text.includes('layout')) return <Layout size={14} className="shrink-0" />;
-      if (text.includes('react') || text.includes('component') || text.includes('code')) return <Code size={14} className="shrink-0" />;
-      if (text.includes('tweet') || text.includes('thread') || text.includes('twitter')) return <Twitter size={14} className="shrink-0" />;
+      if (text.includes('landing') || text.includes('page') || text.includes('layout') || text.includes('design') || text.includes('css')) return <Layout size={14} className="shrink-0" />;
+      if (text.includes('react') || text.includes('component') || text.includes('code') || text.includes('jest') || text.includes('cypress') || text.includes('test')) return <Code size={14} className="shrink-0" />;
+      if (text.includes('tweet') || text.includes('thread') || text.includes('twitter') || text.includes('linkedin') || text.includes('reels') || text.includes('schedule') || text.includes('tag')) return <Twitter size={14} className="shrink-0" />;
+      if (text.includes('security') || text.includes('leak') || text.includes('compliance') || text.includes('rls') || text.includes('policy')) return <ShieldCheck size={14} className="shrink-0" />;
       return <Zap size={14} className="shrink-0" />;
   };
 

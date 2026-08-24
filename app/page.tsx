@@ -196,7 +196,7 @@ export default function Home() {
             height={36}
             className="w-8 h-8 md:w-9 md:h-9 rounded-lg"
           />
-          <span className="hidden md:inline">Pixorva</span>
+          <span>Pixorva</span>
         </div>
 
         {/* Desktop Links (Hidden on Mobile) */}
