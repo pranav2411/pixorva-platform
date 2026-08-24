@@ -189,6 +189,7 @@ export default function Home() {
               AI Employees {aiDropdown ? <ChevronUp size={14}/> : <ChevronDown size={14}/>}
             </button>
           </div>
+          <Link href="/employees" className="hover:text-yellow-600 transition">Marketplace</Link>
           <Link href="/pricing" className="hover:text-yellow-600 transition">Pricing</Link>
           <Link href="/studio" className="hover:text-yellow-600 transition">Studio</Link>
           <Link href="/workspace" className="hover:text-yellow-600 transition">Workspace</Link>
