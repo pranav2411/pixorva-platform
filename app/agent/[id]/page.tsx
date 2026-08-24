@@ -830,8 +830,7 @@ export default function AgentWorkstation() {
                          <div className="font-bold uppercase tracking-wider text-xs">Start a conversation with {agent.name.split('(')[0]}</div>
                      </div>
                  ) : (
-                     <div className="min-h-full flex flex-col space-y-6">
-                         <div className="flex-grow" />
+                     <div className="space-y-6">
                          {chatMessages.map((msg) => (
                              <div key={msg.id} className="space-y-3">
                                  {/* User Message Bubble */}
@@ -1042,7 +1041,7 @@ export default function AgentWorkstation() {
               clearTimeout(t2);
           };
       }
-  }, [tasks, activeTab, activeSessionIndex]);
+  }, [tasks, activeTab, activeSessionIndex, loading]);
 
   // --- 6. HELPERS ---
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
