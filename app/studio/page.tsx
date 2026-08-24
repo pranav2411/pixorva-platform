@@ -316,8 +316,12 @@ export default function StudioPage() {
       <div className="w-full md:w-1/2 p-8 md:p-12 overflow-y-auto h-screen bg-white border-r border-gray-200">
           
           <div className="mb-8">
-              <Link href="/" className="inline-flex items-center gap-2 text-gray-500 hover:text-black font-bold text-sm mb-6"><ArrowLeft size={16}/> Back to Dashboard</Link>
-              <h1 className={`text-5xl uppercase leading-none mb-2 ${oswald.className}`}>Agent Studio</h1>
+              <div className="flex items-center gap-3 mb-3">
+                <Link href="/" className="bg-black text-white p-2 rounded-lg border-2 border-black hover:bg-yellow-400 hover:text-black transition shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-y-0.5 flex items-center justify-center shrink-0">
+                  <ArrowLeft size={16} />
+                </Link>
+                <h1 className={`text-5xl uppercase leading-none ${oswald.className}`}>Agent Studio</h1>
+              </div>
               <p className="text-gray-500 font-medium">Design a custom AI employee from scratch.</p>
           </div>
 
