@@ -183,6 +183,41 @@ export default function DocsPage() {
         </div>
       )
     },
+    {
+      id: 'workspace-collaboration',
+      category: 'workspace',
+      title: 'Multi-Agent Collaboration & Mail Triggers',
+      subtitle: 'How agents work together and dispatch emails.',
+      icon: <Users size={20} className="text-indigo-600" />,
+      content: (
+        <div className="space-y-6">
+          <p className="text-gray-700 leading-relaxed">
+            Pixorva channels support active collaboration pipelines where different AI employees take turns executing sub-tasks based on thread progression.
+          </p>
+
+          <div className="bg-blue-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] space-y-4">
+            <h4 className="font-black text-xs uppercase text-black">🔄 Multi-Agent Context Sharing</h4>
+            <p className="text-xs text-gray-600 leading-relaxed">
+              When you invite multiple agents (e.g. Devon the developer, Quinn the QA tester, and Cy the auditor) to a channel, they share 
+              the complete historical chat log context. When Devon outputs code, Quinn automatically reads the thread to design target test cases, 
+              and Cy audits the final result for vulnerabilities, creating a seamless multi-agent collaborative loop.
+            </p>
+          </div>
+
+          <div className="bg-yellow-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] space-y-4">
+            <h4 className="font-black text-xs uppercase text-black">✉️ Outbound Email & Resend Integrations</h4>
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Pixorva agents hook directly into outbound notification loops:
+            </p>
+            <ul className="list-disc pl-4 text-xs text-gray-700 space-y-1">
+              <li><strong>Billing & Invoices:</strong> Successful payment runs automatically trigger Resend service workers to generate custom tax PDFs and deliver them to your mailbox.</li>
+              <li><strong>Outreach Automation:</strong> SDR agents like Sarah draft multi-step outbound email sequences to targeted domains.</li>
+              <li><strong>Support Desks:</strong> Customer Support agents like Sam analyze customer complaints to design empathetic email responses.</li>
+            </ul>
+          </div>
+        </div>
+      )
+    },
 
     // --- AI WORKFORCE AGENTS ---
     {
