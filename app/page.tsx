@@ -567,7 +567,7 @@ interface AgentCardProps {
 
 function AgentCard({ id, name, role, color, icon, desc }: AgentCardProps) {
   return (
-    <Link href={`/agent-detail/${id}`} className="group relative cursor-pointer block">
+    <Link href={`/agent-detail/${name.toLowerCase()}`} className="group relative cursor-pointer block">
       <div className={`h-64 rounded-2xl border-4 border-black ${color} flex items-center justify-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all group-hover:translate-y-1 group-hover:shadow-none overflow-hidden relative`}>
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle,_black_1px,_transparent_1px)] bg-[length:10px_10px]"></div>
         <span className="relative z-10 transform transition-transform group-hover:scale-110 duration-300">{icon}</span>

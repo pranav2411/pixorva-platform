@@ -472,7 +472,7 @@ export default function EmployeesPage() {
                         >
                             {hiring === emp.id ? "Onboarding..." : <>Hire For {emp.price} <Plus size={14} strokeWidth={3} /></>}
                         </button>
-                        <Link href={`/agent-detail/${emp.id}`} className="block">
+                         <Link href={`/agent-detail/${emp.name.toLowerCase()}`} className="block">
                             <button className="w-full bg-white text-black border-2 border-black py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wide hover:bg-gray-50 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5">
                                 View Profile
                             </button>
