@@ -299,9 +299,9 @@ export default function AgentDetailPage() {
 
   const dynamic = getDynamicContent();
 
-  const renderMockup = (category: string) => {
-    switch (category) {
-      case 'Engineering':
+  const renderMockup = (id: string) => {
+    switch (id) {
+      case 'dev-1': // Devon (React Developer)
         return (
           <div className="w-full max-w-lg mx-auto bg-[#1E1E1E] border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-white text-left font-mono">
             {/* Editor Top Tabs Bar */}
@@ -323,22 +323,112 @@ export default function AgentDetailPage() {
 
             {/* Code Workspace */}
             <div className="p-5 text-xs space-y-2 leading-relaxed min-h-[220px]">
-              <div><span className="text-purple-400">import</span> {'{ runBuild }'} <span className="text-purple-400">from</span> <span className="text-green-300">&apos;@pixorva/compiler&apos;</span>;</div>
-              <div><span className="text-purple-400">const</span> <span className="text-blue-300">agent</span> = <span className="text-yellow-300">createAgent</span>({'{'}</div>
-              <div className="pl-4"><span className="text-gray-400">name:</span> <span className="text-green-300">&quot;{employee.name}&quot;</span>,</div>
-              <div className="pl-4"><span className="text-gray-400">role:</span> <span className="text-green-300">&quot;{employee.role}&quot;</span>,</div>
-              <div className="pl-4"><span className="text-gray-400">status:</span> <span className="text-green-400">&apos;COMPILING_GATEWAY&apos;</span></div>
-              <div>{'})'};</div>
+              <div><span className="text-purple-400">import</span> {'{ Button }'} <span className="text-purple-400">from</span> <span className="text-green-300">&apos;@/components/ui/button&apos;</span>;</div>
+              <div><span className="text-purple-400">export default function</span> <span className="text-yellow-300">DevonApp</span>() {'{'}</div>
+              <div className="pl-4"><span className="text-purple-400">return</span> (</div>
+              <div className="pl-8"><span className="text-blue-300">&lt;Button</span> <span className="text-yellow-400">onClick</span>=<span className="text-green-300">{'{() => console.log(&quot;Compiled!&quot;)}'}</span><span className="text-blue-300">&gt;</span></div>
+              <div className="pl-12">Deploy React Agent</div>
+              <div className="pl-8"><span className="text-blue-300">&lt;/Button&gt;</span></div>
+              <div className="pl-4">);</div>
+              <div>{'}'}</div>
               <div className="pt-4 border-t border-gray-800 text-[10px] text-green-400 flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-green-400 animate-ping"></span>
-                <span>✓ Pipeline compiled successfully in 0.8s. 0 errors.</span>
+                <span>✓ Frontend UI sandbox compiled successfully. 0 lint errors.</span>
               </div>
             </div>
           </div>
         );
 
-      case 'Marketing':
-        // Sonny-style social media grid feed layout
+      case 'dev-2': // Ruby (Database Architect)
+        return (
+          <div className="w-full max-w-lg mx-auto bg-[#1E1E1E] border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-white text-left font-mono">
+            <div className="bg-[#2D2D2D] border-b-4 border-black px-4 py-2.5 flex items-center justify-between">
+              <div className="flex gap-2">
+                <div className="w-3.5 h-3.5 rounded-full bg-red-500 border border-black"></div>
+                <div className="w-3.5 h-3.5 rounded-full bg-yellow-500 border border-black"></div>
+                <div className="w-3.5 h-3.5 rounded-full bg-green-500 border border-black"></div>
+              </div>
+              <div className="text-[10px] font-bold text-gray-400">DB Schema Console</div>
+              <span className="bg-green-600 text-white text-[8px] font-black px-2 py-0.5 rounded border border-black">
+                SQL READY
+              </span>
+            </div>
+
+            <div className="p-5 text-xs space-y-2 leading-relaxed min-h-[220px]">
+              <div><span className="text-yellow-400">SELECT</span> users.id, profiles.plan</div>
+              <div><span className="text-yellow-400">FROM</span> users</div>
+              <div><span className="text-yellow-400">JOIN</span> profiles <span className="text-yellow-400">ON</span> users.id = profiles.user_id</div>
+              <div><span className="text-yellow-400">WHERE</span> profiles.active = <span className="text-purple-400">true</span>;</div>
+              <div className="pt-4 border-t border-gray-800 text-[10px] text-green-400">
+                <span>✓ 149 records retrieved. Indexing optimized. Latency: 12ms.</span>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'dev-3': // Quinn (QA Tester)
+        return (
+          <div className="w-full max-w-lg mx-auto bg-[#1E1E1E] border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-white text-left font-mono">
+            <div className="bg-[#2D2D2D] border-b-4 border-black px-4 py-2.5 flex items-center justify-between">
+              <div className="text-[10px] font-bold text-gray-400">Jest Assertions Runner</div>
+              <span className="bg-purple-600 text-white text-[8px] font-black px-2 py-0.5 rounded border border-black">
+                JEST v29
+              </span>
+            </div>
+
+            <div className="p-5 text-xs space-y-1.5 leading-relaxed min-h-[220px]">
+              <div className="text-green-400">PASS  tests/auth.test.ts (4.8s)</div>
+              <div className="text-green-400">PASS  tests/agents.test.ts (2.1s)</div>
+              <div className="text-green-400">PASS  tests/payments.test.ts (3.4s)</div>
+              <div className="pt-4 border-t border-gray-800 text-[10px] text-white">
+                <span className="block">Test Suites: <span className="text-green-400 font-bold">3 passed</span>, 3 total</span>
+                <span className="block">Tests:       <span className="text-green-400 font-bold">24 passed</span>, 24 total</span>
+                <span className="block">Time:        10.3s</span>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'sec-1': // Cy (Security Compliance)
+        return (
+          <div className="w-full max-w-lg mx-auto bg-[#0F172A] border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-white text-left font-mono">
+            <div className="bg-gray-800 border-b-4 border-black px-4 py-2.5 flex items-center justify-between">
+              <div className="text-[10px] font-bold text-gray-400">SOC2 Threat Scanner</div>
+              <span className="bg-teal-600 text-white text-[8px] font-black px-2 py-0.5 rounded border border-black">
+                SEC COMPLIANT
+              </span>
+            </div>
+
+            <div className="p-5 text-[11px] space-y-1.5 min-h-[220px]">
+              <div className="text-gray-400">[CY_SCAN] Initializing repository security sweep...</div>
+              <div className="text-green-400">✓ SSL/TLS verification check: PASSED</div>
+              <div className="text-green-400">✓ Database SQL Injection sanitization: SECURE</div>
+              <div className="text-green-400">✓ API route token gate encryption: ENCRYPTED</div>
+              <div className="text-yellow-400">! Port monitoring: 0 vulnerabilities flagged.</div>
+              <div className="text-teal-400 font-bold pt-2 border-t border-gray-800">[RESULT] SOC2 Compliance Gate: PASSED</div>
+            </div>
+          </div>
+        );
+
+      case 'mkt-1': // Marcus (Growth Hacker)
+        return (
+          <div className="w-full max-w-lg mx-auto bg-[#FDF2F8] border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-black text-left p-5">
+            <span className="text-[9px] font-black uppercase tracking-wider text-gray-400 block mb-4">Referral Loops Configurator</span>
+            <div className="space-y-4">
+              <div className="border-2 border-black p-3 rounded-xl bg-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                <span className="text-[8px] font-black uppercase text-pink-600 bg-pink-50 border border-pink-300 px-2 py-0.5 rounded">Active Loop</span>
+                <h5 className="font-black text-xs uppercase mt-2">Referral Goal: 10,000 Signups</h5>
+                <p className="text-[10px] text-gray-500 mt-1">Growth Coefficient: <span className="font-bold text-green-600">2.4x 📈</span></p>
+              </div>
+              <div className="border-2 border-black p-3 rounded-xl bg-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex justify-between items-center">
+                <span className="font-black text-[10px] uppercase">Active Channels:</span>
+                <span className="bg-black text-white text-[8px] font-black px-2.5 py-1 rounded">GMAIL, TWITTER, SLACK</span>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'mkt-2': // Stella (Social Media Mgr)
         return (
           <div className="w-full max-w-lg mx-auto bg-gray-100 border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-black relative min-h-[300px] p-4">
             {/* Grid of background post mockups */}
@@ -368,6 +458,76 @@ export default function AgentDetailPage() {
           </div>
         );
 
+      case 'mkt-3': // Gordon (SEO Blog Writer)
+        return (
+          <div className="w-full max-w-lg mx-auto bg-white border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-black text-left font-sans">
+            <div className="bg-gray-100 border-b-4 border-black px-4 py-2 flex items-center justify-between">
+              <div className="text-[10px] font-black uppercase text-gray-400">Google SEO Rank Monitor</div>
+              <span className="bg-yellow-400 text-black text-[8px] font-black px-2 py-0.5 rounded border border-black">SERP #1</span>
+            </div>
+            <div className="p-4 space-y-3 bg-[#EEF2F6]">
+              <div className="bg-white border-2 border-black p-3 rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex justify-between items-center">
+                <div>
+                  <h6 className="text-[11px] font-black text-blue-600 underline">google.com/search?q=best+ai+employees</h6>
+                  <p className="text-[9px] text-gray-500 font-bold mt-1">&quot;Hire verified digital recruits instantly on Pixorva...&quot;</p>
+                </div>
+                <span className="bg-yellow-400 text-black text-[10px] font-black p-1.5 rounded-full border-2 border-black">🏆 #1</span>
+              </div>
+              <div className="bg-white border-2 border-black p-3 rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex justify-between items-center">
+                <div>
+                  <h6 className="text-[11px] font-black text-blue-600 underline">google.com/search?q=grow+my+startup+organic</h6>
+                  <p className="text-[9px] text-gray-500 font-bold mt-1">&quot;Top growth parameters and marketing setups...&quot;</p>
+                </div>
+                <span className="bg-yellow-400 text-black text-[10px] font-black p-1.5 rounded-full border-2 border-black">🏆 #1</span>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'mkt-4': // Vic (Video Editor Script)
+        return (
+          <div className="w-full max-w-lg mx-auto bg-gray-900 border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-white text-left font-mono">
+            <div className="bg-gray-800 border-b-4 border-black px-4 py-2 flex items-center justify-between">
+              <span className="text-[9px] text-gray-400 uppercase font-black font-sans">Video Hooks Timeline Editor</span>
+              <span className="bg-red-600 text-white text-[8px] font-black px-2 py-0.5 rounded border border-black uppercase font-sans">Active Render</span>
+            </div>
+            <div className="p-4 space-y-3 text-[10px]">
+              <div className="flex gap-2 items-center">
+                <span className="w-14 opacity-60">Hook Track:</span>
+                <div className="flex-grow bg-red-600 text-white px-2.5 py-1 rounded border border-black font-black uppercase text-[9px]">&quot;Stop burning developer payroll cash 💸&quot; (0s - 3s)</div>
+              </div>
+              <div className="flex gap-2 items-center">
+                <span className="w-14 opacity-60">Body Track:</span>
+                <div className="flex-grow bg-yellow-400 text-black px-2.5 py-1 rounded border border-black font-black uppercase text-[9px]">&quot;Hire Devon to write Next.js routes instantly.&quot; (3s - 12s)</div>
+              </div>
+              <div className="flex gap-2 items-center">
+                <span className="w-14 opacity-60">CTA Track:</span>
+                <div className="flex-grow bg-green-600 text-white px-2.5 py-1 rounded border border-black font-black uppercase text-[9px]">&quot;Browse at pixorva.com&quot; (12s - 15s)</div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'sal-2': // Sarah (Cold SDR Outreach)
+        return (
+          <div className="w-full max-w-lg mx-auto bg-white border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-black text-left font-sans">
+            <div className="bg-gray-100 border-b-4 border-black px-4 py-2 flex items-center justify-between">
+              <span className="text-[9px] text-gray-400 uppercase font-black">SDR Outreach Sequence Editor</span>
+              <span className="bg-blue-600 text-white text-[8px] font-black px-2 py-0.5 rounded border border-black">OUTBOUND SET</span>
+            </div>
+            <div className="p-4 space-y-3 text-xs">
+              <div className="border border-gray-300 p-2.5 rounded-lg bg-gray-50">
+                <span className="font-black text-gray-400 text-[8px] block mb-1">To: target.founder@startup.io</span>
+                <span className="font-black text-black block mb-2">Subject: Accelerating Next.js development</span>
+                <p className="text-[10px] text-gray-600 leading-normal">
+                  Hi Startup Founder, I noticed your ProductHunt launch. Our developer agent Devon writes frontend code instantly... Are you open to a call?
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'sal-1': // Larry (Leads B2B Miner)
       case 'Sales':
         // Stan-style floating leads map layout
         return (
@@ -395,6 +555,116 @@ export default function AgentDetailPage() {
             <div className="mt-4 bg-white border-2 border-black px-4 py-2 rounded-xl text-[10px] font-bold text-center max-w-[240px]">
               <span className="text-blue-600 font-black">✓ Email sequences ready</span>
               <p className="text-[9px] text-gray-500 font-medium mt-0.5">Customized pitches book appointments directly to your calendar.</p>
+            </div>
+          </div>
+        );
+
+      case 'ops-2': // Holly (HR Specialist)
+        return (
+          <div className="w-full max-w-lg mx-auto bg-white border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-black text-left">
+            <div className="bg-rose-50 border-b-4 border-black px-4 py-3 flex items-center justify-between">
+              <span className="text-[9px] font-black uppercase tracking-wider text-rose-700 bg-rose-100 px-2 py-0.5 rounded border border-rose-300">
+                TEAM ONBOARDING CHECKS
+              </span>
+            </div>
+            <div className="p-5 space-y-3 text-xs">
+              <div className="border-2 border-black p-3 rounded-xl bg-gray-50 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="w-4 h-4 rounded border border-black bg-yellow-400 flex items-center justify-center text-[10px] font-black">✓</span>
+                  <div>
+                    <h5 className="text-[10px] font-black uppercase">Send Slack Invite</h5>
+                    <p className="text-[8px] text-gray-500 font-bold">Completed Invite</p>
+                  </div>
+                </div>
+              </div>
+              <div className="border-2 border-black p-3 rounded-xl bg-gray-50 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="w-4 h-4 rounded border border-black bg-yellow-400 flex items-center justify-center text-[10px] font-black">✓</span>
+                  <div>
+                    <h5 className="text-[10px] font-black uppercase">Draft Handbook</h5>
+                    <p className="text-[8px] text-gray-500 font-bold">Policy rules outlined</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'ops-1': // Finn (EBITDA Optimizer)
+        return (
+          <div className="w-full max-w-lg mx-auto bg-white border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-black text-left font-mono">
+            <div className="bg-gray-100 border-b-4 border-black px-4 py-3 flex items-center justify-between">
+              <span className="text-[9px] font-black uppercase text-gray-400">Finn cost savings calculator</span>
+              <span className="bg-green-100 text-green-800 text-[8px] font-black px-2 py-0.5 rounded border border-green-300 uppercase">EBITDA ACTIVE</span>
+            </div>
+            <div className="p-5 space-y-2 text-xs">
+              <div className="flex justify-between border-b border-gray-200 pb-1 text-black">
+                <span className="font-bold">Total Monthly Revenue:</span>
+                <span className="text-right text-green-600 font-black">₹1,49,000</span>
+              </div>
+              <div className="flex justify-between border-b border-gray-200 pb-1 text-black">
+                <span className="font-bold">Optimized Expense:</span>
+                <span className="text-right text-red-600 font-black">-₹42,000</span>
+              </div>
+              <div className="flex justify-between pt-2 text-black">
+                <span className="font-black text-sm uppercase">Calculated Savings:</span>
+                <span className="text-right text-green-600 text-sm font-black">+18% EBITDA</span>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'ops-3': // Lawson (Legal Boilerplates)
+        return (
+          <div className="w-full max-w-lg mx-auto bg-white border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-black text-left">
+            <div className="bg-amber-50 border-b-4 border-black px-4 py-3 flex items-center justify-between">
+              <span className="text-[9px] font-black uppercase text-amber-700 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">NDA CLAUSES PARSER</span>
+            </div>
+            <div className="p-5 space-y-3 text-xs leading-normal">
+              <h5 className="font-black text-sm uppercase border-b border-gray-200 pb-1">Mutual NDA Charter</h5>
+              <p className="text-[10px] text-gray-600 font-bold">
+                1. Confidentiality parameters: Standard Commercial Protection<br />
+                2. Governed under Pixorva console guidelines.<br />
+                3. SLA Verification: Standard compliance checklist active.
+              </p>
+            </div>
+          </div>
+        );
+
+      case 'ops-4': // Pat (Agile PM Planner)
+        return (
+          <div className="w-full max-w-lg mx-auto bg-[#F4F4F5] border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-black text-left p-4">
+            <span className="text-[8px] font-black uppercase tracking-wider text-gray-400 block mb-3">PAT SCRUM KANBAN SPRINT</span>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="border-2 border-black bg-white p-3 rounded-xl">
+                <span className="bg-yellow-400 text-black text-[7px] font-black uppercase px-2 py-0.5 rounded border border-black">TO DO</span>
+                <h5 className="text-[10px] font-black uppercase mt-2">Design UI templates</h5>
+                <p className="text-[8px] text-gray-500 font-bold mt-1">Sprint Priority: High</p>
+              </div>
+              <div className="border-2 border-black bg-white p-3 rounded-xl">
+                <span className="bg-green-600 text-white text-[7px] font-black uppercase px-2 py-0.5 rounded border border-black">DONE</span>
+                <h5 className="text-[10px] font-black uppercase mt-2">Setup migrations</h5>
+                <p className="text-[8px] text-gray-500 font-bold mt-1">Completed by Ruby</p>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'ops-5': // Sam (Customer Tickets)
+        return (
+          <div className="w-full max-w-lg mx-auto bg-white border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] text-black text-left font-sans">
+            <div className="bg-violet-50 border-b-4 border-black px-4 py-3 flex items-center justify-between">
+              <span className="text-[9px] font-black uppercase text-violet-700 bg-violet-100 px-2 py-0.5 rounded border border-rose-300">SAM HELP DESK CHATS</span>
+            </div>
+            <div className="p-5 space-y-3 text-xs leading-normal">
+              <div className="bg-gray-100 border border-black p-2.5 rounded-xl max-w-[80%]">
+                <span className="font-black text-gray-400 text-[8px] block mb-1">Customer (10:14)</span>
+                <p className="text-[10px] font-bold">How do I upgrade to the Growth Plan?</p>
+              </div>
+              <div className="bg-violet-100 border border-black p-2.5 rounded-xl max-w-[80%] ml-auto text-right">
+                <span className="font-black text-violet-600 text-[8px] block mb-1">Sam AI (10:14)</span>
+                <p className="text-[10px] font-bold">You can proceed through the Billing panel or click the Pricing tab...</p>
+              </div>
             </div>
           </div>
         );
@@ -521,7 +791,7 @@ export default function AgentDetailPage() {
             </div>
           </div>
 
-          {renderMockup(employee.category)}
+          {renderMockup(employee.id)}
 
         </div>
       </section>
