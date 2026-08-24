@@ -235,16 +235,16 @@ export default function AgentDetailPage() {
       <section className="bg-white border-b-4 border-black py-10 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="border-4 border-black p-6 rounded-2xl bg-yellow-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center space-y-1">
-            <span className={`text-4xl font-black text-black block ${oswald.className}`}>120k+</span>
-            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">COMMITS LOGGED</span>
+            <span className={`text-4xl font-black text-black block ${oswald.className}`}>180+</span>
+            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">COMPONENTS SHIPPED</span>
+          </div>
+          <div className="border-4 border-black p-6 rounded-2xl bg-yellow-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center space-y-1">
+            <span className={`text-4xl font-black text-black block ${oswald.className}`}>100%</span>
+            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">PIXEL PERFECT</span>
           </div>
           <div className="border-4 border-black p-6 rounded-2xl bg-yellow-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center space-y-1">
             <span className={`text-4xl font-black text-black block ${oswald.className}`}>4.8s</span>
             <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">BUILD TIME SECURED</span>
-          </div>
-          <div className="border-4 border-black p-6 rounded-2xl bg-yellow-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center space-y-1">
-            <span className={`text-4xl font-black text-black block ${oswald.className}`}>99.9%</span>
-            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">COMPLIANCE LEVEL</span>
           </div>
         </div>
       </section>
@@ -445,33 +445,37 @@ export default function AgentDetailPage() {
       <section className="bg-gray-50 py-16 px-6 border-b-4 border-black text-center">
         <div className="max-w-6xl mx-auto space-y-12">
           <h2 className={`text-3.5xl md:text-5xl uppercase font-black leading-none ${oswald.className}`}>
-            Devon is the most ❤️ loved AI employee
+            Devon is highly rated by developers
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6">
-            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
-              <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
-              <h4 className="font-black text-xs uppercase text-black">&quot;Huge time savings&quot;</h4>
-              <p className="text-xs text-gray-500 font-medium leading-relaxed">
-                &quot;${employee.name} quickly learned my style and workflow. It is like having a full-time expert on call.&quot;
-              </p>
-              <span className="text-[10px] font-black text-gray-400 uppercase">— Luke Birch, Founder</span>
-            </div>
-            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
-              <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
-              <h4 className="font-black text-xs uppercase text-black">&quot;Absolutely Game Changer&quot;</h4>
-              <p className="text-xs text-gray-500 font-medium leading-relaxed">
-                &quot;I check in with her like a real colleague. She saves me hours every single week.&quot;
-              </p>
-              <span className="text-[10px] font-black text-gray-400 uppercase">— Cari Kaufman, COO</span>
-            </div>
-            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
-              <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
-              <h4 className="font-black text-xs uppercase text-black">&quot;Saves hours of stress&quot;</h4>
-              <p className="text-xs text-gray-500 font-medium leading-relaxed">
-                &quot;She runs autonomous loops and lints everything perfectly. Best digital recruitment ever.&quot;
-              </p>
-              <span className="text-[10px] font-black text-gray-400 uppercase">— Steve Harris, Engineer</span>
-            </div>
+            
+              <div key={0} className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+                <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
+                <h4 className="font-black text-xs uppercase text-black">&quot;Huge time savings&quot;</h4>
+                <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                  &quot;Devon built our landing page template in Next.js. The Tailwind grid compiles cleanly, saving us days.&quot;
+                </p>
+                <span className="text-[10px] font-black text-gray-400 uppercase">— David Ko, Lead Engineer</span>
+              </div>
+            
+              <div key={1} className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+                <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
+                <h4 className="font-black text-xs uppercase text-black">&quot;Pixel perfect work&quot;</h4>
+                <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                  &quot;We used Devon to sand-box components. Clean hooks, 0 linting bugs, and outstanding styling.&quot;
+                </p>
+                <span className="text-[10px] font-black text-gray-400 uppercase">— Clara Wu, UI Director</span>
+              </div>
+            
+              <div key={2} className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+                <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
+                <h4 className="font-black text-xs uppercase text-black">&quot;Great route structure&quot;</h4>
+                <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                  &quot;Devon restructured our routes. Dynamic paths and layout trees render perfectly.&quot;
+                </p>
+                <span className="text-[10px] font-black text-gray-400 uppercase">— Marcus Vance, CTO</span>
+              </div>
+            
           </div>
         </div>
       </section>

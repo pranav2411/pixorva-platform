@@ -427,33 +427,37 @@ export default function AgentDetailPage() {
       <section className="bg-gray-50 py-16 px-6 border-b-4 border-black text-center">
         <div className="max-w-6xl mx-auto space-y-12">
           <h2 className={`text-3.5xl md:text-5xl uppercase font-black leading-none ${oswald.className}`}>
-            Ruby is the most ❤️ loved AI employee
+            Ruby is trusted by backend teams
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6">
-            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
-              <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
-              <h4 className="font-black text-xs uppercase text-black">&quot;Huge time savings&quot;</h4>
-              <p className="text-xs text-gray-500 font-medium leading-relaxed">
-                &quot;${employee.name} quickly learned my style and workflow. It is like having a full-time expert on call.&quot;
-              </p>
-              <span className="text-[10px] font-black text-gray-400 uppercase">— Luke Birch, Founder</span>
-            </div>
-            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
-              <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
-              <h4 className="font-black text-xs uppercase text-black">&quot;Absolutely Game Changer&quot;</h4>
-              <p className="text-xs text-gray-500 font-medium leading-relaxed">
-                &quot;I check in with her like a real colleague. She saves me hours every single week.&quot;
-              </p>
-              <span className="text-[10px] font-black text-gray-400 uppercase">— Cari Kaufman, COO</span>
-            </div>
-            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
-              <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
-              <h4 className="font-black text-xs uppercase text-black">&quot;Saves hours of stress&quot;</h4>
-              <p className="text-xs text-gray-500 font-medium leading-relaxed">
-                &quot;She runs autonomous loops and lints everything perfectly. Best digital recruitment ever.&quot;
-              </p>
-              <span className="text-[10px] font-black text-gray-400 uppercase">— Steve Harris, Engineer</span>
-            </div>
+            
+              <div key={0} className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+                <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
+                <h4 className="font-black text-xs uppercase text-black">&quot;Latency dropped instantly&quot;</h4>
+                <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                  &quot;Ruby optimized our heavy join queries. Latency dropped from 200ms to 12ms instantly.&quot;
+                </p>
+                <span className="text-[10px] font-black text-gray-400 uppercase">— Alex Mercer, DB Admin</span>
+              </div>
+            
+              <div key={1} className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+                <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
+                <h4 className="font-black text-xs uppercase text-black">&quot;No more schema errors&quot;</h4>
+                <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                  &quot;Designing Postgres tables is so easy now. Ruby maps migrations and manages schema triggers.&quot;
+                </p>
+                <span className="text-[10px] font-black text-gray-400 uppercase">— Priya Sharma, Tech Lead</span>
+              </div>
+            
+              <div key={2} className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+                <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
+                <h4 className="font-black text-xs uppercase text-black">&quot;Perfect Supabase sync&quot;</h4>
+                <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                  &quot;Ruby structured our entire Supabase configuration. Absolute peace of mind on ACID compliance.&quot;
+                </p>
+                <span className="text-[10px] font-black text-gray-400 uppercase">— Dan Garret, System Architect</span>
+              </div>
+            
           </div>
         </div>
       </section>

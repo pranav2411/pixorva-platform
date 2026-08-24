@@ -217,15 +217,15 @@ export default function AgentDetailPage() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="border-4 border-black p-6 rounded-2xl bg-yellow-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center space-y-1">
             <span className={`text-4xl font-black text-black block ${oswald.className}`}>8,500+</span>
-            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">TICKETS RETRIEVED</span>
+            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">SUPPORT TICKETS CLOSED</span>
           </div>
           <div className="border-4 border-black p-6 rounded-2xl bg-yellow-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center space-y-1">
-            <span className={`text-4xl font-black text-black block ${oswald.className}`}>1.2 min</span>
-            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">RESPONSE TIME</span>
+            <span className={`text-4xl font-black text-black block ${oswald.className}`}>1.2 mins</span>
+            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">RESOLUTION SPEED</span>
           </div>
           <div className="border-4 border-black p-6 rounded-2xl bg-yellow-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center space-y-1">
             <span className={`text-4xl font-black text-black block ${oswald.className}`}>98.5%</span>
-            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">CSAT SCORE INDEX</span>
+            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">CSAT RATING INDEX</span>
           </div>
         </div>
       </section>
@@ -417,33 +417,37 @@ export default function AgentDetailPage() {
       <section className="bg-gray-50 py-16 px-6 border-b-4 border-black text-center">
         <div className="max-w-6xl mx-auto space-y-12">
           <h2 className={`text-3.5xl md:text-5xl uppercase font-black leading-none ${oswald.className}`}>
-            Sam is the most ❤️ loved AI employee
+            Sam is loved by customer success managers
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6">
-            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
-              <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
-              <h4 className="font-black text-xs uppercase text-black">&quot;Huge time savings&quot;</h4>
-              <p className="text-xs text-gray-500 font-medium leading-relaxed">
-                &quot;${employee.name} quickly learned my style and workflow. It is like having a full-time expert on call.&quot;
-              </p>
-              <span className="text-[10px] font-black text-gray-400 uppercase">— Luke Birch, Founder</span>
-            </div>
-            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
-              <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
-              <h4 className="font-black text-xs uppercase text-black">&quot;Absolutely Game Changer&quot;</h4>
-              <p className="text-xs text-gray-500 font-medium leading-relaxed">
-                &quot;I check in with her like a real colleague. She saves me hours every single week.&quot;
-              </p>
-              <span className="text-[10px] font-black text-gray-400 uppercase">— Cari Kaufman, COO</span>
-            </div>
-            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
-              <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
-              <h4 className="font-black text-xs uppercase text-black">&quot;Saves hours of stress&quot;</h4>
-              <p className="text-xs text-gray-500 font-medium leading-relaxed">
-                &quot;She runs autonomous loops and lints everything perfectly. Best digital recruitment ever.&quot;
-              </p>
-              <span className="text-[10px] font-black text-gray-400 uppercase">— Steve Harris, Engineer</span>
-            </div>
+            
+              <div key={0} className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+                <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
+                <h4 className="font-black text-xs uppercase text-black">&quot;800 tickets closed&quot;</h4>
+                <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                  &quot;Sam resolved 800 support tickets in a day. Resolution speed was 1.2 min.&quot;
+                </p>
+                <span className="text-[10px] font-black text-gray-400 uppercase">— Tony Hsieh, Ex-Zappos CEO</span>
+              </div>
+            
+              <div key={1} className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+                <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
+                <h4 className="font-black text-xs uppercase text-black">&quot;Satisfaction rating 98%&quot;</h4>
+                <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                  &quot;Our customer satisfaction rating hit 98.5% CSAT. Sam is amazing.&quot;
+                </p>
+                <span className="text-[10px] font-black text-gray-400 uppercase">— Mikkel Svane, Zendesk Founder</span>
+              </div>
+            
+              <div key={2} className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+                <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
+                <h4 className="font-black text-xs uppercase text-black">&quot;Empathetic ticket replies&quot;</h4>
+                <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                  &quot;Sam answers client queries with empathy. SLA response rate secured.&quot;
+                </p>
+                <span className="text-[10px] font-black text-gray-400 uppercase">— Dharmesh Shah, HubSpot Co-Founder</span>
+              </div>
+            
           </div>
         </div>
       </section>

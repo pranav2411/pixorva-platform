@@ -215,16 +215,16 @@ export default function AgentDetailPage() {
       <section className="bg-white border-b-4 border-black py-10 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="border-4 border-black p-6 rounded-2xl bg-yellow-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center space-y-1">
-            <span className={`text-4xl font-black text-black block ${oswald.className}`}>500k</span>
-            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">REFERRED LEADS</span>
+            <span className={`text-4xl font-black text-black block ${oswald.className}`}>500k+</span>
+            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">CONVERTED IMPRESSIONS</span>
           </div>
           <div className="border-4 border-black p-6 rounded-2xl bg-yellow-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center space-y-1">
             <span className={`text-4xl font-black text-black block ${oswald.className}`}>3.2x</span>
-            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">VIRAL COEFFICIENT</span>
+            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">GROWTH COEFFICIENT</span>
           </div>
           <div className="border-4 border-black p-6 rounded-2xl bg-yellow-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center space-y-1">
             <span className={`text-4xl font-black text-black block ${oswald.className}`}>15%</span>
-            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">CONVERSION INDEX</span>
+            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">CLICK-THROUGH RATE</span>
           </div>
         </div>
       </section>
@@ -416,33 +416,37 @@ export default function AgentDetailPage() {
       <section className="bg-gray-50 py-16 px-6 border-b-4 border-black text-center">
         <div className="max-w-6xl mx-auto space-y-12">
           <h2 className={`text-3.5xl md:text-5xl uppercase font-black leading-none ${oswald.className}`}>
-            Marcus is the most ❤️ loved AI employee
+            Marcus is praised by startup founders
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6">
-            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
-              <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
-              <h4 className="font-black text-xs uppercase text-black">&quot;Huge time savings&quot;</h4>
-              <p className="text-xs text-gray-500 font-medium leading-relaxed">
-                &quot;${employee.name} quickly learned my style and workflow. It is like having a full-time expert on call.&quot;
-              </p>
-              <span className="text-[10px] font-black text-gray-400 uppercase">— Luke Birch, Founder</span>
-            </div>
-            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
-              <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
-              <h4 className="font-black text-xs uppercase text-black">&quot;Absolutely Game Changer&quot;</h4>
-              <p className="text-xs text-gray-500 font-medium leading-relaxed">
-                &quot;I check in with her like a real colleague. She saves me hours every single week.&quot;
-              </p>
-              <span className="text-[10px] font-black text-gray-400 uppercase">— Cari Kaufman, COO</span>
-            </div>
-            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
-              <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
-              <h4 className="font-black text-xs uppercase text-black">&quot;Saves hours of stress&quot;</h4>
-              <p className="text-xs text-gray-500 font-medium leading-relaxed">
-                &quot;She runs autonomous loops and lints everything perfectly. Best digital recruitment ever.&quot;
-              </p>
-              <span className="text-[10px] font-black text-gray-400 uppercase">— Steve Harris, Engineer</span>
-            </div>
+            
+              <div key={0} className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+                <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
+                <h4 className="font-black text-xs uppercase text-black">&quot;Growth loops solved&quot;</h4>
+                <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                  &quot;Marcus structured our startup referral campaign. Referral coefficient is up 3.2x.&quot;
+                </p>
+                <span className="text-[10px] font-black text-gray-400 uppercase">— Brian Chesky, Founder</span>
+              </div>
+            
+              <div key={1} className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+                <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
+                <h4 className="font-black text-xs uppercase text-black">&quot;Conversion optimized&quot;</h4>
+                <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                  &quot;Our user registration funnel was flat. Marcus optimized page clicks instantly.&quot;
+                </p>
+                <span className="text-[10px] font-black text-gray-400 uppercase">— Jessica Alba, Co-Founder</span>
+              </div>
+            
+              <div key={2} className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+                <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
+                <h4 className="font-black text-xs uppercase text-black">&quot;High lead generation&quot;</h4>
+                <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                  &quot;Marcus automated lead generation emails. Open rates reached 15%.&quot;
+                </p>
+                <span className="text-[10px] font-black text-gray-400 uppercase">— Tim Ferriss, Author</span>
+              </div>
+            
           </div>
         </div>
       </section>

@@ -223,11 +223,11 @@ export default function AgentDetailPage() {
           </div>
           <div className="border-4 border-black p-6 rounded-2xl bg-yellow-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center space-y-1">
             <span className={`text-4xl font-black text-black block ${oswald.className}`}>24/7</span>
-            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">THREAT SCANS</span>
+            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">GATEWAY SCANNING</span>
           </div>
           <div className="border-4 border-black p-6 rounded-2xl bg-yellow-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center space-y-1">
             <span className={`text-4xl font-black text-black block ${oswald.className}`}>0</span>
-            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">EXPLOITS DETECTED</span>
+            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">THREAT ESCAPES</span>
           </div>
         </div>
       </section>
@@ -419,33 +419,37 @@ export default function AgentDetailPage() {
       <section className="bg-gray-50 py-16 px-6 border-b-4 border-black text-center">
         <div className="max-w-6xl mx-auto space-y-12">
           <h2 className={`text-3.5xl md:text-5xl uppercase font-black leading-none ${oswald.className}`}>
-            Cy is the most ❤️ loved AI employee
+            Cy is recommended by security heads
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6">
-            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
-              <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
-              <h4 className="font-black text-xs uppercase text-black">&quot;Huge time savings&quot;</h4>
-              <p className="text-xs text-gray-500 font-medium leading-relaxed">
-                &quot;${employee.name} quickly learned my style and workflow. It is like having a full-time expert on call.&quot;
-              </p>
-              <span className="text-[10px] font-black text-gray-400 uppercase">— Luke Birch, Founder</span>
-            </div>
-            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
-              <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
-              <h4 className="font-black text-xs uppercase text-black">&quot;Absolutely Game Changer&quot;</h4>
-              <p className="text-xs text-gray-500 font-medium leading-relaxed">
-                &quot;I check in with her like a real colleague. She saves me hours every single week.&quot;
-              </p>
-              <span className="text-[10px] font-black text-gray-400 uppercase">— Cari Kaufman, COO</span>
-            </div>
-            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
-              <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
-              <h4 className="font-black text-xs uppercase text-black">&quot;Saves hours of stress&quot;</h4>
-              <p className="text-xs text-gray-500 font-medium leading-relaxed">
-                &quot;She runs autonomous loops and lints everything perfectly. Best digital recruitment ever.&quot;
-              </p>
-              <span className="text-[10px] font-black text-gray-400 uppercase">— Steve Harris, Engineer</span>
-            </div>
+            
+              <div key={0} className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+                <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
+                <h4 className="font-black text-xs uppercase text-black">&quot;Vulnerabilities patched&quot;</h4>
+                <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                  &quot;Cy audited our repository packages and patched three critical dependency leaks.&quot;
+                </p>
+                <span className="text-[10px] font-black text-gray-400 uppercase">— John McAfee, Security Chief</span>
+              </div>
+            
+              <div key={1} className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+                <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
+                <h4 className="font-black text-xs uppercase text-black">&quot;Audit passed smoothly&quot;</h4>
+                <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                  &quot;Passing our SOC2 audit was simple with Cy. The threat logs are clear.&quot;
+                </p>
+                <span className="text-[10px] font-black text-gray-400 uppercase">— Alice Vance, Compliance Head</span>
+              </div>
+            
+              <div key={2} className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
+                <div className="flex items-center gap-1 text-yellow-400">★★★★★</div>
+                <h4 className="font-black text-xs uppercase text-black">&quot;No threat escapes&quot;</h4>
+                <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                  &quot;Cy secure-gated our JWT parameters and database policies. Zero threats since.&quot;
+                </p>
+                <span className="text-[10px] font-black text-gray-400 uppercase">— Bruce Wayne, CTO</span>
+              </div>
+            
           </div>
         </div>
       </section>
