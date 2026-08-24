@@ -101,58 +101,198 @@ export default function AgentDetailPage() {
 
   // Helper dynamic content generator based on agent type
   const getDynamicContent = () => {
-    switch (employee.category) {
-      case 'Engineering':
+    switch (employee.id) {
+      case 'dev-1': // Devon
         return {
-          tagline: `I compile code, structure database endpoints, write test scripts, and audit vulnerabilities so your engineering builds are bulletproof.`,
-          metrics: { val1: "120,000+", label1: "COMMITS LOGGED", val2: "4.8s", label2: "BUILD TIME GUARANTEED", val3: "99.9%", label3: "SECURITY COMPLIANCE" },
+          heroBgColor: '#2563EB',
+          heroTextColor: '#FFFFFF',
+          tagline: `I compile code, build frontend interfaces, fix React hooks, and structure Next.js layouts on the fly.`,
+          metrics: { val1: "120k+", label1: "COMMITS LOGGED", val2: "4.8s", label2: "BUILD TIME SECURED", val3: "99.9%", label3: "COMPLIANCE LEVEL" },
           painPoints: [
-            "We spend hours fixing small syntax issues and hooks",
-            "Designing database tables is slowing our progress",
-            "We skip writing unit tests and bugs hit production"
-          ],
-          mockupTitle: "Code Workspace Sandbox",
-          mockupBadge: "Active Compile",
-          mockupText: `import { createClient } from '@supabase/supabase-js';\n\n// Provisioning AI Agent pipeline\nexport async function runSecurityAudit(id) {\n  const res = await db.from('tasks').select('*');\n  return res.filter(t => !t.vulnerable);\n}`
+            "We spend hours fixing small CSS alignment issues and React hooks.",
+            "Designing frontend layout shells is slowing down backend integration.",
+            "We lack specialized React support to ship features on timeline."
+          ]
         };
-      case 'Marketing':
+      case 'dev-2': // Ruby
         return {
-          tagline: `I draft viral LinkedIn hooks, formulate Twitter launch threads, design ad conversions copy, and script short Reels to grow your organic traffic.`,
-          metrics: { val1: "2.4M", label1: "IMPRESSIONS ENGAGED", val2: "15 mins", label2: "DRAFT OUTLINES", val3: "4.8x", label3: "TRAFFIC CTR INCREASE" },
+          heroBgColor: '#047857',
+          heroTextColor: '#FFFFFF',
+          tagline: `I write optimized SQL queries, construct Node.js APIs, and configure Supabase schemas.`,
+          metrics: { val1: "45,000+", label1: "QUERIES OPTIMIZED", val2: "12ms", label2: "LATENCY REDUCTION", val3: "100%", label3: "ACID RELIABILITY" },
           painPoints: [
-            "I spend 3 hours writing social descriptions every day",
-            "Organic brand growth feels like a full-time task",
-            "Drafting YouTube scripts from scratch is exhausting"
-          ],
-          mockupTitle: "Marcus Campaign Writer",
-          mockupBadge: "Prepared Draft",
-          mockupText: `Campaign Topic: Pixorva Launch\n\n[Tweet 1] Stop burning payroll cash. 💸\nHire Devon to write your React components instantly.\n\n[Action CTA] Browse AI marketplace at pixorva.com/employees`
+            "Our database queries are slow and bottlenecking user traffic.",
+            "Designing relational schemas is confusing and leads to server errors.",
+            "Setting up Supabase tables and migrations takes up half our sprint."
+          ]
         };
-      case 'Sales':
+      case 'dev-3': // Quinn
         return {
-          tagline: `I enrich business domains, compile clean prospect lead sheets, and design cold email outreach sequences to get calls booked on autopilot.`,
-          metrics: { val1: "50,000", label1: "EMAILS OUTBOUNDED", val2: "3.4h", label2: "SAVED PER SDR TASK", val3: "18%", label3: "CONVERSION CTR INDEX" },
+          heroBgColor: '#7C3AED',
+          heroTextColor: '#FFFFFF',
+          tagline: `I write unit tests, Cypress end-to-end integration specs, and scan for broken frontend logic.`,
+          metrics: { val1: "18,000+", label1: "SPECS RUN", val2: "100%", label2: "COVERAGE SECURED", val3: "0", label3: "PRODUCTION BUGS" },
           painPoints: [
-            "Sifting through lead files manually takes forever",
-            "We struggle to customize pitches for every domain",
-            "Follow-ups get lost and potential deals vanish"
-          ],
-          mockupTitle: "Sales Outreach Console",
-          mockupBadge: "Sequence Set",
-          mockupText: `To: founder@startup.co\nSubject: Automating your component testing\n\nHi,\nI noticed you are building on Next.js.\nOur QA agent Quinn writes Jest specs instantly.\nAre you open to a call tomorrow?`
+            "Bugs hit production because we lack time to write Jest specs.",
+            "Writing assertions and mocking routes is tedious.",
+            "Refactoring database tables breaks our app quietly."
+          ]
+        };
+      case 'sec-1': // Cy
+        return {
+          heroBgColor: '#111827',
+          heroTextColor: '#FFFFFF',
+          tagline: `I scan repositories for vulnerabilities, audit compliance requirements, and build SOC2 gates.`,
+          metrics: { val1: "100%", label1: "SOC2 COMPLIANT", val2: "24/7", label2: "THREAT SCANS", val3: "0", label3: "EXPLOITS DETECTED" },
+          painPoints: [
+            "We are worried about data leaks and security violations in our repo.",
+            "Passing security audits and compliance checks feels impossible.",
+            "We have no active threat scanning or monitoring in place."
+          ]
+        };
+      case 'mkt-1': // Marcus
+        return {
+          heroBgColor: '#EA580C',
+          heroTextColor: '#FFFFFF',
+          tagline: `I design growth loops, formulate high-converting referral landing pages, and launch viral lead flows.`,
+          metrics: { val1: "500k", label1: "REFERRED LEADS", val2: "3.2x", label2: "VIRAL COEFFICIENT", val3: "15%", label3: "CONVERSION INDEX" },
+          painPoints: [
+            "Our user growth is stagnant and ads are draining our budget.",
+            "We don't know how to set up dynamic referral campaigns.",
+            "Landing page visitors bounce without converting."
+          ]
+        };
+      case 'mkt-2': // Stella
+        return {
+          heroBgColor: '#DB2777',
+          heroTextColor: '#FFFFFF',
+          tagline: `I draft viral Reels scripts, schedule Instagram postings, and compose engaging social media threads.`,
+          metrics: { val1: "1.2M", label1: "VIEWS ENGAGED", val2: "15 mins", label2: "DRAFT OUTLINES", val3: "4.8x", label3: "CTR INCREASE INDEX" },
+          painPoints: [
+            "Keeping up with daily social postings is exhausting.",
+            "Writing video scripts and caption drafts consumes hours.",
+            "We have zero organic lead generation from social platforms."
+          ]
+        };
+      case 'mkt-3': // Gordon
+        return {
+          heroBgColor: '#4F46E5',
+          heroTextColor: '#FFFFFF',
+          tagline: `I perform semantic keyword audits and write organic blog posts that rank #1 on search engines.`,
+          metrics: { val1: "480k", label1: "ORGANIC TRAFFIC", val2: "15 min", label2: "DRAFT OUTLINES", val3: "6.2x", label3: "CTR UPLIFT INDEX" },
+          painPoints: [
+            "We write articles but none of them show up on Google search results.",
+            "Finding high-value, low-competition keywords is too technical.",
+            "Our organic traffic is flat and paid ads are too expensive."
+          ]
+        };
+      case 'mkt-4': // Vic
+        return {
+          heroBgColor: '#F43F5E',
+          heroTextColor: '#FFFFFF',
+          tagline: `I edit short-form promotional videos, format typography, and schedule high-retention Reels.`,
+          metrics: { val1: "2.5M+", label1: "VIDEO VIEWS", val2: "12 min", label2: "RENDER OUTLINES", val3: "8.5x", label3: "RETENTION INDEX" },
+          painPoints: [
+            "Editing videos and scripting hooks takes all our time.",
+            "Short-form content gets low views due to poor pacing.",
+            "We need high-quality scripts for social video launches."
+          ]
+        };
+      case 'sal-2': // Sarah
+        return {
+          heroBgColor: '#EAB308',
+          heroTextColor: '#000000',
+          tagline: `I enrich sales domains, compose personalized email sequences, and book meetings on autopilot.`,
+          metrics: { val1: "30,000", label1: "EMAILS SENT", val2: "20+", label2: "MEETINGS BOOKED", val3: "24%", label3: "OPEN RATE INDEX" },
+          painPoints: [
+            "We struggle to get replies from cold email campaigns.",
+            "Drafting customized pitches for prospect domains takes all day.",
+            "Outbound sales sequences are manual and book zero calls."
+          ]
+        };
+      case 'sal-1': // Larry
+        return {
+          heroBgColor: '#F59E0B',
+          heroTextColor: '#000000',
+          tagline: `I build targeted direct-line business lead lists and verify prospect emails.`,
+          metrics: { val1: "240k", label1: "LEADS EXTRACTED", val2: "99.8%", label2: "ACCURACY RATE", val3: "4.8h", label3: "SAVED PER WEEK" },
+          painPoints: [
+            "Buying lead databases leads to high email bounce rates.",
+            "Finding valid emails and direct lines for decision makers is slow.",
+            "We lack a system to target specific local business niches."
+          ]
+        };
+      case 'ops-2': // Holly
+        return {
+          heroBgColor: '#E11D48',
+          heroTextColor: '#FFFFFF',
+          tagline: `I build HR policy guidelines, design team onboarding guides, and coordinate benefits systems.`,
+          metrics: { val1: "50+", label1: "MEMBERS ASSIGNED", val2: "20h", label2: "TIMELINE SAVED", val3: "100%", label3: "COMPLIANCE LEVEL" },
+          painPoints: [
+            "Onboarding new hires is manual, disorganized, and slow.",
+            "Drafting handbook policies takes hours.",
+            "Keeping employee records and benefits files is chaotic."
+          ]
+        };
+      case 'ops-1': // Finn
+        return {
+          heroBgColor: '#475569',
+          heroTextColor: '#FFFFFF',
+          tagline: `I scan expense logs, audit payroll distributions, and optimize operational EBITDA structures.`,
+          metrics: { val1: "₹2.5M+", label1: "EXPENSES SAVED", val2: "18%", label2: "EBITDA INCREASE", val3: "24/7", label3: "LEDGER SCANS" },
+          painPoints: [
+            "Our operational costs are high and profit margins are shrinking.",
+            "Analyzing financial statements for cost leakages is manual.",
+            "We struggle to balance resource allocations against payroll."
+          ]
+        };
+      case 'ops-3': // Lawson
+        return {
+          heroBgColor: '#B45309',
+          heroTextColor: '#FFFFFF',
+          tagline: `I review commercial NDA guidelines, draft partnership charters, and verify vendor SLAs.`,
+          metrics: { val1: "15,000+", label1: "PAGES DRAFTED", val2: "48h", label2: "TURNAROUND SAVED", val3: "100%", label3: "LEGAL ACCURACY" },
+          painPoints: [
+            "Legal templates and NDAs are slow to review and draft.",
+            "We spend too much money on standard boilerplate templates.",
+            "Ensuring compliance across diverse agreements is risky."
+          ]
+        };
+      case 'ops-4': // Pat
+        return {
+          heroBgColor: '#0D9488',
+          heroTextColor: '#FFFFFF',
+          tagline: `I structure agile sprint roadmaps, track board milestones, and log team action items.`,
+          metrics: { val1: "45", label1: "SPRINTS COMPLETED", val2: "92%", label2: "VELOCITY INDEX", val3: "8h", label3: "MEETING TIME SAVED" },
+          painPoints: [
+            "Sprint planning and JIRA setup eats up our product timeline.",
+            "Action items from meetings are forgotten and tasks stall.",
+            "We lack clear roadmap specifications for developers."
+          ]
+        };
+      case 'ops-5': // Sam
+        return {
+          heroBgColor: '#6D28D9',
+          heroTextColor: '#FFFFFF',
+          tagline: `I manage customer support tickets, answer help center queries, and audit customer SLA satisfaction scores.`,
+          metrics: { val1: "8,500+", label1: "TICKETS RETRIEVED", val2: "1.2 min", label2: "RESPONSE TIME", val3: "98.5%", label3: "CSAT SCORE INDEX" },
+          painPoints: [
+            "Customer support tickets are piling up and response time is slow.",
+            "Answering repetitive user questions consumes our team's time.",
+            "SLA compliance is dropping due to support bottlenecks."
+          ]
         };
       default:
         return {
+          heroBgColor: '#FF5A36',
+          heroTextColor: '#FFFFFF',
           tagline: `I review corporate NDAs, summarize costing ledgers, structure onboarding rules, and write user roadmap spec sheets.`,
           metrics: { val1: "15,000", label1: "PAGES DRAFTED", val2: "2H", label2: "SAVED DAILY, GUARANTEED", val3: "100%", label3: "AGILE SPEC COVERAGE" },
           painPoints: [
             "Creating spec sheets eats up our product timeline",
             "NDA agreements and terms reviews take days to clear",
             "Onboarding checkers and policy lists get messy"
-          ],
-          mockupTitle: "Operations Manager Tower",
-          mockupBadge: "Compliance Clear",
-          mockupText: `Pixorva Legal Charter // Mutual NDA\n\nSection 1. Confidentiality parameters and code protections.\nSection 2. Governed under standard commercial parameters.`
+          ]
         };
     }
   };
@@ -322,31 +462,34 @@ export default function AgentDetailPage() {
         </Link>
       </header>
 
-      {/* HERO SECTION - ORANGE NEOBRUTALIST BANNER */}
-      <section className="bg-[#FF5A36] border-b-4 border-black px-6 py-12 md:py-20 text-white relative overflow-hidden">
+      {/* HERO SECTION - DYNAMIC NEOBRUTALIST BANNER */}
+      <section 
+        className="border-b-4 border-black px-6 py-12 md:py-20 relative overflow-hidden transition-colors duration-300"
+        style={{ backgroundColor: dynamic.heroBgColor, color: dynamic.heroTextColor }}
+      >
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle,_black_1.5px,_transparent_1.5px)] bg-[length:15px_15px]"></div>
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
 
           {/* Left Text */}
           <div className="text-left space-y-6">
-            <div className="inline-flex items-center gap-2 bg-black border-2 border-white px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transform -rotate-1">
+            <div className="inline-flex items-center gap-2 bg-black border-2 border-white px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transform -rotate-1 text-white">
               <Sparkles size={12} className="text-yellow-400" />
               Meet {employee.name}
             </div>
 
-            <h1 className={`text-5xl md:text-7xl font-black uppercase leading-[0.9] tracking-tight ${oswald.className}`}>
+            <h1 className={`text-5xl md:text-7xl font-black uppercase leading-[0.9] tracking-tight ${oswald.className}`} style={{ color: dynamic.heroTextColor }}>
               YOUR AI <br />
               <span className="text-black bg-yellow-400 px-3 py-1 inline-block border-4 border-black transform rotate-1 mt-2">
                 {employee.role}
               </span>
             </h1>
 
-            <p className="text-lg md:text-xl font-medium leading-relaxed max-w-xl text-white/95">
+            <p className="text-lg md:text-xl font-medium leading-relaxed max-w-xl" style={{ color: dynamic.heroTextColor === '#000000' ? 'rgba(0,0,0,0.85)' : 'rgba(255,255,255,0.95)' }}>
               &ldquo;{dynamic.tagline}&rdquo;
             </p>
 
             {/* Price Box */}
-            <div className="bg-black/25 border-2 border-white p-4 rounded-2xl max-w-sm flex justify-between items-center">
+            <div className="bg-black/25 border-2 border-white p-4 rounded-2xl max-w-sm flex justify-between items-center text-white">
               <div>
                 <span className="text-[10px] font-black uppercase text-white/70 block">Monthly Rate</span>
                 <span className="text-3xl font-black text-yellow-400">{employee.price}</span>
@@ -363,8 +506,8 @@ export default function AgentDetailPage() {
                   onChange={(e) => setAgreeHire(e.target.checked)}
                   className="mt-1 border-2 border-black rounded text-black bg-white accent-yellow-400"
                 />
-                <span className="text-[10px] text-white/90 font-bold leading-tight">
-                  I agree to Pixorva&apos;s <Link href="/terms" className="underline hover:text-yellow-400">Terms of Service</Link> & <Link href="/privacy" className="underline hover:text-yellow-400">Privacy Policy</Link> to commission this AI employee.
+                <span className="text-[10px] font-bold leading-tight" style={{ color: dynamic.heroTextColor === '#000000' ? 'rgba(0,0,0,0.85)' : 'rgba(255,255,255,0.9)' }}>
+                  I agree to Pixorva&apos;s <Link href="/terms" className="underline" style={{ color: dynamic.heroTextColor === '#000000' ? '#1D4ED8' : '#FBBF24' }}>Terms of Service</Link> & <Link href="/privacy" className="underline" style={{ color: dynamic.heroTextColor === '#000000' ? '#1D4ED8' : '#FBBF24' }}>Privacy Policy</Link> to commission this AI employee.
                 </span>
               </label>
 
