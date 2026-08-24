@@ -822,7 +822,8 @@ export default function AgentWorkstation() {
                          <div className="font-bold uppercase tracking-wider text-xs">Start a conversation with {agent.name.split('(')[0]}</div>
                      </div>
                  ) : (
-                     <div className="flex-grow flex flex-col justify-end min-h-full space-y-6">
+                     <div className="min-h-full flex flex-col space-y-6">
+                         <div className="flex-grow" />
                          {chatMessages.map((msg) => (
                              <div key={msg.id} className="space-y-3">
                                  {/* User Message Bubble */}
