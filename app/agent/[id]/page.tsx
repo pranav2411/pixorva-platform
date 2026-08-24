@@ -449,7 +449,13 @@ export default function AgentWorkstation() {
         });
         
         const data = await response.json();
-        const finalResult = data.result || "No response";
+        let finalResult = data.result || "No response";
+
+        if (!data.success || finalResult.startsWith("❌ Error:") || finalResult.includes("Error fetching") || response.status >= 400) {
+            if (!finalResult.includes("Unauthorized")) {
+                finalResult = "⚠️ The agent is experiencing high demand. Please wait a moment and try again.";
+            }
+        }
 
         // --- NEW: CHECK FOR ACTION JSON ---
         try {
@@ -469,7 +475,9 @@ export default function AgentWorkstation() {
         removeFile();
 
     } catch (e) {
-        showToast("Connection Error.", "error");
+        const friendlyError = "⚠️ The agent is experiencing high demand. Please wait a moment and try again.";
+        setTasks(prev => prev.map(t => t.id === tempId ? { ...t, result: friendlyError, type: 'text' } : t));
+        showToast("Request failed.", "error");
     } finally {
         setRunning(false);
     }
