@@ -300,62 +300,35 @@ export default function Home() {
           {/* Menu Body */}
           <div className="flex-grow py-8 space-y-6 text-black">
             <div>
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-4">AI Workforce Recruits</span>
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-4">Core Platform</span>
               
-              {/* Neobrutalist Cards Grid (matching photo look!) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Link href="/agent-detail/dev-1" onClick={() => setMenuOpen(false)} className="border-2 border-black p-3.5 rounded-xl bg-blue-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition text-black block">
+              {/* Neobrutalist Cards Grid */}
+              <div className="grid grid-cols-1 gap-4">
+                <Link href="/employees" onClick={() => setMenuOpen(false)} className="border-2 border-black p-4 rounded-xl bg-yellow-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition text-black block">
                   <div className="flex justify-between items-start mb-2">
-                    <span className="bg-blue-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">Devon</span>
-                    <Code size={14} className="text-blue-600" />
+                    <span className="bg-yellow-400 text-black text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">Employees</span>
+                    <Briefcase size={14} className="text-black" />
                   </div>
-                  <h4 className="font-black text-xs uppercase text-black">React Developer</h4>
-                  <p className="text-[9px] text-gray-500 font-medium mt-1">Writes frontend and components.</p>
+                  <h4 className="font-black text-sm uppercase text-black">AI Employees Marketplace</h4>
+                  <p className="text-xs text-gray-500 font-medium mt-1">Browse, inspect, and hire 15+ specialized AI agents for your team.</p>
                 </Link>
 
-                <Link href="/agent-detail/dev-2" onClick={() => setMenuOpen(false)} className="border-2 border-black p-3.5 rounded-xl bg-green-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition text-black block">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="bg-green-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">Ruby</span>
-                    <Database size={14} className="text-green-600" />
-                  </div>
-                  <h4 className="font-black text-xs uppercase text-black">Database Architect</h4>
-                  <p className="text-[9px] text-gray-500 font-medium mt-1">Generates relational SQL endpoints.</p>
-                </Link>
-
-                <Link href="/agent-detail/mkt-2" onClick={() => setMenuOpen(false)} className="border-2 border-black p-3.5 rounded-xl bg-orange-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition text-black block">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="bg-orange-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">Stella</span>
-                    <Camera size={14} className="text-orange-600" />
-                  </div>
-                  <h4 className="font-black text-xs uppercase text-black">Social Media Manager</h4>
-                  <p className="text-[9px] text-gray-500 font-medium mt-1">Drafts campaigns and outlines Reels.</p>
-                </Link>
-
-                <Link href="/agent-detail/mkt-3" onClick={() => setMenuOpen(false)} className="border-2 border-black p-3.5 rounded-xl bg-red-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition text-black block">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="bg-red-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">Gordon</span>
-                    <PenTool size={14} className="text-red-600" />
-                  </div>
-                  <h4 className="font-black text-xs uppercase text-black">SEO Blog Writer</h4>
-                  <p className="text-[9px] text-gray-500 font-medium mt-1">Ranks keywords on organic searches.</p>
-                </Link>
-
-                <Link href="/studio" onClick={() => setMenuOpen(false)} className="border-2 border-black p-3.5 rounded-xl bg-purple-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition text-black block">
+                <Link href="/studio" onClick={() => setMenuOpen(false)} className="border-2 border-black p-4 rounded-xl bg-purple-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition text-black block">
                   <div className="flex justify-between items-start mb-2">
                     <span className="bg-purple-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">Studio</span>
                     <Cpu size={14} className="text-purple-600" />
                   </div>
-                  <h4 className="font-black text-xs uppercase text-black">AI Agent Studio</h4>
-                  <p className="text-[9px] text-gray-500 font-medium mt-1">Build custom employees from scratch.</p>
+                  <h4 className="font-black text-sm uppercase text-black">AI Agent Studio</h4>
+                  <p className="text-xs text-gray-500 font-medium mt-1">Build custom employees and prompt pipelines from scratch.</p>
                 </Link>
 
-                <Link href="/docs" onClick={() => setMenuOpen(false)} className="border-2 border-black p-3.5 rounded-xl bg-yellow-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition text-black block">
+                <Link href="/docs" onClick={() => setMenuOpen(false)} className="border-2 border-black p-4 rounded-xl bg-blue-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition text-black block">
                   <div className="flex justify-between items-start mb-2">
-                    <span className="bg-yellow-600 text-black text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">Docs</span>
-                    <FileText size={14} className="text-yellow-600" />
+                    <span className="bg-blue-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">Docs</span>
+                    <FileText size={14} className="text-blue-600" />
                   </div>
-                  <h4 className="font-black text-xs uppercase text-black">Developer Specs</h4>
-                  <p className="text-[9px] text-gray-500 font-medium mt-1">API specifications and governance details.</p>
+                  <h4 className="font-black text-sm uppercase text-black">Developer Specs & Docs</h4>
+                  <p className="text-xs text-gray-500 font-medium mt-1">Read integration guides, API specs, and compliance gates.</p>
                 </Link>
               </div>
             </div>
@@ -364,7 +337,7 @@ export default function Home() {
             <div className="space-y-4 pt-4 border-t-2 border-gray-100 font-bold uppercase text-sm text-black">
               <Link href="/pricing" onClick={() => setMenuOpen(false)} className="block hover:text-yellow-600">Pricing Plans</Link>
               <Link href="/governance" onClick={() => setMenuOpen(false)} className="block hover:text-yellow-600">Governance Console</Link>
-              <Link href="/employees" onClick={() => setMenuOpen(false)} className="block hover:text-yellow-600">Full Employee Marketplace</Link>
+              <Link href="/workspace" onClick={() => setMenuOpen(false)} className="block hover:text-yellow-600">Open Workspace</Link>
             </div>
           </div>
 
