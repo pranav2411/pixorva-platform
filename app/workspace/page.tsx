@@ -504,30 +504,30 @@ export default function WorkspacePage() {
       </nav>
 
       {/* WORKSPACE LAYOUT CONTAINER */}
-      <main className="flex-grow p-6 overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 border-4 border-black rounded-3xl overflow-hidden bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] h-[620px] lg:h-[calc(100vh-160px)]">
+      <main className="flex-grow p-4 lg:p-6 overflow-hidden flex flex-col">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 border-4 border-black rounded-3xl overflow-hidden bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex-grow h-[calc(100vh-220px)] lg:h-[calc(100vh-160px)]">
           
           {/* SIDEBAR NAVIGATION PANEL (3 COLS) */}
-          <div className="lg:col-span-3 bg-gray-50 border-b-4 lg:border-b-0 lg:border-r-4 border-black p-6 flex flex-col justify-between h-full overflow-hidden">
-            <div className="flex-grow overflow-y-auto space-y-6 pr-1">
+          <div className="lg:col-span-3 bg-gray-50 border-b-4 lg:border-b-0 lg:border-r-4 border-black p-4 lg:p-6 flex flex-col justify-between overflow-hidden shrink-0">
+            <div className="flex-grow overflow-y-auto space-y-4 lg:space-y-6 pr-1">
               <div>
                 <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Workspace Hub</span>
-                <div className="space-y-2">
+                <div className="flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible no-scrollbar pb-2 lg:pb-0">
                   <button 
                     onClick={() => setActiveTab("office")}
-                    className={`w-full text-left p-3 rounded-xl border-2 border-black font-black uppercase text-xs transition ${activeTab === 'office' ? 'bg-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]' : 'bg-white hover:bg-yellow-50 text-black'}`}
+                    className={`shrink-0 text-center p-2.5 lg:p-3 rounded-xl border-2 border-black font-black uppercase text-[10px] lg:text-xs transition ${activeTab === 'office' ? 'bg-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]' : 'bg-white hover:bg-yellow-50 text-black'}`}
                   >
                     Hired Office
                   </button>
                   <button 
                     onClick={() => setActiveTab("channels")}
-                    className={`w-full text-left p-3 rounded-xl border-2 border-black font-black uppercase text-xs transition ${activeTab === 'channels' ? 'bg-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]' : 'bg-white hover:bg-yellow-50 text-black'}`}
+                    className={`shrink-0 text-center p-2.5 lg:p-3 rounded-xl border-2 border-black font-black uppercase text-[10px] lg:text-xs transition ${activeTab === 'channels' ? 'bg-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]' : 'bg-white hover:bg-yellow-50 text-black'}`}
                   >
                     Active Channels
                   </button>
                   <button 
                     onClick={() => setActiveTab("vault")}
-                    className={`w-full text-left p-3 rounded-xl border-2 border-black font-black uppercase text-xs transition ${activeTab === 'vault' ? 'bg-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]' : 'bg-white hover:bg-yellow-50 text-black'}`}
+                    className={`shrink-0 text-center p-2.5 lg:p-3 rounded-xl border-2 border-black font-black uppercase text-[10px] lg:text-xs transition ${activeTab === 'vault' ? 'bg-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]' : 'bg-white hover:bg-yellow-50 text-black'}`}
                   >
                     File Vault
                   </button>
@@ -557,7 +557,7 @@ export default function WorkspacePage() {
                     </form>
                   )}
 
-                  <div className="space-y-1 overflow-y-auto pr-1 flex-grow max-h-[220px]">
+                  <div className="space-y-1 overflow-y-auto pr-1 flex-grow max-h-[140px] lg:max-h-[220px]">
                     {channels.map((ch) => (
                       <div key={ch.id} className="group flex items-center justify-between gap-1 w-full">
                         <button 
@@ -582,21 +582,16 @@ export default function WorkspacePage() {
               )}
             </div>
 
-            <div className="pt-6 border-t-2 border-gray-200 flex flex-col gap-2 flex-shrink-0 text-center">
-              <Link href="/governance" className="w-full text-center bg-black text-white hover:bg-yellow-400 hover:text-black transition py-2.5 rounded-xl border-2 border-black text-xs font-black uppercase shadow-[3px_3px_0px_0px_rgba(0,0,0,0.15)]">
+            <div className="pt-4 border-t-2 border-gray-200 flex flex-row lg:flex-col gap-2 flex-shrink-0 text-center overflow-x-auto no-scrollbar">
+              <Link href="/governance" className="shrink-0 px-4 py-2 bg-black text-white hover:bg-yellow-400 hover:text-black transition rounded-xl border-2 border-black text-[10px] font-black uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]">
                 Control Tower
               </Link>
-              <Link href="/billing" className="w-full text-center bg-white text-black hover:bg-gray-100 transition py-2.5 rounded-xl border-2 border-black text-xs font-black uppercase">
+              <Link href="/billing" className="shrink-0 px-4 py-2 bg-white text-black hover:bg-gray-100 transition rounded-xl border-2 border-black text-[10px] font-black uppercase">
                 Manage Salaries
               </Link>
-              <Link href="/settings" className="w-full text-center bg-white text-black hover:bg-gray-100 transition py-2.5 rounded-xl border-2 border-black text-xs font-black uppercase">
-                Settings & Compliance
+              <Link href="/settings" className="shrink-0 px-4 py-2 bg-white text-black hover:bg-gray-100 transition rounded-xl border-2 border-black text-[10px] font-black uppercase">
+                Settings
               </Link>
-              
-              <div className="flex justify-center gap-4 text-[9px] font-black text-gray-400 uppercase mt-1">
-                <Link href="/terms" className="hover:text-black underline">Terms</Link>
-                <Link href="/privacy" className="hover:text-black underline">Privacy & Cookie Policies</Link>
-              </div>
             </div>
           </div>
 

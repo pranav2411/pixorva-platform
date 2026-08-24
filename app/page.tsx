@@ -173,18 +173,19 @@ export default function Home() {
           Pixorva
         </div>
 
-        <div className="hidden md:flex gap-8 text-sm font-bold uppercase tracking-wide">
-          <Link href="/employees" className="hover:text-yellow-600 transition">Marketplace</Link>
-          <Link href="/pricing" className="hover:text-yellow-600 transition">Pricing</Link>
-          <Link href="/studio" className="hover:text-yellow-600 transition">Studio</Link>
-          <Link href="/workspace" className="hover:text-yellow-600 transition">Workspace</Link>
-          <Link href="/governance" className="hover:text-yellow-600 transition">Governance</Link>
+        <div className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar max-w-[150px] sm:max-w-sm md:max-w-none text-[10px] md:text-sm font-bold uppercase tracking-wide py-1">
+          <Link href="/employees" className="hover:text-yellow-600 transition shrink-0">Marketplace</Link>
+          <Link href="/pricing" className="hover:text-yellow-600 transition shrink-0">Pricing</Link>
+          <Link href="/studio" className="hover:text-yellow-600 transition shrink-0">Studio</Link>
+          <Link href="/workspace" className="hover:text-yellow-600 transition shrink-0">Workspace</Link>
+          <Link href="/governance" className="hover:text-yellow-600 transition shrink-0">Governance</Link>
+          <Link href="/docs" className="hover:text-yellow-600 transition shrink-0">Docs</Link>
         </div>
 
         <div className="flex items-center gap-4">
           {user ? (
             <div className="flex items-center gap-3">
-              <Link href="/settings" className="hidden md:flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-black transition">
+              <Link href="/settings" className="flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-black transition">
                 <SettingsIcon size={14} />
                 {profile?.full_name || user.email?.split('@')[0]}
               </Link>
@@ -309,10 +310,10 @@ export default function Home() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                <AgentCard name="DEVON" role="React Developer" color="bg-blue-600" icon={<Code size={64} className="text-white" />} desc="Builds UI components, fixes React hooks, and Next.js projects." />
-                <AgentCard name="RUBY" role="Backend Architect" color="bg-green-500" icon={<Database size={64} className="text-white" />} desc="Designs database schemas and generates optimal SQL queries." />
-                <AgentCard name="STELLA" role="Social Media Mgr" color="bg-orange-500" icon={<Camera size={64} className="text-white" />} desc="Drafts viral post descriptions and designs visual captures." />
-                <AgentCard name="GORDON" role="SEO Blog Writer" color="bg-red-600" icon={<PenTool size={64} className="text-white" />} desc="Ranks your articles #1 on Google search using targeted keywords." />
+                <AgentCard id="dev-1" name="DEVON" role="React Developer" color="bg-blue-600" icon={<Code size={64} className="text-white" />} desc="Builds UI components, fixes React hooks, and Next.js projects." />
+                <AgentCard id="dev-2" name="RUBY" role="Backend Architect" color="bg-green-500" icon={<Database size={64} className="text-white" />} desc="Designs database schemas and generates optimal SQL queries." />
+                <AgentCard id="mkt-2" name="STELLA" role="Social Media Mgr" color="bg-orange-500" icon={<Camera size={64} className="text-white" />} desc="Drafts viral post descriptions and designs visual captures." />
+                <AgentCard id="mkt-3" name="GORDON" role="SEO Blog Writer" color="bg-red-600" icon={<PenTool size={64} className="text-white" />} desc="Ranks your articles #1 on Google search using targeted keywords." />
                 <CustomAgentCard />
               </div>
             </>
@@ -450,6 +451,7 @@ function CustomAgentCard() {
 }
 
 interface AgentCardProps {
+  id: string;
   name: string;
   role: string;
   color: string;
@@ -457,9 +459,9 @@ interface AgentCardProps {
   desc: string;
 }
 
-function AgentCard({ name, role, color, icon, desc }: AgentCardProps) {
+function AgentCard({ id, name, role, color, icon, desc }: AgentCardProps) {
   return (
-    <div className="group relative cursor-pointer">
+    <Link href={`/agent-detail/${id}`} className="group relative cursor-pointer block">
       <div className={`h-64 rounded-2xl border-4 border-black ${color} flex items-center justify-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all group-hover:translate-y-1 group-hover:shadow-none overflow-hidden relative`}>
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle,_black_1px,_transparent_1px)] bg-[length:10px_10px]"></div>
         <span className="relative z-10 transform transition-transform group-hover:scale-110 duration-300">{icon}</span>
@@ -469,6 +471,6 @@ function AgentCard({ name, role, color, icon, desc }: AgentCardProps) {
         <h3 className="text-xl font-black uppercase leading-none">{role}</h3>
         <p className="text-sm font-medium text-gray-500 mt-1">{desc}</p>
       </div>
-    </div>
+    </Link>
   );
 }
