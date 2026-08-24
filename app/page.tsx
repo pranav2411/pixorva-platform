@@ -271,125 +271,126 @@ export default function Home() {
           <Menu size={20} />
         </button>
 
-        {/* Mobile Full Screen Collapse Drawer Menu */}
-        {menuOpen && (
-          <div className="fixed inset-0 bg-white z-[100] flex flex-col p-6 overflow-y-auto animate-in slide-in-from-right duration-300">
-            {/* Header */}
-            <div className="flex items-center justify-between pb-6 border-b-4 border-black">
-              <div className={`text-2xl tracking-tighter uppercase italic ${oswald.className} flex items-center gap-2 text-black`}>
-                <Image
-                  src="/favicon.ico"
-                  alt="Pixorva Logo"
-                  width={36}
-                  height={36}
-                  className="w-8 h-8 rounded-lg"
-                />
-                Pixorva
-              </div>
-              <button 
-                onClick={() => setMenuOpen(false)}
-                className="p-2 border-2 border-black rounded-lg hover:bg-gray-100 text-black"
-              >
-                <X size={20} />
-              </button>
+      </nav>
+
+      {/* Mobile Full Screen Collapse Drawer Menu */}
+      {menuOpen && (
+        <div className="fixed inset-0 bg-white z-[100] flex flex-col p-6 overflow-y-auto animate-in slide-in-from-right duration-300">
+          {/* Header */}
+          <div className="flex items-center justify-between pb-6 border-b-4 border-black">
+            <div className={`text-2xl tracking-tighter uppercase italic ${oswald.className} flex items-center gap-2 text-black`}>
+              <Image
+                src="/favicon.ico"
+                alt="Pixorva Logo"
+                width={36}
+                height={36}
+                className="w-8 h-8 rounded-lg"
+              />
+              Pixorva
             </div>
+            <button 
+              onClick={() => setMenuOpen(false)}
+              className="p-2 border-2 border-black rounded-lg hover:bg-gray-100 text-black"
+            >
+              <X size={20} />
+            </button>
+          </div>
 
-            {/* Menu Body */}
-            <div className="flex-grow py-8 space-y-6">
-              <div>
-                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-4">AI Workforce Recruits</span>
-                
-                {/* Neobrutalist Cards Grid (matching photo look!) */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Link href="/agent-detail/dev-1" onClick={() => setMenuOpen(false)} className="border-2 border-black p-3.5 rounded-xl bg-blue-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition">
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="bg-blue-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">Devon</span>
-                      <Code size={14} className="text-blue-600" />
-                    </div>
-                    <h4 className="font-black text-xs uppercase">React Developer</h4>
-                    <p className="text-[9px] text-gray-500 font-medium mt-1">Writes frontend and components.</p>
-                  </Link>
+          {/* Menu Body */}
+          <div className="flex-grow py-8 space-y-6 text-black">
+            <div>
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-4">AI Workforce Recruits</span>
+              
+              {/* Neobrutalist Cards Grid (matching photo look!) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Link href="/agent-detail/dev-1" onClick={() => setMenuOpen(false)} className="border-2 border-black p-3.5 rounded-xl bg-blue-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition text-black block">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="bg-blue-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">Devon</span>
+                    <Code size={14} className="text-blue-600" />
+                  </div>
+                  <h4 className="font-black text-xs uppercase text-black">React Developer</h4>
+                  <p className="text-[9px] text-gray-500 font-medium mt-1">Writes frontend and components.</p>
+                </Link>
 
-                  <Link href="/agent-detail/dev-2" onClick={() => setMenuOpen(false)} className="border-2 border-black p-3.5 rounded-xl bg-green-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition">
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="bg-green-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">Ruby</span>
-                      <Database size={14} className="text-green-600" />
-                    </div>
-                    <h4 className="font-black text-xs uppercase">Database Architect</h4>
-                    <p className="text-[9px] text-gray-500 font-medium mt-1">Generates relational SQL endpoints.</p>
-                  </Link>
+                <Link href="/agent-detail/dev-2" onClick={() => setMenuOpen(false)} className="border-2 border-black p-3.5 rounded-xl bg-green-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition text-black block">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="bg-green-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">Ruby</span>
+                    <Database size={14} className="text-green-600" />
+                  </div>
+                  <h4 className="font-black text-xs uppercase text-black">Database Architect</h4>
+                  <p className="text-[9px] text-gray-500 font-medium mt-1">Generates relational SQL endpoints.</p>
+                </Link>
 
-                  <Link href="/agent-detail/mkt-2" onClick={() => setMenuOpen(false)} className="border-2 border-black p-3.5 rounded-xl bg-orange-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition">
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="bg-orange-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">Stella</span>
-                      <Camera size={14} className="text-orange-600" />
-                    </div>
-                    <h4 className="font-black text-xs uppercase">Social Media Manager</h4>
-                    <p className="text-[9px] text-gray-500 font-medium mt-1">Drafts campaigns and outlines Reels.</p>
-                  </Link>
+                <Link href="/agent-detail/mkt-2" onClick={() => setMenuOpen(false)} className="border-2 border-black p-3.5 rounded-xl bg-orange-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition text-black block">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="bg-orange-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">Stella</span>
+                    <Camera size={14} className="text-orange-600" />
+                  </div>
+                  <h4 className="font-black text-xs uppercase text-black">Social Media Manager</h4>
+                  <p className="text-[9px] text-gray-500 font-medium mt-1">Drafts campaigns and outlines Reels.</p>
+                </Link>
 
-                  <Link href="/agent-detail/mkt-3" onClick={() => setMenuOpen(false)} className="border-2 border-black p-3.5 rounded-xl bg-red-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition">
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="bg-red-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">Gordon</span>
-                      <PenTool size={14} className="text-red-600" />
-                    </div>
-                    <h4 className="font-black text-xs uppercase">SEO Blog Writer</h4>
-                    <p className="text-[9px] text-gray-500 font-medium mt-1">Ranks keywords on organic searches.</p>
-                  </Link>
+                <Link href="/agent-detail/mkt-3" onClick={() => setMenuOpen(false)} className="border-2 border-black p-3.5 rounded-xl bg-red-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition text-black block">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="bg-red-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">Gordon</span>
+                    <PenTool size={14} className="text-red-600" />
+                  </div>
+                  <h4 className="font-black text-xs uppercase text-black">SEO Blog Writer</h4>
+                  <p className="text-[9px] text-gray-500 font-medium mt-1">Ranks keywords on organic searches.</p>
+                </Link>
 
-                  <Link href="/studio" onClick={() => setMenuOpen(false)} className="border-2 border-black p-3.5 rounded-xl bg-purple-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition">
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="bg-purple-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">Studio</span>
-                      <Cpu size={14} className="text-purple-600" />
-                    </div>
-                    <h4 className="font-black text-xs uppercase">AI Agent Studio</h4>
-                    <p className="text-[9px] text-gray-500 font-medium mt-1">Build custom employees from scratch.</p>
-                  </Link>
+                <Link href="/studio" onClick={() => setMenuOpen(false)} className="border-2 border-black p-3.5 rounded-xl bg-purple-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition text-black block">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="bg-purple-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">Studio</span>
+                    <Cpu size={14} className="text-purple-600" />
+                  </div>
+                  <h4 className="font-black text-xs uppercase text-black">AI Agent Studio</h4>
+                  <p className="text-[9px] text-gray-500 font-medium mt-1">Build custom employees from scratch.</p>
+                </Link>
 
-                  <Link href="/docs" onClick={() => setMenuOpen(false)} className="border-2 border-black p-3.5 rounded-xl bg-yellow-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition">
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="bg-yellow-600 text-black text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">Docs</span>
-                      <FileText size={14} className="text-yellow-600" />
-                    </div>
-                    <h4 className="font-black text-xs uppercase">Developer Specs</h4>
-                    <p className="text-[9px] text-gray-500 font-medium mt-1">API specifications and governance details.</p>
-                  </Link>
-                </div>
-              </div>
-
-              {/* General Core links */}
-              <div className="space-y-4 pt-4 border-t-2 border-gray-100 font-bold uppercase text-sm">
-                <Link href="/pricing" onClick={() => setMenuOpen(false)} className="block text-black hover:text-yellow-600">Pricing Plans</Link>
-                <Link href="/governance" onClick={() => setMenuOpen(false)} className="block text-black hover:text-yellow-600">Governance Console</Link>
-                <Link href="/employees" onClick={() => setMenuOpen(false)} className="block text-black hover:text-yellow-600">Full Employee Marketplace</Link>
+                <Link href="/docs" onClick={() => setMenuOpen(false)} className="border-2 border-black p-3.5 rounded-xl bg-yellow-50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition text-black block">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="bg-yellow-600 text-black text-[8px] font-black uppercase px-2 py-0.5 rounded border border-black">Docs</span>
+                    <FileText size={14} className="text-yellow-600" />
+                  </div>
+                  <h4 className="font-black text-xs uppercase text-black">Developer Specs</h4>
+                  <p className="text-[9px] text-gray-500 font-medium mt-1">API specifications and governance details.</p>
+                </Link>
               </div>
             </div>
 
-            {/* Actions at the bottom (matching photo bottom actions layout!) */}
-            <div className="pt-6 border-t-4 border-black space-y-3 flex flex-col">
-              {user ? (
-                <>
-                  <Link href="/settings" onClick={() => setMenuOpen(false)} className="w-full text-center bg-white text-black border-4 border-black py-3.5 rounded-xl font-black uppercase text-xs hover:bg-gray-50 transition shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none flex items-center justify-center gap-2">
-                    <SettingsIcon size={14} /> Profile Settings
-                  </Link>
-                  <Link href="/workspace" onClick={() => setMenuOpen(false)} className="w-full text-center bg-yellow-400 text-black border-4 border-black py-3.5 rounded-xl font-black uppercase text-xs hover:bg-black hover:text-white transition shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none flex items-center justify-center gap-2">
-                    Go to Workspace
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link href="/login" onClick={() => setMenuOpen(false)} className="w-full text-center bg-white text-black border-4 border-black py-3.5 rounded-xl font-black uppercase text-xs hover:bg-gray-50 transition shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none flex items-center justify-center">
-                    Log In
-                  </Link>
-                  <Link href="/login" onClick={() => setMenuOpen(false)} className="w-full text-center bg-yellow-400 text-black border-4 border-black py-3.5 rounded-xl font-black uppercase text-xs hover:bg-black hover:text-white transition shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none flex items-center justify-center">
-                    Get Started
-                  </Link>
-                </>
-              )}
+            {/* General Core links */}
+            <div className="space-y-4 pt-4 border-t-2 border-gray-100 font-bold uppercase text-sm text-black">
+              <Link href="/pricing" onClick={() => setMenuOpen(false)} className="block hover:text-yellow-600">Pricing Plans</Link>
+              <Link href="/governance" onClick={() => setMenuOpen(false)} className="block hover:text-yellow-600">Governance Console</Link>
+              <Link href="/employees" onClick={() => setMenuOpen(false)} className="block hover:text-yellow-600">Full Employee Marketplace</Link>
             </div>
           </div>
-        )}
-      </nav>
+
+          {/* Actions at the bottom (matching photo bottom actions layout!) */}
+          <div className="pt-6 border-t-4 border-black space-y-3 flex flex-col mt-auto shrink-0">
+            {user ? (
+              <>
+                <Link href="/settings" onClick={() => setMenuOpen(false)} className="w-full text-center bg-white text-black border-4 border-black py-3.5 rounded-xl font-black uppercase text-xs hover:bg-gray-50 transition shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none flex items-center justify-center gap-2">
+                  <SettingsIcon size={14} /> Profile Settings
+                </Link>
+                <Link href="/workspace" onClick={() => setMenuOpen(false)} className="w-full text-center bg-yellow-400 text-black border-4 border-black py-3.5 rounded-xl font-black uppercase text-xs hover:bg-black hover:text-white transition shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none flex items-center justify-center gap-2">
+                  Go to Workspace
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link href="/login" onClick={() => setMenuOpen(false)} className="w-full text-center bg-white text-black border-4 border-black py-3.5 rounded-xl font-black uppercase text-xs hover:bg-gray-50 transition shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none flex items-center justify-center">
+                  Log In
+                </Link>
+                <Link href="/login" onClick={() => setMenuOpen(false)} className="w-full text-center bg-yellow-400 text-black border-4 border-black py-3.5 rounded-xl font-black uppercase text-xs hover:bg-black hover:text-white transition shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none flex items-center justify-center">
+                  Get Started
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* HERO / DASHBOARD */}
       <main className="max-w-7xl mx-auto px-6 pt-20 pb-24 text-center">
