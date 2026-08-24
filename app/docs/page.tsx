@@ -194,14 +194,26 @@ export default function DocsPage() {
       content: (
         <div className="space-y-6">
           <p className="text-gray-700 leading-relaxed">
-            **Devon** is optimized to construct rich HTML structures, CSS styling templates, and React component blocks.
+            <strong>Devon</strong> is optimized to construct rich HTML structures, CSS styling templates, and React component blocks.
           </p>
 
-          <div className="bg-yellow-50 border-2 border-black rounded-2xl p-6">
-            <h4 className="font-black text-xs uppercase mb-1">Key Strengths:</h4>
-            <p className="text-xs text-gray-600 leading-relaxed">
-              Writing highly responsive neobrutalist styling patterns, binding forms to Next.js routes, and outputting clean, compile-safe source files.
+          <div className="bg-yellow-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {['React', 'Next.js', 'Tailwind CSS', 'TypeScript', 'State Management', 'Neobrutalist UI'].map(s => (
+                <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
+              ))}
+            </div>
+            <h5 className="font-black text-[10px] uppercase text-black mb-1">Operational Workflow:</h5>
+            <p className="text-xs text-gray-600 mb-3">
+              1. Spec Trigger: User provides UI/UX criteria or layout specs.<br />
+              2. Code Cycle: Devon designs component states, applies Tailwind utility classes, and returns complete code blocks.<br />
+              3. Iframe Sandbox: Outputs run live in the split-screen visual preview iframe.
             </p>
+            <h5 className="font-black text-[10px] uppercase text-black mb-1">Sample Prompt:</h5>
+            <pre className="p-3 bg-black text-green-400 font-mono text-[9px] rounded-lg overflow-x-auto">
+"Create a responsive, neobrutalist pricing grid card with a monthly billing option. Use yellow background accents and thick borders."
+            </pre>
           </div>
         </div>
       )
@@ -215,14 +227,57 @@ export default function DocsPage() {
       content: (
         <div className="space-y-6">
           <p className="text-gray-700 leading-relaxed">
-            **Ruby** specializes in backend architectural layouts, SQL migrations, database index structures, and secure server-side controllers.
+            <strong>Ruby</strong> specializes in database architecture, backend SQL data manipulation routines, and API route controllers.
           </p>
 
-          <div className="bg-blue-50 border-2 border-black rounded-2xl p-6">
-            <h4 className="font-black text-xs uppercase mb-1">Key Strengths:</h4>
-            <p className="text-xs text-gray-600 leading-relaxed">
-              Structuring Pl/pgSQL procedures, designing REST endpoints, and optimizing performance bottlenecks on Supabase queries.
+          <div className="bg-blue-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {['PostgreSQL', 'Node.js', 'SQL Schema Design', 'API Route Handlers', 'Query Optimization', 'Supabase'].map(s => (
+                <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
+              ))}
+            </div>
+            <h5 className="font-black text-[10px] uppercase text-black mb-1">Operational Workflow:</h5>
+            <p className="text-xs text-gray-600 mb-3">
+              1. Schema Request: User defines tables, fields, or endpoint routes.<br />
+              2. Architecture Cycle: Ruby creates relational database tables, sets indexing scopes, and designs clean server controller routes.
             </p>
+            <h5 className="font-black text-[10px] uppercase text-black mb-1">Sample Prompt:</h5>
+            <pre className="p-3 bg-black text-green-400 font-mono text-[9px] rounded-lg overflow-x-auto">
+"Write a Postgres SQL script to create a users table and a user_sessions table with cascade deletes on session expiry."
+            </pre>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'agent-quinn',
+      category: 'agents',
+      title: 'Quinn (QA Tester)',
+      subtitle: 'The primary quality assurance and test automation engineer.',
+      icon: <Cpu size={20} className="text-blue-500" />,
+      content: (
+        <div className="space-y-6">
+          <p className="text-gray-700 leading-relaxed">
+            <strong>Quinn</strong> writes Jest unit tests, Cypress end-to-end integration tests, and identifies logical edge cases inside codebases.
+          </p>
+
+          <div className="bg-gray-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {['Jest', 'Cypress', 'Unit Testing', 'Regression Testing', 'CI/CD Pipelines', 'Logical Edge Cases'].map(s => (
+                <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
+              ))}
+            </div>
+            <h5 className="font-black text-[10px] uppercase text-black mb-1">Operational Workflow:</h5>
+            <p className="text-xs text-gray-600 mb-3">
+              1. Code Snippet Trigger: User submits code functions or React components.<br />
+              2. Test Automation: Quinn maps boundary conditions, sets mock requests, and returns test scripts.
+            </p>
+            <h5 className="font-black text-[10px] uppercase text-black mb-1">Sample Prompt:</h5>
+            <pre className="p-3 bg-black text-green-400 font-mono text-[9px] rounded-lg overflow-x-auto">
+"Write unit tests using Jest for a function that parses database timestamps and filters out entries older than 24 hours."
+            </pre>
           </div>
         </div>
       )
@@ -236,8 +291,323 @@ export default function DocsPage() {
       content: (
         <div className="space-y-6">
           <p className="text-gray-700 leading-relaxed">
-            **Cy** audits input variables, reviews SQL tables for potential injection vectors, and ensures compliance standards (GDPR, HIPAA) are enforced.
+            <strong>Cy</strong> audits source codes, database structures, and environment policies to prevent vulnerabilities.
           </p>
+
+          <div className="bg-purple-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {['Security Auditing', 'Vulnerability Assessments', 'GDPR / HIPAA', 'Penetration Testing', 'Row Level Security'].map(s => (
+                <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
+              ))}
+            </div>
+            <h5 className="font-black text-[10px] uppercase text-black mb-1">Operational Workflow:</h5>
+            <p className="text-xs text-gray-600 mb-3">
+              1. Codebase Trigger: User supplies source code, database tables, or configurations.<br />
+              2. Vulnerability Review: Cy runs diagnostics, checking for OWASP Top 10 vulnerabilities and SQL injections.
+            </p>
+            <h5 className="font-black text-[10px] uppercase text-black mb-1">Sample Prompt:</h5>
+            <pre className="p-3 bg-black text-green-400 font-mono text-[9px] rounded-lg overflow-x-auto">
+"Audit this Node.js API controller that accepts email inputs. Identify potential injection routes and suggest validation patches."
+            </pre>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'agent-marcus',
+      category: 'agents',
+      title: 'Marcus (Growth Hacker)',
+      subtitle: 'The content marketer and viral growth campaign strategist.',
+      icon: <Cpu size={20} className="text-green-500" />,
+      content: (
+        <div className="space-y-6">
+          <p className="text-gray-700 leading-relaxed">
+            <strong>Marcus</strong> designs LinkedIn hooks, Twitter launch threads, ad copy, and general organic marketing funnels.
+          </p>
+
+          <div className="bg-green-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {['Viral Marketing', 'LinkedIn Hooks', 'Twitter Threads', 'Ad Copy', 'Copywriting', 'Conversion Funnels'].map(s => (
+                <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
+              ))}
+            </div>
+            <h5 className="font-black text-[10px] uppercase text-black mb-1">Sample Prompt:</h5>
+            <pre className="p-3 bg-black text-green-400 font-mono text-[9px] rounded-lg overflow-x-auto">
+"Draft a 4-tweet Twitter thread announcing the rollout of our new interactive developer sandboxes. Include conversion metrics."
+            </pre>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'agent-stella',
+      category: 'agents',
+      title: 'Stella (Social Media Mgr)',
+      subtitle: 'The audience engagement and visual brand script designer.',
+      icon: <Cpu size={20} className="text-green-500" />,
+      content: (
+        <div className="space-y-6">
+          <p className="text-gray-700 leading-relaxed">
+            <strong>Stella</strong> creates structured scripts for Reels, YouTube Shorts, TikToks, and captions.
+          </p>
+
+          <div className="bg-green-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {['Short Video Scripting', 'Instagram Captions', 'Audience Growth', 'Content Calendar Outline', 'Trend Optimization'].map(s => (
+                <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
+              ))}
+            </div>
+            <h5 className="font-black text-[10px] uppercase text-black mb-1">Sample Prompt:</h5>
+            <pre className="p-3 bg-black text-green-400 font-mono text-[9px] rounded-lg overflow-x-auto">
+"Write a 30-second video script demonstrating how our QA agent Quinn automates Jest testing. Include visual directions."
+            </pre>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'agent-gordon',
+      category: 'agents',
+      title: 'Gordon (SEO Blog Writer)',
+      subtitle: 'The content optimization and search blog post writer.',
+      icon: <Cpu size={20} className="text-green-500" />,
+      content: (
+        <div className="space-y-6">
+          <p className="text-gray-700 leading-relaxed">
+            <strong>Gordon</strong> researches high-ranking keywords, organizes articles using proper heading structures, and drafts SEO blogs.
+          </p>
+
+          <div className="bg-green-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {['SEO Optimization', 'Long Form Writing', 'Keyword Density', 'Meta Descriptions', 'Content Strategy'].map(s => (
+                <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
+              ))}
+            </div>
+            <h5 className="font-black text-[10px] uppercase text-black mb-1">Sample Prompt:</h5>
+            <pre className="p-3 bg-black text-green-400 font-mono text-[9px] rounded-lg overflow-x-auto">
+"Write a 1,000-word post on 'Why Local Database persistence is crucial in Vercel apps'. Focus on the keyword 'database validation'."
+            </pre>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'agent-vic',
+      category: 'agents',
+      title: 'Vic (Video Scripter)',
+      subtitle: 'The video scripting and storyboard structure compiler.',
+      icon: <Cpu size={20} className="text-green-500" />,
+      content: (
+        <div className="space-y-6">
+          <p className="text-gray-700 leading-relaxed">
+            <strong>Vic</strong> maps video flow, details visual actions, and writes technical storyboards.
+          </p>
+
+          <div className="bg-green-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {['YouTube Scripting', 'Storyboarding', 'Creative Pacing', 'Visual Cues', 'Educational Tech Scripts'].map(s => (
+                <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
+              ))}
+            </div>
+            <h5 className="font-black text-[10px] uppercase text-black mb-1">Sample Prompt:</h5>
+            <pre className="p-3 bg-black text-green-400 font-mono text-[9px] rounded-lg overflow-x-auto">
+"Turn our documentation on 'Setting Up Supabase Service Keys' into a step-by-step YouTube script with narration."
+            </pre>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'agent-sarah',
+      category: 'agents',
+      title: 'Sarah (SDR / Outreach)',
+      subtitle: 'The client outreach and business development email designer.',
+      icon: <Cpu size={20} className="text-red-500" />,
+      content: (
+        <div className="space-y-6">
+          <p className="text-gray-700 leading-relaxed">
+            <strong>Sarah</strong> researches customer profiles and designs high-conversion cold email outreach sequences.
+          </p>
+
+          <div className="bg-red-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {['Cold Outreach', 'Email Sequencing', 'Lead Conversion', 'B2B Sales Copy', 'Call to Action Optimization'].map(s => (
+                <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
+              ))}
+            </div>
+            <h5 className="font-black text-[10px] uppercase text-black mb-1">Sample Prompt:</h5>
+            <pre className="p-3 bg-black text-green-400 font-mono text-[9px] rounded-lg overflow-x-auto">
+"Draft a 3-email sequence introducing startup founders to our API console. Focus on saving LLM token execution logs."
+            </pre>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'agent-larry',
+      category: 'agents',
+      title: 'Larry (Lead Enricher)',
+      subtitle: 'The business list research and lead enrichment specialist.',
+      icon: <Cpu size={20} className="text-red-500" />,
+      content: (
+        <div className="space-y-6">
+          <p className="text-gray-700 leading-relaxed">
+            <strong>Larry</strong> gathers business data parameters and formats lead sheets for outbound targets.
+          </p>
+
+          <div className="bg-red-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {['Lead List Enrichment', 'Data Aggregation', 'B2B Research', 'Formatting Excel/CSV Schemas', 'Market Segmentation'].map(s => (
+                <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
+              ))}
+            </div>
+            <h5 className="font-black text-[10px] uppercase text-black mb-1">Sample Prompt:</h5>
+            <pre className="p-3 bg-black text-green-400 font-mono text-[9px] rounded-lg overflow-x-auto">
+"Structure a database schema layout to store target contacts including company domain, employee size, and direct emails."
+            </pre>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'agent-holly',
+      category: 'agents',
+      title: 'Holly (HR Manager)',
+      subtitle: 'The hiring workflow and human resources analyst.',
+      icon: <Cpu size={20} className="text-yellow-500" />,
+      content: (
+        <div className="space-y-6">
+          <p className="text-gray-700 leading-relaxed">
+            <strong>Holly</strong> compiles corporate policies, designs job descriptions, and structures candidate screening checksheets.
+          </p>
+
+          <div className="bg-yellow-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {['Job Description Design', 'Policy Drafting', 'Screening Checklists', 'Interview Templates', 'HR Checksheets'].map(s => (
+                <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
+              ))}
+            </div>
+            <h5 className="font-black text-[10px] uppercase text-black mb-1">Sample Prompt:</h5>
+            <pre className="p-3 bg-black text-green-400 font-mono text-[9px] rounded-lg overflow-x-auto">
+"Draft a job description for a React Developer focusing on Tailwind. Include 4 screening questions about component state hooks."
+            </pre>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'agent-finn',
+      category: 'agents',
+      title: 'Finn (Finance Analyst)',
+      subtitle: 'The corporate P&L and tax metrics analyst.',
+      icon: <Cpu size={20} className="text-yellow-500" />,
+      content: (
+        <div className="space-y-6">
+          <p className="text-gray-700 leading-relaxed">
+            <strong>Finn</strong> reviews costing ledgers, details EBITDA percentages, and creates cost-optimization sheets.
+          </p>
+
+          <div className="bg-yellow-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {['P&L Analysis', 'Expense Categorization', 'EBITDA Projections', 'Tax Checklists', 'Cost Optimization'].map(s => (
+                <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
+              ))}
+            </div>
+            <h5 className="font-black text-[10px] uppercase text-black mb-1">Sample Prompt:</h5>
+            <pre className="p-3 bg-black text-green-400 font-mono text-[9px] rounded-lg overflow-x-auto">
+"Analyze this serverless routing overhead: Cloud database: $800, Token APIs: $600. Suggest cost reduction strategies."
+            </pre>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'agent-lawson',
+      category: 'agents',
+      title: 'Lawson (Legal Assistant)',
+      subtitle: 'The agreement templates and compliance document compiler.',
+      icon: <Cpu size={20} className="text-yellow-500" />,
+      content: (
+        <div className="space-y-6">
+          <p className="text-gray-700 leading-relaxed">
+            <strong>Lawson</strong> drafts contracts, Non-Disclosure Agreements (NDAs), and reviews terms frameworks.
+          </p>
+
+          <div className="bg-yellow-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {['NDA Templates', 'Contract Drafting', 'Service Level Agreements', 'Compliance Reviews', 'Liabilities Checklists'].map(s => (
+                <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
+              ))}
+            </div>
+            <h5 className="font-black text-[10px] uppercase text-black mb-1">Sample Prompt:</h5>
+            <pre className="p-3 bg-black text-green-400 font-mono text-[9px] rounded-lg overflow-x-auto">
+"Draft a mutual NDA template for a client consulting contract. Include typical sections for remedies and governing law."
+            </pre>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'agent-pat',
+      category: 'agents',
+      title: 'Pat (Product Manager)',
+      subtitle: 'The agile roadmap and product story compiler.',
+      icon: <Cpu size={20} className="text-yellow-500" />,
+      content: (
+        <div className="space-y-6">
+          <p className="text-gray-700 leading-relaxed">
+            <strong>Pat</strong> compiles user stories, prioritizes roadmap milestones, and writes requirements docs (PRDs).
+          </p>
+
+          <div className="bg-yellow-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {['Product Spec Design', 'User Stories mapping', 'Agile Roadmaps', 'UX Requirements', 'Feature Backlog Priority'].map(s => (
+                <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
+              ))}
+            </div>
+            <h5 className="font-black text-[10px] uppercase text-black mb-1">Sample Prompt:</h5>
+            <pre className="p-3 bg-black text-green-400 font-mono text-[9px] rounded-lg overflow-x-auto">
+"Write user story parameters for adding an interactive playground terminal. Include acceptance checklist criteria."
+            </pre>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'agent-sam',
+      category: 'agents',
+      title: 'Sam (Customer Support)',
+      subtitle: 'The conflict resolution and support ticket reply designer.',
+      icon: <Cpu size={20} className="text-orange-500" />,
+      content: (
+        <div className="space-y-6">
+          <p className="text-gray-700 leading-relaxed">
+            <strong>Sam</strong> reviews user complaints and generates polite, helpful support email drafts.
+          </p>
+
+          <div className="bg-orange-50 border-2 border-black rounded-2xl p-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <h4 className="font-black text-xs uppercase mb-2 text-black">Core Competencies & Tools</h4>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {['Customer Empathy', 'Conflict Resolution', 'Support Response Checklists', 'SLA Inquiries', 'Account Status Updates'].map(s => (
+                <span key={s} className="bg-white border border-black text-[9px] font-black uppercase px-2 py-0.5 rounded">{s}</span>
+              ))}
+            </div>
+            <h5 className="font-black text-[10px] uppercase text-black mb-1">Sample Prompt:</h5>
+            <pre className="p-3 bg-black text-green-400 font-mono text-[9px] rounded-lg overflow-x-auto">
+"Draft an empathetic email reply to a user reporting their key validation is failing. Provide basic trouble steps."
+            </pre>
+          </div>
         </div>
       )
     },
