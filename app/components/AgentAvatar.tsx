@@ -86,36 +86,17 @@ export default function AgentAvatar({ id, className = "w-14 h-14" }: AgentAvatar
 
       case 'dev-4': // Cy (Security Compliance)
         return {
-          bgColor: '#14B8A6', // Teal
+          bgColor: 'transparent',
           svg: (
-            <g>
-              {/* Cool spiky hair */}
-              <path d="M15 22 L20 10 L25 15 L30 8 L35 15 L40 10 L45 22 Z" fill="#000" stroke="#000" strokeWidth="2.5" />
-              {/* Face */}
-              <circle cx="30" cy="28" r="11" fill="#FDBA74" stroke="#000" strokeWidth="2.5" />
-              {/* Cyber Visor */}
-              <path d="M 18 24 L 42 24 L 40 29 L 20 29 Z" fill="#22C55E" stroke="#000" strokeWidth="2" />
-              <line x1="18" y1="26" x2="42" y2="26" stroke="#fff" strokeWidth="1" />
-            </g>
+            <image href="/GIF/Cy.png" x="0" y="0" width="60" height="60" preserveAspectRatio="xMidYMid slice" />
           )
         };
 
       case 'mkt-1': // Marcus (Twitter Campaigner)
         return {
-          bgColor: '#7C3AED', // Purple
+          bgColor: 'transparent',
           svg: (
-            <g>
-              {/* Messy curly hair */}
-              <path d="M16 20 C 12 12, 48 12, 44 20" fill="none" stroke="#000" strokeWidth="6" strokeLinecap="round" />
-              {/* Face */}
-              <circle cx="30" cy="28" r="10" fill="#FED7AA" stroke="#000" strokeWidth="2.5" />
-              {/* Headset mic */}
-              <path d="M 38 28 L 41 28 L 41 33 L 36 33" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round" />
-              <circle cx="35" cy="33" r="1.5" fill="#000" />
-              {/* Ear pads */}
-              <rect x="18" y="24" width="3" height="8" rx="1.5" fill="#000" />
-              <rect x="39" y="24" width="3" height="8" rx="1.5" fill="#000" />
-            </g>
+            <image href="/GIF/Marcus.png" x="0" y="0" width="60" height="60" preserveAspectRatio="xMidYMid slice" />
           )
         };
 

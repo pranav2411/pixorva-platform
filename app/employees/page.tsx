@@ -493,6 +493,34 @@ export default function EmployeesPage() {
                             <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                         </>
                     )}
+                    {/* Background Video for Cy on Hover */}
+                    {emp.id === "dev-4" && (
+                        <>
+                            <video 
+                                src="/GIF/Cy.mp4"
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                            />
+                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                        </>
+                    )}
+                    {/* Background Video for Marcus on Hover */}
+                    {emp.id === "mkt-1" && (
+                        <>
+                            <video 
+                                src="/GIF/Marcus.mp4"
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                            />
+                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                        </>
+                    )}
                     
                     {/* CARD CONTENT */}
                     <div className="relative z-10 flex flex-col justify-between h-full flex-grow">
