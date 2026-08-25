@@ -408,12 +408,15 @@ export default function SettingsPage() {
       
       {/* Navbar */}
       <nav className="bg-white border-b-4 border-black px-6 py-4 flex items-center justify-between sticky top-0 z-50">
-         <div className="flex items-center gap-3">
-            <Link href="/" className="bg-black text-white p-2 rounded-lg border-2 border-black hover:bg-yellow-400 hover:text-black transition shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-y-0.5 flex items-center justify-center shrink-0">
-              <ArrowLeft size={16} />
-            </Link>
-            <h1 className={`text-2xl font-black uppercase tracking-wider ${oswald.className}`}>Settings</h1>
-         </div>
+        <div className="flex items-center gap-3">
+          <Link href="/" className="bg-black text-white p-2 rounded hover:bg-yellow-400 hover:text-black transition border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:shadow-none hover:translate-y-1 flex items-center justify-center shrink-0">
+            <ArrowLeft size={16} />
+          </Link>
+          <h1 className={`text-2xl font-black uppercase tracking-wider ${oswald.className}`}>Settings</h1>
+        </div>
+        <div className="bg-yellow-400 text-black border-2 border-black px-3 py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wider shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+          Account Settings
+        </div>
       </nav>
 
       {/* Content */}
