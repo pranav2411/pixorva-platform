@@ -78,20 +78,9 @@ export default function AgentAvatar({ id, className = "w-14 h-14" }: AgentAvatar
 
       case 'dev-3': // Quinn (Testing Engineer)
         return {
-          bgColor: '#FBBF24', // Yellow
+          bgColor: 'transparent',
           svg: (
-            <g>
-              {/* Ponytail background */}
-              <path d="M 38 18 C 45 18, 50 25, 48 35 C 46 40, 42 40, 40 35 Z" fill="#78350F" stroke="#000" strokeWidth="2" />
-              {/* Face */}
-              <circle cx="28" cy="26" r="10" fill="#FFEDD5" stroke="#000" strokeWidth="2.5" />
-              {/* Front Hair */}
-              <path d="M 18 22 C 22 18, 34 18, 38 22" fill="none" stroke="#78350F" strokeWidth="3" strokeLinecap="round" />
-              {/* Bold Glasses */}
-              <rect x="20" y="22" width="6" height="5" rx="1" fill="none" stroke="#4C1D95" strokeWidth="2.5" />
-              <rect x="30" y="22" width="6" height="5" rx="1" fill="none" stroke="#4C1D95" strokeWidth="2.5" />
-              <line x1="26" y1="24.5" x2="30" y2="24.5" stroke="#4C1D95" strokeWidth="2.5" />
-            </g>
+            <image href="/GIF/Quinn.png" x="0" y="0" width="60" height="60" preserveAspectRatio="xMidYMid slice" />
           )
         };
 
