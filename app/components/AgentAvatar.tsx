@@ -88,69 +88,33 @@ export default function AgentAvatar({ id, className = "w-14 h-14" }: AgentAvatar
 
       case 'sales-1': // Sarah (Cold SDR Outreach)
         return {
-          bgColor: '#EC4899', // Pink
+          bgColor: 'transparent',
           svg: (
-            <g>
-              {/* Bob hair */}
-              <path d="M 15 28 C 15 15, 45 15, 45 28" fill="#EAB308" stroke="#000" strokeWidth="2.5" />
-              {/* Face */}
-              <circle cx="30" cy="28" r="10" fill="#FFEDD5" stroke="#000" strokeWidth="2.5" />
-              {/* Sales Mic */}
-              <path d="M 38 28 C 38 34, 30 36, 28 36" fill="none" stroke="#000" strokeWidth="1.5" strokeLinecap="round" />
-              <circle cx="27" cy="36" r="1.5" fill="#000" />
-            </g>
+            <image href="/GIF/Sarah.png" x="0" y="0" width="60" height="60" preserveAspectRatio="xMidYMid slice" />
           )
         };
 
       case 'sales-2': // Larry (Leads B2B Miner)
         return {
-          bgColor: '#06B6D4', // Cyan
+          bgColor: 'transparent',
           svg: (
-            <g>
-              {/* Side parted hair */}
-              <path d="M 16 22 C 20 12, 44 14, 44 22 Z" fill="#1E293B" stroke="#000" strokeWidth="2.5" />
-              {/* Face */}
-              <circle cx="30" cy="28" r="10" fill="#FED7AA" stroke="#000" strokeWidth="2.5" />
-              {/* Square Wire Glasses */}
-              <rect x="22" y="24" width="6" height="5" fill="none" stroke="#000" strokeWidth="1.5" />
-              <rect x="32" y="24" width="6" height="5" fill="none" stroke="#000" strokeWidth="1.5" />
-              <line x1="28" y1="26.5" x2="32" y2="26.5" stroke="#000" strokeWidth="1.5" />
-            </g>
+            <image href="/GIF/Larry.png" x="0" y="0" width="60" height="60" preserveAspectRatio="xMidYMid slice" />
           )
         };
 
       case 'ops-1': // Holly (HR Specialist)
         return {
-          bgColor: '#F43F5E', // Rose
+          bgColor: 'transparent',
           svg: (
-            <g>
-              {/* Curly hair */}
-              <circle cx="16" cy="22" r="5" fill="#D1D5DB" stroke="#000" strokeWidth="1.5" />
-              <circle cx="44" cy="22" r="5" fill="#D1D5DB" stroke="#000" strokeWidth="1.5" />
-              <circle cx="20" cy="16" r="5" fill="#D1D5DB" stroke="#000" strokeWidth="1.5" />
-              <circle cx="40" cy="16" r="5" fill="#D1D5DB" stroke="#000" strokeWidth="1.5" />
-              <circle cx="30" cy="14" r="5" fill="#D1D5DB" stroke="#000" strokeWidth="1.5" />
-              {/* Face */}
-              <circle cx="30" cy="28" r="10" fill="#FDBA74" stroke="#000" strokeWidth="2.5" />
-              {/* Smile */}
-              <path d="M 25 31 Q 30 35 35 31" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round" />
-            </g>
+            <image href="/GIF/Holly.png" x="0" y="0" width="60" height="60" preserveAspectRatio="xMidYMid slice" />
           )
         };
 
       case 'ops-2': // Finn (EBITDA Optimizer)
         return {
-          bgColor: '#64748B', // Slate
+          bgColor: 'transparent',
           svg: (
-            <g>
-              {/* Bald/comb hair */}
-              <line x1="18" y1="18" x2="42" y2="18" stroke="#000" strokeWidth="2" />
-              {/* Face */}
-              <circle cx="30" cy="28" r="11" fill="#FFEDD5" stroke="#000" strokeWidth="2.5" />
-              {/* Monocle on right eye */}
-              <circle cx="34" cy="26" r="3.5" fill="none" stroke="#000" strokeWidth="2" />
-              <line x1="37.5" y1="26" x2="44" y2="30" stroke="#000" strokeWidth="1" />
-            </g>
+            <image href="/GIF/Finn.png" x="0" y="0" width="60" height="60" preserveAspectRatio="xMidYMid slice" />
           )
         };
 
@@ -164,32 +128,17 @@ export default function AgentAvatar({ id, className = "w-14 h-14" }: AgentAvatar
 
       case 'ops-4': // Pat (Agile PM Planner)
         return {
-          bgColor: '#84CC16', // Lime
+          bgColor: 'transparent',
           svg: (
-            <g>
-              {/* Face */}
-              <circle cx="30" cy="28" r="10" fill="#FFEDD5" stroke="#000" strokeWidth="2.5" />
-              {/* Front Cap */}
-              <path d="M 16 22 L 44 22 L 40 15 L 20 15 Z" fill="#DC2626" stroke="#000" strokeWidth="2.5" />
-              <path d="M 12 22 L 20 22" stroke="#000" strokeWidth="3" strokeLinecap="round" />
-            </g>
+            <image href="/GIF/Pat.png" x="0" y="0" width="60" height="60" preserveAspectRatio="xMidYMid slice" />
           )
         };
 
       case 'sup-1': // Sam (Customer Tickets)
         return {
-          bgColor: '#8B5CF6', // Violet
+          bgColor: 'transparent',
           svg: (
-            <g>
-              {/* Support hair */}
-              <path d="M 18 24 C 18 16, 42 16, 42 24" fill="none" stroke="#312E81" strokeWidth="3" />
-              {/* Face */}
-              <circle cx="30" cy="28" r="10" fill="#FED7AA" stroke="#000" strokeWidth="2.5" />
-              {/* Headset */}
-              <rect x="17" y="24" width="3" height="8" rx="1.5" fill="#000" />
-              <path d="M 20 32 C 20 37, 26 37, 28 35" fill="none" stroke="#000" strokeWidth="1.5" strokeLinecap="round" />
-              <circle cx="28" cy="35" r="1" fill="#000" />
-            </g>
+            <image href="/GIF/Sam.png" x="0" y="0" width="60" height="60" preserveAspectRatio="xMidYMid slice" />
           )
         };
 

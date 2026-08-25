@@ -563,6 +563,90 @@ export default function EmployeesPage() {
                             <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                         </>
                     )}
+                    {/* Background Video for Sarah on Hover */}
+                    {emp.id === "sales-1" && (
+                        <>
+                            <video 
+                                src="/GIF/Sarah.mp4"
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                            />
+                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                        </>
+                    )}
+                    {/* Background Video for Larry on Hover */}
+                    {emp.id === "sales-2" && (
+                        <>
+                            <video 
+                                src="/GIF/Larry.mp4"
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                            />
+                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                        </>
+                    )}
+                    {/* Background Video for Holly on Hover */}
+                    {emp.id === "ops-1" && (
+                        <>
+                            <video 
+                                src="/GIF/Holly.mp4"
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                            />
+                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                        </>
+                    )}
+                    {/* Background Video for Finn on Hover */}
+                    {emp.id === "ops-2" && (
+                        <>
+                            <video 
+                                src="/GIF/Finn.mp4"
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                            />
+                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                        </>
+                    )}
+                    {/* Background Video for Pat on Hover */}
+                    {emp.id === "ops-4" && (
+                        <>
+                            <video 
+                                src="/GIF/Pat.mp4"
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                            />
+                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                        </>
+                    )}
+                    {/* Background Video for Sam on Hover */}
+                    {emp.id === "sup-1" && (
+                        <>
+                            <video 
+                                src="/GIF/Sam.mp4"
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                            />
+                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                        </>
+                    )}
                     
                     {/* CARD CONTENT */}
                     <div className="relative z-10 flex flex-col justify-between h-full flex-grow">
