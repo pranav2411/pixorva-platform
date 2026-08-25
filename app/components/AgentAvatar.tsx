@@ -239,16 +239,9 @@ export default function AgentAvatar({ id, className = "w-14 h-14" }: AgentAvatar
 
       case 'ops-3': // Lawson (Legal Boilerplates)
         return {
-          bgColor: '#D97706', // Amber
+          bgColor: 'transparent',
           svg: (
-            <g>
-              {/* Slick back hair */}
-              <path d="M 18 20 C 22 14, 38 14, 42 20" fill="none" stroke="#1E293B" strokeWidth="4" />
-              {/* Face */}
-              <circle cx="30" cy="28" r="11" fill="#FDBA74" stroke="#000" strokeWidth="2.5" />
-              {/* Legal white collar */}
-              <path d="M 26 39 L 30 35 L 34 39 Z" fill="#FFF" stroke="#000" strokeWidth="1.5" />
-            </g>
+            <image href="/GIF/Lawson.png" x="0" y="0" width="60" height="60" />
           )
         };
 

@@ -436,47 +436,63 @@ export default function EmployeesPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             
             {filteredEmployees.map((emp) => (
-                <div key={emp.id} className="group relative bg-white border-4 border-black rounded-xl p-6 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-y-1 flex flex-col justify-between h-full">
+                <div key={emp.id} className="group relative bg-white border-4 border-black rounded-xl p-6 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-y-1 flex flex-col justify-between h-full overflow-hidden">
+                    {/* Background Video for Lawson on Hover */}
+                    {emp.id === "ops-3" && (
+                        <>
+                            <video 
+                                src="/GIF/Lawson.mp4"
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                            />
+                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                        </>
+                    )}
                     
                     {/* CARD CONTENT */}
-                    <div>
-                        <div className="flex justify-between items-start mb-6">
-                            <AgentAvatar id={emp.id} className="w-14 h-14" />
-                            <span className="bg-black text-white px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide border border-black text-xs">
-                                {emp.category}
-                            </span>
-                        </div>
-
-                        <h3 className={`text-2xl uppercase mb-1 leading-none ${oswald.className}`}>{emp.name}</h3>
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">{emp.role}</p>
-                        
-                        <p className="text-sm font-medium text-gray-800 leading-relaxed mb-6 min-h-[60px] border-l-4 border-gray-200 pl-3">
-                            {emp.desc}
-                        </p>
-
-                        <div className="flex flex-wrap gap-2 mb-8">
-                            {emp.skills.map((skill, i) => (
-                                <span key={i} className="text-[10px] font-black border-2 border-black px-2 py-1 rounded bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                                    {skill}
+                    <div className="relative z-10 flex flex-col justify-between h-full flex-grow">
+                        <div>
+                            <div className="flex justify-between items-start mb-6">
+                                <AgentAvatar id={emp.id} className="w-14 h-14" />
+                                <span className="bg-black text-white px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide border border-black text-xs">
+                                    {emp.category}
                                 </span>
-                            ))}
-                        </div>
-                    </div>
+                            </div>
 
-                    {/* ACTIONS */}
-                    <div className="space-y-2 mt-4 flex-shrink-0">
-                        <button 
-                            onClick={() => handleHire(emp)}
-                            disabled={hiring === emp.id}
-                            className="w-full bg-yellow-400 text-black border-4 border-black py-2.5 rounded-lg font-black text-xs uppercase tracking-wide hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none"
-                        >
-                            {hiring === emp.id ? "Onboarding..." : <>Hire For {emp.price} <Plus size={14} strokeWidth={3} /></>}
-                        </button>
-                         <Link href={`/agent-detail/${emp.name.toLowerCase()}`} className="block">
-                            <button className="w-full bg-white text-black border-2 border-black py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wide hover:bg-gray-50 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5">
-                                View Profile
+                            <h3 className={`text-2xl uppercase mb-1 leading-none ${oswald.className}`}>{emp.name}</h3>
+                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">{emp.role}</p>
+                            
+                            <p className="text-sm font-medium text-gray-800 leading-relaxed mb-6 min-h-[60px] border-l-4 border-gray-200 pl-3">
+                                {emp.desc}
+                            </p>
+
+                            <div className="flex flex-wrap gap-2 mb-8">
+                                {emp.skills.map((skill, i) => (
+                                    <span key={i} className="text-[10px] font-black border-2 border-black px-2 py-1 rounded bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                                        {skill}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* ACTIONS */}
+                        <div className="space-y-2 mt-4 flex-shrink-0">
+                            <button 
+                                onClick={() => handleHire(emp)}
+                                disabled={hiring === emp.id}
+                                className="w-full bg-yellow-400 text-black border-4 border-black py-2.5 rounded-lg font-black text-xs uppercase tracking-wide hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none"
+                            >
+                                {hiring === emp.id ? "Onboarding..." : <>Hire For {emp.price} <Plus size={14} strokeWidth={3} /></>}
                             </button>
-                        </Link>
+                             <Link href={`/agent-detail/${emp.name.toLowerCase()}`} className="block">
+                                <button className="w-full bg-white text-black border-2 border-black py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wide hover:bg-gray-50 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5">
+                                    View Profile
+                                </button>
+                            </Link>
+                        </div>
                     </div>
                 </div>
             ))}
