@@ -18,7 +18,8 @@ import {
   Cpu, 
   Sparkles, 
   Check, 
-  ExternalLink 
+  ExternalLink,
+  X 
 } from 'lucide-react';
 import { Oswald, Inter } from 'next/font/google';
 
@@ -38,6 +39,7 @@ export default function DocsPage() {
   const [activeTab, setActiveTab] = useState('intro');
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedText, setCopiedText] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleCopyCode = (code: string, id: string) => {
     navigator.clipboard.writeText(code);
@@ -802,23 +804,42 @@ export default function DocsPage() {
       {/* Top Header */}
       <header className="bg-white border-b-4 border-black px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-3">
-          <Link href="/" className="bg-black text-white p-2 rounded-lg border-2 border-black hover:bg-yellow-400 hover:text-black transition shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-y-0.5 flex items-center justify-center shrink-0">
+          <Link href="/" className="bg-black text-white p-2 rounded hover:bg-yellow-400 hover:text-black transition border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:shadow-none hover:translate-y-1 flex items-center justify-center shrink-0">
             <ArrowLeft size={16} />
           </Link>
-          <span className={`text-2xl font-black uppercase tracking-wider ${oswald.className}`}>
-            Pixorva Docs
-          </span>
+          <h1 className={`text-2xl font-black uppercase tracking-wider ${oswald.className}`}>Developer Docs</h1>
         </div>
-        <div className="text-[10px] font-black uppercase bg-black text-white px-3 py-1 rounded-full">
-          v1.4.0 Live Spec
+        <div className="bg-yellow-400 text-black border-2 border-black px-3 py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wider shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+          Live Spec v1.4.0
         </div>
       </header>
 
       {/* Main Container */}
       <div className="flex-grow flex flex-col md:flex-row max-w-7xl mx-auto w-full p-4 md:p-8 gap-6">
         
+        {/* Mobile Backdrop overlay */}
+        {sidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black/40 z-30 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
         {/* Left Sidebar */}
-        <aside className="w-full md:w-64 shrink-0 md:sticky md:top-24 md:max-h-[calc(100vh-140px)] flex flex-col overflow-hidden">
+        <aside className={`fixed md:sticky top-0 left-0 h-screen md:h-auto w-[280px] md:w-64 bg-white md:bg-transparent border-r-4 md:border-r-0 border-black md:border-transparent p-6 md:p-0 z-40 transition-transform duration-300 flex flex-col overflow-hidden shrink-0 md:top-24 md:max-h-[calc(100vh-140px)] ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        }`}>
+          {/* Mobile Sidebar Close Header */}
+          <div className="flex items-center justify-between pb-4 mb-4 border-b-2 border-black md:hidden shrink-0">
+            <span className={`text-lg font-black uppercase tracking-wider ${oswald.className}`}>Menu</span>
+            <button 
+              onClick={() => setSidebarOpen(false)}
+              className="p-1 border-2 border-black rounded-lg hover:bg-gray-100 flex items-center justify-center"
+            >
+              <X size={16} />
+            </button>
+          </div>
+
           {/* Search box */}
           <div className="relative shrink-0 mb-4">
             <input 
@@ -847,7 +868,10 @@ export default function DocsPage() {
                     {catArticles.map(art => (
                       <li key={art.id}>
                         <button
-                          onClick={() => setActiveTab(art.id)}
+                          onClick={() => {
+                            setActiveTab(art.id);
+                            setSidebarOpen(false);
+                          }}
                           className={`w-full text-left py-1.5 px-2 rounded-lg text-xs font-bold transition flex items-center justify-between ${
                             activeTab === art.id 
                               ? 'bg-yellow-400 text-black border border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' 
@@ -905,6 +929,14 @@ export default function DocsPage() {
       <footer className="border-t-4 border-black bg-white py-6 text-center text-xs font-black uppercase mt-12">
         Pixorva Documentation Platform © 2026. Billed with precision.
       </footer>
+
+      {/* Floating Mobile Sidebar Trigger Button */}
+      <button 
+        onClick={() => setSidebarOpen(true)}
+        className="md:hidden fixed bottom-6 right-6 z-30 bg-yellow-400 text-black border-2 border-black p-3.5 rounded-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none hover:bg-black hover:text-white transition flex items-center justify-center animate-bounce"
+      >
+        <FileText size={20} />
+      </button>
     </div>
   );
 }
