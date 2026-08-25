@@ -241,7 +241,7 @@ export default function AgentAvatar({ id, className = "w-14 h-14" }: AgentAvatar
         return {
           bgColor: 'transparent',
           svg: (
-            <image href="/GIF/Lawson.png" x="0" y="0" width="60" height="60" />
+            <image href="/GIF/Lawson.png" x="0" y="0" width="60" height="60" preserveAspectRatio="xMidYMid slice" />
           )
         };
 
