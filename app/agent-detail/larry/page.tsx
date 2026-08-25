@@ -497,25 +497,91 @@ export default function AgentDetailPage() {
             Larry Loves to work with a team
           </h2>
           <div className="relative w-full overflow-hidden pt-4 mask-marquee">
-            <div className="animate-marquee flex gap-4 py-2">
+            <div className="animate-marquee flex gap-6 py-2">
               {/* First Sequence */}
-              {teamList.map((item, i) => (
-                <Link key={`seq1-${i}`} href={item.path} className="inline-block transition transform hover:scale-105 active:scale-95 shrink-0">
-                  <div className="bg-white border-2 border-black p-2 rounded-2xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex flex-col items-center gap-1.5 w-20">
-                    <AgentAvatar id={item.id} className="w-8 h-8 rounded-full" />
-                    <span className="text-[8px] font-black uppercase text-gray-400">{item.name}</span>
-                  </div>
-                </Link>
-              ))}
+              {teamList.map((item, i) => {
+                const getDetails = (id: string) => {
+                  const data: Record<string, { role: string; color: string }> = {
+                    'dev-1': { role: 'React Developer', color: 'bg-orange-500' },
+                    'dev-2': { role: 'Backend Architect', color: 'bg-emerald-500' },
+                    'dev-3': { role: 'QA Tester', color: 'bg-purple-600' },
+                    'dev-4': { role: 'Security Analyst', color: 'bg-teal-500' },
+                    'mkt-1': { role: 'Growth Hacker', color: 'bg-red-700' },
+                    'mkt-2': { role: 'Social Media Mgr', color: 'bg-orange-500' },
+                    'mkt-3': { role: 'SEO Blog Writer', color: 'bg-red-600' },
+                    'mkt-4': { role: 'Video Scripter', color: 'bg-indigo-600' },
+                    'sales-1': { role: 'SDR / Outreach', color: 'bg-pink-500' },
+                    'sales-2': { role: 'Lead Enricher', color: 'bg-sky-500' },
+                    'ops-1': { role: 'HR Manager', color: 'bg-fuchsia-500' },
+                    'ops-2': { role: 'Finance Analyst', color: 'bg-slate-600' },
+                    'ops-3': { role: 'Legal Assistant', color: 'bg-orange-700' },
+                    'ops-4': { role: 'Product Manager', color: 'bg-lime-500' },
+                    'sup-1': { role: 'Customer Support', color: 'bg-cyan-500' }
+                  };
+                  return data[id] || { role: 'AI Specialist', color: 'bg-blue-500' };
+                };
+                const details = getDetails(item.id);
+                return (
+                  <Link key={`seq1-${i}`} href={item.path} className="inline-block transition transform hover:scale-105 active:scale-95 shrink-0">
+                    <div className={`w-[160px] h-[160px] rounded-2xl border-4 border-black ${details.color} shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden`}>
+                      <div 
+                        className={`absolute left-2.5 top-3 text-white/25 font-black text-[38px] tracking-tighter select-none leading-none ${oswald.className}`} 
+                        style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+                      >
+                        {item.name}
+                      </div>
+                      <div className="absolute -bottom-1 -right-1 w-24 h-24 z-10">
+                        <AgentAvatar id={item.id} className="w-full h-full" />
+                      </div>
+                      <div className="absolute bottom-2.5 left-1/2 transform -translate-x-1/2 z-20 bg-yellow-400 text-black border-2 border-black px-2 py-0.5 rounded-lg text-[8px] font-black uppercase whitespace-nowrap tracking-wider shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                        {details.role}
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
               {/* Duplicate Sequence for seamless looping marquee */}
-              {teamList.map((item, i) => (
-                <Link key={`seq2-${i}`} href={item.path} className="inline-block transition transform hover:scale-105 active:scale-95 shrink-0">
-                  <div className="bg-white border-2 border-black p-2 rounded-2xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex flex-col items-center gap-1.5 w-20">
-                    <AgentAvatar id={item.id} className="w-8 h-8 rounded-full" />
-                    <span className="text-[8px] font-black uppercase text-gray-400">{item.name}</span>
-                  </div>
-                </Link>
-              ))}
+              {teamList.map((item, i) => {
+                const getDetails = (id: string) => {
+                  const data: Record<string, { role: string; color: string }> = {
+                    'dev-1': { role: 'React Developer', color: 'bg-orange-500' },
+                    'dev-2': { role: 'Backend Architect', color: 'bg-emerald-500' },
+                    'dev-3': { role: 'QA Tester', color: 'bg-purple-600' },
+                    'dev-4': { role: 'Security Analyst', color: 'bg-teal-500' },
+                    'mkt-1': { role: 'Growth Hacker', color: 'bg-red-700' },
+                    'mkt-2': { role: 'Social Media Mgr', color: 'bg-orange-500' },
+                    'mkt-3': { role: 'SEO Blog Writer', color: 'bg-red-600' },
+                    'mkt-4': { role: 'Video Scripter', color: 'bg-indigo-600' },
+                    'sales-1': { role: 'SDR / Outreach', color: 'bg-pink-500' },
+                    'sales-2': { role: 'Lead Enricher', color: 'bg-sky-500' },
+                    'ops-1': { role: 'HR Manager', color: 'bg-fuchsia-500' },
+                    'ops-2': { role: 'Finance Analyst', color: 'bg-slate-600' },
+                    'ops-3': { role: 'Legal Assistant', color: 'bg-orange-700' },
+                    'ops-4': { role: 'Product Manager', color: 'bg-lime-500' },
+                    'sup-1': { role: 'Customer Support', color: 'bg-cyan-500' }
+                  };
+                  return data[id] || { role: 'AI Specialist', color: 'bg-blue-500' };
+                };
+                const details = getDetails(item.id);
+                return (
+                  <Link key={`seq2-${i}`} href={item.path} className="inline-block transition transform hover:scale-105 active:scale-95 shrink-0">
+                    <div className={`w-[160px] h-[160px] rounded-2xl border-4 border-black ${details.color} shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden`}>
+                      <div 
+                        className={`absolute left-2.5 top-3 text-white/25 font-black text-[38px] tracking-tighter select-none leading-none ${oswald.className}`} 
+                        style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+                      >
+                        {item.name}
+                      </div>
+                      <div className="absolute -bottom-1 -right-1 w-24 h-24 z-10">
+                        <AgentAvatar id={item.id} className="w-full h-full" />
+                      </div>
+                      <div className="absolute bottom-2.5 left-1/2 transform -translate-x-1/2 z-20 bg-yellow-400 text-black border-2 border-black px-2 py-0.5 rounded-lg text-[8px] font-black uppercase whitespace-nowrap tracking-wider shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                        {details.role}
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </div>

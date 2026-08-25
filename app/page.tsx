@@ -252,6 +252,94 @@ export default function Home() {
 
       </nav>
 
+      {/* INFINITE SCROLLING BRAND MARQUEE */}
+      <div className="w-full bg-gray-50 border-b-4 border-black py-8 overflow-hidden relative mask-marquee">
+        <div className="animate-marquee flex gap-6">
+          {[
+            { name: 'Devon', id: 'dev-1', role: 'React Developer', path: '/agent-detail/devon', color: 'bg-orange-500' },
+            { name: 'Ruby', id: 'dev-2', role: 'Backend Architect', path: '/agent-detail/ruby', color: 'bg-emerald-500' },
+            { name: 'Quinn', id: 'dev-3', role: 'QA Tester', path: '/agent-detail/quinn', color: 'bg-purple-600' },
+            { name: 'Cy', id: 'dev-4', role: 'Security Analyst', path: '/agent-detail/cy', color: 'bg-teal-500' },
+            { name: 'Marcus', id: 'mkt-1', role: 'Growth Hacker', path: '/agent-detail/marcus', color: 'bg-red-700' },
+            { name: 'Stella', id: 'mkt-2', role: 'Social Media Mgr', path: '/agent-detail/stella', color: 'bg-orange-500' },
+            { name: 'Gordon', id: 'mkt-3', role: 'SEO Blog Writer', path: '/agent-detail/gordon', color: 'bg-red-600' },
+            { name: 'Vic', id: 'mkt-4', role: 'Video Scripter', path: '/agent-detail/vic', color: 'bg-indigo-600' },
+            { name: 'Sarah', id: 'sales-1', role: 'SDR / Outreach', path: '/agent-detail/sarah', color: 'bg-pink-500' },
+            { name: 'Larry', id: 'sales-2', role: 'Lead Enricher', path: '/agent-detail/larry', color: 'bg-sky-500' },
+            { name: 'Holly', id: 'ops-1', role: 'HR Manager', path: '/agent-detail/holly', color: 'bg-fuchsia-500' },
+            { name: 'Finn', id: 'ops-2', role: 'Finance Analyst', path: '/agent-detail/finn', color: 'bg-slate-600' },
+            { name: 'Lawson', id: 'ops-3', role: 'Legal Assistant', path: '/agent-detail/lawson', color: 'bg-orange-700' },
+            { name: 'Pat', id: 'ops-4', role: 'Product Manager', path: '/agent-detail/pat', color: 'bg-lime-500' },
+            { name: 'Sam', id: 'sup-1', role: 'Customer Support', path: '/agent-detail/sam', color: 'bg-cyan-500' }
+          ].map((item, i) => (
+            <Link key={`home-seq1-${i}`} href={item.path} className="inline-block transition transform hover:scale-105 active:scale-95 shrink-0">
+              <div className={`w-[160px] h-[160px] rounded-2xl border-4 border-black ${item.color} shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden`}>
+                
+                {/* Large vertical background name */}
+                <div 
+                  className={`absolute left-2.5 top-3 text-white/25 font-black text-[38px] tracking-tighter select-none leading-none ${oswald.className}`} 
+                  style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+                >
+                  {item.name}
+                </div>
+
+                {/* Avatar illustration positioned absolute bottom-right */}
+                <div className="absolute -bottom-1 -right-1 w-24 h-24 z-10">
+                  <AgentAvatar id={item.id} className="w-full h-full" />
+                </div>
+
+                {/* Yellow badge role pill at bottom */}
+                <div className="absolute bottom-2.5 left-1/2 transform -translate-x-1/2 z-20 bg-yellow-400 text-black border-2 border-black px-2 py-0.5 rounded-lg text-[8px] font-black uppercase whitespace-nowrap tracking-wider shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  {item.role}
+                </div>
+
+              </div>
+            </Link>
+          ))}
+          {[
+            { name: 'Devon', id: 'dev-1', role: 'React Developer', path: '/agent-detail/devon', color: 'bg-orange-500' },
+            { name: 'Ruby', id: 'dev-2', role: 'Backend Architect', path: '/agent-detail/ruby', color: 'bg-emerald-500' },
+            { name: 'Quinn', id: 'dev-3', role: 'QA Tester', path: '/agent-detail/quinn', color: 'bg-purple-600' },
+            { name: 'Cy', id: 'dev-4', role: 'Security Analyst', path: '/agent-detail/cy', color: 'bg-teal-500' },
+            { name: 'Marcus', id: 'mkt-1', role: 'Growth Hacker', path: '/agent-detail/marcus', color: 'bg-red-700' },
+            { name: 'Stella', id: 'mkt-2', role: 'Social Media Mgr', path: '/agent-detail/stella', color: 'bg-orange-500' },
+            { name: 'Gordon', id: 'mkt-3', role: 'SEO Blog Writer', path: '/agent-detail/gordon', color: 'bg-red-600' },
+            { name: 'Vic', id: 'mkt-4', role: 'Video Scripter', path: '/agent-detail/vic', color: 'bg-indigo-600' },
+            { name: 'Sarah', id: 'sales-1', role: 'SDR / Outreach', path: '/agent-detail/sarah', color: 'bg-pink-500' },
+            { name: 'Larry', id: 'sales-2', role: 'Lead Enricher', path: '/agent-detail/larry', color: 'bg-sky-500' },
+            { name: 'Holly', id: 'ops-1', role: 'HR Manager', path: '/agent-detail/holly', color: 'bg-fuchsia-500' },
+            { name: 'Finn', id: 'ops-2', role: 'Finance Analyst', path: '/agent-detail/finn', color: 'bg-slate-600' },
+            { name: 'Lawson', id: 'ops-3', role: 'Legal Assistant', path: '/agent-detail/lawson', color: 'bg-orange-700' },
+            { name: 'Pat', id: 'ops-4', role: 'Product Manager', path: '/agent-detail/pat', color: 'bg-lime-500' },
+            { name: 'Sam', id: 'sup-1', role: 'Customer Support', path: '/agent-detail/sam', color: 'bg-cyan-500' }
+          ].map((item, i) => (
+            <Link key={`home-seq2-${i}`} href={item.path} className="inline-block transition transform hover:scale-105 active:scale-95 shrink-0">
+              <div className={`w-[160px] h-[160px] rounded-2xl border-4 border-black ${item.color} shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden`}>
+                
+                {/* Large vertical background name */}
+                <div 
+                  className={`absolute left-2.5 top-3 text-white/25 font-black text-[38px] tracking-tighter select-none leading-none ${oswald.className}`} 
+                  style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+                >
+                  {item.name}
+                </div>
+
+                {/* Avatar illustration positioned absolute bottom-right */}
+                <div className="absolute -bottom-1 -right-1 w-24 h-24 z-10">
+                  <AgentAvatar id={item.id} className="w-full h-full" />
+                </div>
+
+                {/* Yellow badge role pill at bottom */}
+                <div className="absolute bottom-2.5 left-1/2 transform -translate-x-1/2 z-20 bg-yellow-400 text-black border-2 border-black px-2 py-0.5 rounded-lg text-[8px] font-black uppercase whitespace-nowrap tracking-wider shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  {item.role}
+                </div>
+
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
       {/* Mobile Full Screen Collapse Drawer Menu */}
       {menuOpen && (
         <div className="fixed inset-0 bg-white z-[100] flex flex-col p-6 overflow-y-auto animate-in slide-in-from-right duration-300">
