@@ -40,20 +40,9 @@ export default function AgentAvatar({ id, className = "w-14 h-14" }: AgentAvatar
 
       case 'mkt-2': // Stella (Social Media Mgr)
         return {
-          bgColor: '#F97316', // Orange
+          bgColor: 'transparent',
           svg: (
-            <g>
-              {/* Flowing Hair background */}
-              <path d="M 12 40 C 10 20, 15 10, 30 10 C 45 10, 50 20, 48 40" fill="#450A0A" stroke="#000" strokeWidth="2.5" />
-              {/* Face */}
-              <circle cx="30" cy="26" r="10" fill="#FFEDD5" stroke="#000" strokeWidth="2.5" />
-              {/* Cat Eye Sunglasses */}
-              <path d="M21 23 L28 25 L29 23 L27 21 Z" fill="#000" stroke="#000" strokeWidth="1.5" />
-              <path d="M39 23 L32 25 L31 23 L33 21 Z" fill="#000" stroke="#000" strokeWidth="1.5" />
-              <line x1="29" y1="24" x2="31" y2="24" stroke="#000" strokeWidth="2" />
-              {/* Red Lips */}
-              <path d="M 26 31 Q 30 34 34 31 Q 30 30 26 31" fill="#DC2626" stroke="#000" strokeWidth="1.5" />
-            </g>
+            <image href="/GIF/Stella.png" x="0" y="0" width="60" height="60" preserveAspectRatio="xMidYMid slice" />
           )
         };
 
