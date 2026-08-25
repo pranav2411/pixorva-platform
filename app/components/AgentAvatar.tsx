@@ -24,20 +24,9 @@ export default function AgentAvatar({ id, className = "w-14 h-14" }: AgentAvatar
     switch (id) {
       case 'dev-1': // Devon (React Developer)
         return {
-          bgColor: '#2563EB', // Blue
+          bgColor: 'transparent',
           svg: (
-            <g>
-              {/* Hair */}
-              <path d="M15 15 C 20 8, 30 8, 35 15 C 40 8, 45 12, 48 18 C 52 28, 48 40, 48 40 L 12 40 C 12 40, 8 28, 12 18 C 13 15, 14 15, 15 15 Z" fill="#1E1B4B" stroke="#000" strokeWidth="2.5" />
-              {/* Face */}
-              <circle cx="30" cy="28" r="12" fill="#FED7AA" stroke="#000" strokeWidth="2.5" />
-              {/* Glasses */}
-              <circle cx="25" cy="26" r="4.5" fill="none" stroke="#000" strokeWidth="2.5" />
-              <circle cx="35" cy="26" r="4.5" fill="none" stroke="#000" strokeWidth="2.5" />
-              <line x1="29.5" y1="26" x2="30.5" y2="26" stroke="#000" strokeWidth="2.5" />
-              {/* Mouth */}
-              <path d="M 26 32 Q 30 35 34 32" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round" />
-            </g>
+            <image href="/GIF/Devon.png" x="0" y="0" width="60" height="60" preserveAspectRatio="xMidYMid slice" />
           )
         };
 
