@@ -253,7 +253,7 @@ export default function Home() {
       </nav>
 
       {/* INFINITE SCROLLING BRAND MARQUEE */}
-      <div className="w-full bg-gray-50 border-b-4 border-black py-8 overflow-hidden relative mask-marquee">
+      <div className="w-full bg-gray-50 border-b-4 border-black py-8 overflow-hidden relative">
         <div className="animate-marquee flex gap-6">
           {[
             { name: 'Devon', id: 'dev-1', role: 'React Developer', path: '/agent-detail/devon', color: 'bg-orange-500' },
