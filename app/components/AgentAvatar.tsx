@@ -48,20 +48,9 @@ export default function AgentAvatar({ id, className = "w-14 h-14" }: AgentAvatar
 
       case 'mkt-3': // Gordon (SEO Blog Writer)
         return {
-          bgColor: '#DC2626', // Red
+          bgColor: 'transparent',
           svg: (
-            <g>
-              {/* Face */}
-              <circle cx="30" cy="28" r="11" fill="#FDBA74" stroke="#000" strokeWidth="2.5" />
-              {/* Beanie Hat */}
-              <path d="M 17 22 C 17 12, 43 12, 43 22 Z" fill="#F59E0B" stroke="#000" strokeWidth="2.5" />
-              <rect x="15" y="20" width="30" height="4" rx="2" fill="#D97706" stroke="#000" strokeWidth="2" />
-              {/* Glasses */}
-              <circle cx="25" cy="27" r="3.5" fill="none" stroke="#000" strokeWidth="2" />
-              <circle cx="35" cy="27" r="3.5" fill="none" stroke="#000" strokeWidth="2" />
-              {/* Beard */}
-              <path d="M 22 34 Q 30 39 38 34" fill="none" stroke="#000" strokeWidth="2.5" />
-            </g>
+            <image href="/GIF/Gordon.png" x="0" y="0" width="60" height="60" preserveAspectRatio="xMidYMid slice" />
           )
         };
 
