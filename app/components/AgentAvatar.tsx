@@ -43,20 +43,9 @@ export default function AgentAvatar({ id, className = "w-14 h-14" }: AgentAvatar
 
       case 'dev-2': // Ruby (Database Architect)
         return {
-          bgColor: '#10B981', // Green
+          bgColor: 'transparent',
           svg: (
-            <g>
-              {/* Spiky Hair */}
-              <path d="M12 25 L16 12 L22 15 L28 10 L34 16 L40 11 L45 17 L48 25 Z" fill="#172554" stroke="#000" strokeWidth="2.5" />
-              {/* Face */}
-              <rect x="20" y="20" width="20" height="18" rx="4" fill="#FDBA74" stroke="#000" strokeWidth="2.5" />
-              {/* Beard */}
-              <path d="M20 32 L20 38 Q 30 42 40 38 L40 32 Z" fill="#172554" stroke="#000" strokeWidth="2" />
-              {/* Glasses */}
-              <rect x="22" y="23" width="6" height="5" fill="none" stroke="#000" strokeWidth="2.5" />
-              <rect x="32" y="23" width="6" height="5" fill="none" stroke="#000" strokeWidth="2.5" />
-              <line x1="28" y1="25.5" x2="32" y2="25.5" stroke="#000" strokeWidth="2.5" />
-            </g>
+            <image href="/GIF/Ruby.png" x="0" y="0" width="60" height="60" preserveAspectRatio="xMidYMid slice" />
           )
         };
 
