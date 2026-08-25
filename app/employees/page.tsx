@@ -549,6 +549,20 @@ export default function EmployeesPage() {
                             <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                         </>
                     )}
+                    {/* Background Video for Vic on Hover */}
+                    {emp.id === "mkt-4" && (
+                        <>
+                            <video 
+                                src="/GIF/Vic.mp4"
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                            />
+                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                        </>
+                    )}
                     
                     {/* CARD CONTENT */}
                     <div className="relative z-10 flex flex-col justify-between h-full flex-grow">

@@ -80,18 +80,9 @@ export default function AgentAvatar({ id, className = "w-14 h-14" }: AgentAvatar
 
       case 'mkt-4': // Vic (Video Editor Script)
         return {
-          bgColor: '#4F46E5', // Indigo
+          bgColor: 'transparent',
           svg: (
-            <g>
-              {/* Creative hair */}
-              <path d="M 16 22 C 10 10, 50 10, 44 22" fill="#0F172A" stroke="#000" strokeWidth="3.5" />
-              {/* Face */}
-              <circle cx="30" cy="28" r="11" fill="#FFEDD5" stroke="#000" strokeWidth="2.5" />
-              {/* Sunglasses */}
-              <rect x="21" y="24" width="7" height="6" rx="1" fill="#000" />
-              <rect x="32" y="24" width="7" height="6" rx="1" fill="#000" />
-              <line x1="28" y1="27" x2="32" y2="27" stroke="#000" strokeWidth="2" />
-            </g>
+            <image href="/GIF/Vic.png" x="0" y="0" width="60" height="60" preserveAspectRatio="xMidYMid slice" />
           )
         };
 
