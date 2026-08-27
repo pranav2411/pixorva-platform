@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     description: "Get an AI Team who runs your inbox, socials, SEO, lead generation, calls, and support. Scale your business 24/7 with zero drama.",
     images: [
       {
-        url: "/public/GIF/Lawson.png", // Use Lawson keyframe as an initial share preview image
+        url: "/GIF/Lawson.png", // Use Lawson keyframe as an initial share preview image
         width: 1200,
         height: 630,
         alt: "Pixorva - Scale with Autonomous AI Employees"
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Pixorva | Hire Your Next AI Employee",
     description: "Scale your business 24/7 with specialized AI agents and autonomous digital employees.",
-    images: ["/public/GIF/Lawson.png"]
+    images: ["/GIF/Lawson.png"]
   }
 };
 
