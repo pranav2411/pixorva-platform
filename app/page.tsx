@@ -189,16 +189,31 @@ export default function Home() {
       {/* JSON-LD Structured Data for Brand Indexing */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            "name": "Pixorva",
-            "url": "https://pixorva.com",
-            "logo": "https://pixorva.com/favicon.ico",
-            "description": "Hire your next AI Employee. Browse, inspect, and provision specialized AI agents for your business team."
-          })
-        }}
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                "name": "Pixorva",
+                "alternateName": ["Pixorva AI", "Pixorva Platform"],
+                "url": "https://pixorva.com",
+                "logo": "https://pixorva.com/favicon.ico",
+                "description": "Pixorva is an autonomous digital workforce marketplace. Hire specialized AI Employees and AI Agents for software development, marketing, sales, ops, and support.",
+                "knowsAbout": [
+                  "Artificial Intelligence",
+                  "AI Employees",
+                  "AI Agents",
+                  "Autonomous Agents",
+                  "Digital Workforce Automation",
+                  "AI Marketing",
+                  "AI Coding Agents"
+                ],
+                "brand": {
+                  "@type": "Brand",
+                  "name": "Pixorva",
+                  "description": "Pixorva Autonomous AI Employee Marketplace"
+                }
+              })
+            }}
       />
 
       {/* NAVBAR */}
