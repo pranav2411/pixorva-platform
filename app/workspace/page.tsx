@@ -67,7 +67,7 @@ function getIcon(name: string) {
   }
 }
 
-function ChatMessage({ text }: { text: string }) {
+function ChatMessage({ text, isYou }: { text: string; isYou?: boolean }) {
   if (!text) return null;
 
   // Split text by code blocks ```
@@ -123,7 +123,11 @@ function ChatMessage({ text }: { text: string }) {
                   if (match.index > lastIndex) {
                     boldParts.push(line.substring(lastIndex, match.index));
                   }
-                  boldParts.push(<strong key={match.index} className="font-black text-black">{match[1]}</strong>);
+                  boldParts.push(
+                    <strong key={match.index} className={`font-black ${isYou ? 'text-black' : 'text-[#ffc700]'}`}>
+                      {match[1]}
+                    </strong>
+                  );
                   lastIndex = boldRegex.lastIndex;
                 }
                 if (lastIndex < line.length) {
@@ -672,13 +676,13 @@ export default function WorkspacePage() {
                           onClick={() => setChannelViewMode("chat")}
                           className={`px-3 py-1 text-[9px] font-black uppercase transition ${channelViewMode === 'chat' ? 'bg-[#ffc700] text-black' : 'text-neutral-400 hover:text-white'}`}
                         >
-                          💬 Chat Feed
+                          Chat Feed
                         </button>
                         <button
                           onClick={() => setChannelViewMode("preview")}
                           className={`px-3 py-1 text-[9px] font-black uppercase transition ${channelViewMode === 'preview' ? 'bg-[#ffc700] text-black' : 'text-neutral-400 hover:text-white'}`}
                         >
-                          🖥️ Live Sandbox
+                          Live Sandbox
                         </button>
                       </div>
                     </div>
@@ -708,7 +712,7 @@ export default function WorkspacePage() {
                               <span className="text-[8px] text-neutral-500">{msg.time}</span>
                             </div>
                             <div className={`p-3 rounded-xl border text-xs max-w-md ${isYou ? 'bg-[#ffc700] text-black border-black font-medium shadow-md' : isSys ? 'bg-white/5 text-neutral-400 border-dashed border-white/20' : 'bg-[#1a1b20] text-neutral-200 border-white/15 shadow-md'}`}>
-                              <ChatMessage text={msg.text} />
+                              <ChatMessage text={msg.text} isYou={isYou} />
                             </div>
                           </div>
                         );
