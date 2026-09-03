@@ -404,24 +404,24 @@ export default function AgentDetailPage() {
             Up and running in minutes. Sam handles the operational busywork so you can spend your day on what matters.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6">
-            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
-              <div className="w-10 h-10 rounded-lg bg-blue-100 border-2 border-black flex items-center justify-center font-black text-lg">1</div>
-              <h4 className="font-black text-sm uppercase">Connect Workspace</h4>
-              <p className="text-xs text-gray-500 font-medium leading-relaxed">
+            <div className="bg-[#dbeafe] border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4 hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all">
+              <div className="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center font-black text-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">1</div>
+              <h4 className="font-black text-sm uppercase text-black">Connect Workspace</h4>
+              <p className="text-xs text-gray-800 font-medium leading-relaxed">
                 Link Sam to your Slack, email, or repository in a couple of clicks. Setup is fully automated.
               </p>
             </div>
-            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
-              <div className="w-10 h-10 rounded-lg bg-yellow-100 border-2 border-black flex items-center justify-center font-black text-lg">2</div>
-              <h4 className="font-black text-sm uppercase">Executes Daily Audits</h4>
-              <p className="text-xs text-gray-500 font-medium leading-relaxed">
+            <div className="bg-[#fef08a] border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4 hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all">
+              <div className="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center font-black text-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">2</div>
+              <h4 className="font-black text-sm uppercase text-black">Executes Daily Audits</h4>
+              <p className="text-xs text-gray-800 font-medium leading-relaxed">
                 She scans files, compiles tasks, and writes output drafts in your channels around the clock.
               </p>
             </div>
-            <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4">
-              <div className="w-10 h-10 rounded-lg bg-green-100 border-2 border-black flex items-center justify-center font-black text-lg">3</div>
-              <h4 className="font-black text-sm uppercase">You Stay in Control</h4>
-              <p className="text-xs text-gray-500 font-medium leading-relaxed">
+            <div className="bg-[#bbf7d0] border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left space-y-4 hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all">
+              <div className="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center font-black text-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">3</div>
+              <h4 className="font-black text-sm uppercase text-black">You Stay in Control</h4>
+              <p className="text-xs text-gray-800 font-medium leading-relaxed">
                 Nothing is deployed or finalized without your approval. Review drafts with a single click.
               </p>
             </div>
