@@ -224,7 +224,7 @@ export default function OnboardingPage() {
       const { error: signInError } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=/workspace`
+          redirectTo: `${window.location.origin}/auth/callback?next=/`
         }
       });
       if (signInError) throw signInError;
@@ -259,7 +259,7 @@ export default function OnboardingPage() {
       const { error: otpError } = await supabase.auth.signInWithOtp({
         email: email.trim(),
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback?next=/trial`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=/`,
           data: {
             full_name: fullName.trim(),
             industry,
@@ -301,7 +301,8 @@ export default function OnboardingPage() {
       if (verifyError) throw verifyError;
 
       showToast("Verified successfully! Welcome to Pixorva.", "success");
-      router.push("/trial");
+      router.push("/");
+      router.refresh();
     } catch (err: any) {
       setError(err.message || "Invalid or expired verification code");
     } finally {
