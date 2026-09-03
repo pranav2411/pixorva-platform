@@ -159,6 +159,7 @@ export default function EmployeesPage() {
   const [modalLoading, setModalLoading] = useState(false);
   const [slotCount, setSlotCount] = useState(0);
   const [agreeHire, setAgreeHire] = useState(false);
+  const [activeTappedId, setActiveTappedId] = useState<string | null>(null);
 
   const handleConfirmTrial = async () => {
     const employee = confirmModal.employee;
@@ -435,263 +436,97 @@ export default function EmployeesPage() {
       <main className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             
-            {filteredEmployees.map((emp) => (
-                <div key={emp.id} className="group relative bg-white border-4 border-black rounded-xl p-6 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-y-1 flex flex-col justify-between h-full overflow-hidden">
-                    {/* Background Video for Lawson on Hover */}
-                    {emp.id === "ops-3" && (
-                        <>
-                            <video 
-                                src="/GIF/Lawson.mp4"
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                            />
-                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                        </>
-                    )}
-                    {/* Background Video for Ruby on Hover */}
-                    {emp.id === "dev-2" && (
-                        <>
-                            <video 
-                                src="/GIF/Ruby.mp4"
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                            />
-                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                        </>
-                    )}
-                    {/* Background Video for Devon on Hover */}
-                    {emp.id === "dev-1" && (
-                        <>
-                            <video 
-                                src="/GIF/Devon.mp4"
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                            />
-                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                        </>
-                    )}
-                    {/* Background Video for Quinn on Hover */}
-                    {emp.id === "dev-3" && (
-                        <>
-                            <video 
-                                src="/GIF/Quinn.mp4"
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                            />
-                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                        </>
-                    )}
-                    {/* Background Video for Cy on Hover */}
-                    {emp.id === "dev-4" && (
-                        <>
-                            <video 
-                                src="/GIF/Cy.mp4"
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                            />
-                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                        </>
-                    )}
-                    {/* Background Video for Marcus on Hover */}
-                    {emp.id === "mkt-1" && (
-                        <>
-                            <video 
-                                src="/GIF/Marcus.mp4"
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                            />
-                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                        </>
-                    )}
-                    {/* Background Video for Stella on Hover */}
-                    {emp.id === "mkt-2" && (
-                        <>
-                            <video 
-                                src="/GIF/Stella.mp4"
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                            />
-                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                        </>
-                    )}
-                    {/* Background Video for Gordon on Hover */}
-                    {emp.id === "mkt-3" && (
-                        <>
-                            <video 
-                                src="/GIF/Gordon.mp4"
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                            />
-                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                        </>
-                    )}
-                    {/* Background Video for Vic on Hover */}
-                    {emp.id === "mkt-4" && (
-                        <>
-                            <video 
-                                src="/GIF/Vic.mp4"
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                            />
-                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                        </>
-                    )}
-                    {/* Background Video for Sarah on Hover */}
-                    {emp.id === "sales-1" && (
-                        <>
-                            <video 
-                                src="/GIF/Sarah.mp4"
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                            />
-                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                        </>
-                    )}
-                    {/* Background Video for Larry on Hover */}
-                    {emp.id === "sales-2" && (
-                        <>
-                            <video 
-                                src="/GIF/Larry.mp4"
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                            />
-                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                        </>
-                    )}
-                    {/* Background Video for Holly on Hover */}
-                    {emp.id === "ops-1" && (
-                        <>
-                            <video 
-                                src="/GIF/Holly.mp4"
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                            />
-                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                        </>
-                    )}
-                    {/* Background Video for Finn on Hover */}
-                    {emp.id === "ops-2" && (
-                        <>
-                            <video 
-                                src="/GIF/Finn.mp4"
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                            />
-                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                        </>
-                    )}
-                    {/* Background Video for Pat on Hover */}
-                    {emp.id === "ops-4" && (
-                        <>
-                            <video 
-                                src="/GIF/Pat.mp4"
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                            />
-                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                        </>
-                    )}
-                    {/* Background Video for Sam on Hover */}
-                    {emp.id === "sup-1" && (
-                        <>
-                            <video 
-                                src="/GIF/Sam.mp4"
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                            />
-                            <div className="absolute inset-0 bg-white/40 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                        </>
-                    )}
-                    
-                    {/* CARD CONTENT */}
-                    <div className="relative z-10 flex flex-col justify-between h-full flex-grow">
-                        <div>
-                            <div className="flex justify-between items-start mb-6">
-                                <AgentAvatar id={emp.id} className="w-14 h-14" />
-                                <span className="bg-black text-white px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide border border-black text-xs">
-                                    {emp.category}
-                                </span>
-                            </div>
+            {filteredEmployees.map((emp) => {
+                const isPlaying = activeTappedId === emp.id;
 
-                            <h3 className={`text-2xl uppercase mb-1 leading-none ${oswald.className}`}>{emp.name}</h3>
-                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">{emp.role}</p>
-                            
-                            <p className="text-sm font-medium text-gray-800 leading-relaxed mb-6 min-h-[60px] border-l-4 border-gray-200 pl-3">
-                                {emp.desc}
-                            </p>
+                return (
+                    <div 
+                        key={emp.id} 
+                        onClick={() => setActiveTappedId(prev => prev === emp.id ? null : emp.id)}
+                        className={`group relative bg-white border-4 border-black rounded-xl p-6 transition-all flex flex-col justify-between h-full overflow-hidden cursor-pointer ${
+                            isPlaying 
+                                ? 'shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] -translate-y-1' 
+                                : 'hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1'
+                        }`}
+                    >
+                        {/* Background Video for Agent: On Hover (Desktop) or Tap (Phone/Mobile) */}
+                        <video 
+                            src={`/GIF/${emp.name}.mp4`}
+                            poster={`/GIF/${emp.name}.png`}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className={`absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-500 pointer-events-none ${
+                                isPlaying ? 'opacity-100' : 'opacity-0'
+                            } group-hover:opacity-100`}
+                        />
+                        <div 
+                            className={`absolute inset-0 bg-white/40 z-0 transition-opacity duration-500 pointer-events-none ${
+                                isPlaying ? 'opacity-100' : 'opacity-0'
+                            } group-hover:opacity-100`} 
+                        />
 
-                            <div className="flex flex-wrap gap-2 mb-8">
-                                {emp.skills.map((skill, i) => (
-                                    <span key={i} className="text-[10px] font-black border-2 border-black px-2 py-1 rounded bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                                        {skill}
+                        {/* Mobile Live Preview Pill Indicator */}
+                        {isPlaying && (
+                            <span className="md:hidden absolute top-3 right-3 z-20 bg-black text-yellow-400 border-2 border-black text-[9px] font-black uppercase px-2 py-0.5 rounded shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] flex items-center gap-1.5 animate-pulse">
+                                <span className="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
+                                Playing Preview
+                            </span>
+                        )}
+                        
+                        {/* CARD CONTENT */}
+                        <div className="relative z-10 flex flex-col justify-between h-full flex-grow">
+                            <div>
+                                <div className="flex justify-between items-start mb-6">
+                                    <AgentAvatar id={emp.id} className="w-14 h-14" />
+                                    <span className="bg-black text-white px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide border border-black text-xs">
+                                        {emp.category}
                                     </span>
-                                ))}
-                            </div>
-                        </div>
+                                </div>
 
-                        {/* ACTIONS */}
-                        <div className="space-y-2 mt-4 flex-shrink-0">
-                            <button 
-                                onClick={() => handleHire(emp)}
-                                disabled={hiring === emp.id}
-                                className="w-full bg-yellow-400 text-black border-4 border-black py-2.5 rounded-lg font-black text-xs uppercase tracking-wide hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none"
-                            >
-                                {hiring === emp.id ? "Onboarding..." : <>Hire For {emp.price} <Plus size={14} strokeWidth={3} /></>}
-                            </button>
-                             <Link href={`/agent-detail/${emp.name.toLowerCase()}`} className="block">
-                                <button className="w-full bg-white text-black border-2 border-black py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wide hover:bg-gray-50 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5">
-                                    View Profile
+                                <h3 className={`text-2xl uppercase mb-1 leading-none ${oswald.className}`}>{emp.name}</h3>
+                                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">{emp.role}</p>
+                                
+                                <p className="text-sm font-medium text-gray-800 leading-relaxed mb-6 min-h-[60px] border-l-4 border-gray-200 pl-3">
+                                    {emp.desc}
+                                </p>
+
+                                <div className="flex flex-wrap gap-2 mb-8">
+                                    {emp.skills.map((skill, i) => (
+                                        <span key={i} className="text-[10px] font-black border-2 border-black px-2 py-1 rounded bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                                            {skill}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* ACTIONS */}
+                            <div className="space-y-2 mt-4 flex-shrink-0">
+                                <button 
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleHire(emp);
+                                    }}
+                                    disabled={hiring === emp.id}
+                                    className="w-full bg-yellow-400 text-black border-4 border-black py-2.5 rounded-lg font-black text-xs uppercase tracking-wide hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none"
+                                >
+                                    {hiring === emp.id ? "Onboarding..." : <>Hire For {emp.price} <Plus size={14} strokeWidth={3} /></>}
                                 </button>
-                            </Link>
+                                <Link 
+                                    href={`/agent-detail/${emp.name.toLowerCase()}`} 
+                                    className="block"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    <button className="w-full bg-white text-black border-2 border-black py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wide hover:bg-gray-50 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5">
+                                        View Profile
+                                    </button>
+                                </Link>
+                            </div>
                         </div>
                     </div>
-                </div>
-            ))}
+                );
+            })}
         </div>
       </main>
 
