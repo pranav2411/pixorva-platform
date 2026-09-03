@@ -806,17 +806,17 @@ export default function DocsPage() {
   }, [activeArticle]);
 
   return (
-    <div className={`min-h-screen bg-gray-50 text-black ${inter.className} flex flex-col`}>
+    <div className={`min-h-screen bg-[#0e0f12] text-white ${inter.className} flex flex-col selection:bg-[#ffc700] selection:text-black`}>
       
       {/* Top Header */}
-      <header className="bg-white border-b-4 border-black px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+      <header className="bg-[#141519]/90 backdrop-blur-xl border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-50 shadow-md">
         <div className="flex items-center gap-3">
-          <Link href="/" className="bg-black text-white p-2 rounded hover:bg-yellow-400 hover:text-black transition border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:shadow-none hover:translate-y-1 flex items-center justify-center shrink-0">
+          <Link href="/" className="bg-black/50 text-white p-2 rounded-xl hover:bg-[#ffc700] hover:text-black transition border border-white/15 shadow-sm flex items-center justify-center shrink-0">
             <ArrowLeft size={16} />
           </Link>
-          <h1 className={`text-2xl font-black uppercase tracking-wider ${oswald.className}`}>Developer Docs</h1>
+          <h1 className={`text-2xl font-black uppercase tracking-wider text-white ${oswald.className}`}>Developer Docs</h1>
         </div>
-        <div className="bg-yellow-400 text-black border-2 border-black px-3 py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wider shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+        <div className="bg-[#ffc700] text-black border border-yellow-300 px-3 py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wider shadow-sm">
           Live Spec v1.4.0
         </div>
       </header>
@@ -827,21 +827,21 @@ export default function DocsPage() {
         {/* Mobile Backdrop overlay */}
         {sidebarOpen && (
           <div 
-            className="fixed inset-0 bg-black/40 z-30 md:hidden"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
 
         {/* Left Sidebar */}
-        <aside className={`fixed md:sticky top-0 left-0 h-screen md:h-auto w-[280px] md:w-64 bg-white md:bg-transparent border-r-4 md:border-r-0 border-black md:border-transparent p-6 md:p-0 z-40 transition-transform duration-300 flex flex-col overflow-hidden shrink-0 md:top-24 md:max-h-[calc(100vh-140px)] ${
+        <aside className={`fixed md:sticky top-0 left-0 h-screen md:h-auto w-[280px] md:w-64 bg-[#141519] md:bg-transparent border-r border-white/10 md:border-r-0 p-6 md:p-0 z-40 transition-transform duration-300 flex flex-col overflow-hidden shrink-0 md:top-24 md:max-h-[calc(100vh-140px)] ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}>
           {/* Mobile Sidebar Close Header */}
-          <div className="flex items-center justify-between pb-4 mb-4 border-b-2 border-black md:hidden shrink-0">
-            <span className={`text-lg font-black uppercase tracking-wider ${oswald.className}`}>Menu</span>
+          <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10 md:hidden shrink-0">
+            <span className={`text-lg font-black uppercase tracking-wider text-white ${oswald.className}`}>Menu</span>
             <button 
               onClick={() => setSidebarOpen(false)}
-              className="p-1 border-2 border-black rounded-lg hover:bg-gray-100 flex items-center justify-center"
+              className="p-1 border border-white/20 rounded-lg hover:bg-white/10 text-white flex items-center justify-center"
             >
               <X size={16} />
             </button>
@@ -854,24 +854,24 @@ export default function DocsPage() {
               placeholder="Search documentation..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 bg-white border-2 border-black rounded-xl text-xs font-bold focus:outline-none placeholder-gray-400 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-none transition-all"
+              className="w-full pl-9 pr-4 py-2.5 bg-black/50 border border-white/15 rounded-xl text-xs font-bold text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700] shadow-sm transition-all"
             />
-            <Search size={14} className="absolute left-3 top-3.5 text-gray-400" />
+            <Search size={14} className="absolute left-3 top-3.5 text-neutral-500" />
           </div>
 
           {/* Navigation Links list */}
-          <nav className="flex-grow overflow-y-auto pr-1 space-y-6 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-400">
+          <nav className="flex-grow overflow-y-auto pr-1 space-y-6 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-neutral-700 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-neutral-600">
             {categories.map(cat => {
               const catArticles = filteredArticles.filter(art => art.category === cat.id);
               if (catArticles.length === 0) return null;
 
               return (
                 <div key={cat.id} className="pr-1">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-gray-400 mb-2 flex items-center gap-1.5">
+                  <h4 className="text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-2 flex items-center gap-1.5">
                     {cat.icon}
                     {cat.name}
                   </h4>
-                  <ul className="space-y-1 border-l-2 border-gray-200 ml-2 pl-2">
+                  <ul className="space-y-1 border-l-2 border-white/10 ml-2 pl-2">
                     {catArticles.map(art => (
                       <li key={art.id}>
                         <button
@@ -881,8 +881,8 @@ export default function DocsPage() {
                           }}
                           className={`w-full text-left py-1.5 px-2 rounded-lg text-xs font-bold transition flex items-center justify-between ${
                             activeTab === art.id 
-                              ? 'bg-yellow-400 text-black border border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' 
-                              : 'text-gray-500 hover:text-black hover:bg-gray-100 border border-transparent'
+                              ? 'bg-[#ffc700] text-black border border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' 
+                              : 'text-neutral-400 hover:text-white hover:bg-white/5 border border-transparent'
                           }`}
                         >
                           <span className="truncate">{art.title}</span>
@@ -898,7 +898,7 @@ export default function DocsPage() {
         </aside>
 
         {/* Right content viewer */}
-        <main className="flex-grow bg-white border-4 border-black rounded-3xl p-6 md:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] min-h-[500px] relative overflow-hidden">
+        <main className="flex-grow bg-[#141519]/80 backdrop-blur-xl border border-white/15 rounded-3xl p-6 md:p-10 shadow-2xl min-h-[500px] relative overflow-hidden text-white">
           {/* Ambient Video Player behind selected Agent Doc */}
           {selectedAgentName && (
             <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
@@ -910,41 +910,69 @@ export default function DocsPage() {
                 loop
                 muted
                 playsInline
-                className="w-full h-full object-cover opacity-25 scale-100"
+                className="w-full h-full object-cover opacity-35 scale-100"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/65 to-white/85" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#0e0f12]/85 via-[#0e0f12]/65 to-[#0e0f12]/90" />
             </div>
           )}
 
           <div className="relative z-10">
-            {/* Breadcrumbs */}
-            <div className="flex items-center gap-1.5 text-[9px] font-black uppercase text-gray-400 mb-4">
-              <span>Pixorva</span>
+            {/* Breadcrumbs - Fully Clickable */}
+            <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-neutral-400 mb-4 tracking-wider">
+              <Link href="/" className="hover:text-[#ffc700] transition">
+                Pixorva
+              </Link>
               <span>/</span>
-              <span>Docs</span>
+              <button 
+                onClick={() => { setActiveTab('intro'); setSearchQuery(''); }}
+                className="hover:text-[#ffc700] transition uppercase font-black"
+              >
+                Docs
+              </button>
               <span>/</span>
-              <span className="text-yellow-600">
-                {categories.find(c => c.id === activeArticle.category)?.name}
-              </span>
+              {activeArticle.category === 'agents' ? (
+                <Link href="/employees" className="text-[#ffc700] hover:underline transition font-black">
+                  AI Workforce Agents
+                </Link>
+              ) : activeArticle.category === 'workspace' ? (
+                <Link href="/workspace" className="text-[#ffc700] hover:underline transition font-black">
+                  Collaborative Workspace
+                </Link>
+              ) : activeArticle.category === 'api' ? (
+                <Link href="/settings#api" className="text-[#ffc700] hover:underline transition font-black">
+                  Developer API Console
+                </Link>
+              ) : activeArticle.category === 'governance' ? (
+                <Link href="/governance" className="text-[#ffc700] hover:underline transition font-black">
+                  Governance & Rules
+                </Link>
+              ) : (
+                <button 
+                  onClick={() => setActiveTab('intro')}
+                  className="text-[#ffc700] hover:underline transition font-black uppercase"
+                >
+                  {categories.find(c => c.id === activeArticle.category)?.name}
+                </button>
+              )}
             </div>
 
             {/* Article Header */}
-            <div className="flex items-start gap-4 border-b-2 border-gray-100 pb-6 mb-6">
-              <div className="bg-yellow-400 p-3 rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] shrink-0">
+            <div className="flex items-start gap-4 border-b border-white/10 pb-6 mb-6">
+              <div className="bg-[#ffc700] p-3 rounded-2xl border border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black shrink-0">
                 {activeArticle.icon}
               </div>
               <div>
-                <h2 className={`text-3xl uppercase leading-tight font-black ${oswald.className}`}>
+                <h2 className={`text-3xl uppercase leading-tight font-black text-white ${oswald.className}`}>
                   {activeArticle.title}
                 </h2>
-                <p className="text-xs text-gray-500 font-medium mt-1">
+                <p className="text-xs text-neutral-400 font-medium mt-1">
                   {activeArticle.subtitle}
                 </p>
               </div>
             </div>
 
-            {/* Article Content */}
-            <article className="prose max-w-none text-sm text-gray-800">
+            {/* Article Content with Dark Mode Support */}
+            <article className="prose prose-invert max-w-none text-sm text-neutral-300 [&_p]:text-neutral-300 [&_strong]:text-white [&_h3]:text-white [&_h4]:text-white [&_h5]:text-white [&_li]:text-neutral-300 [&_ul]:text-neutral-300 [&_.bg-yellow-50]:bg-black/50 [&_.bg-yellow-50]:border-white/15 [&_.bg-yellow-50]:text-white [&_.bg-yellow-50_*]:text-neutral-300 [&_.bg-blue-50]:bg-black/50 [&_.bg-blue-50]:border-white/15 [&_.bg-blue-50]:text-white [&_.bg-blue-50_*]:text-neutral-300 [&_.bg-gray-50]:bg-black/50 [&_.bg-gray-50]:border-white/15 [&_.bg-gray-50]:text-white [&_.bg-gray-50_*]:text-neutral-300 [&_.bg-white]:bg-black/60 [&_.bg-white]:border-white/20 [&_.bg-white]:text-white [&_pre]:bg-black/80 [&_pre]:border [&_pre]:border-white/20 [&_code]:bg-black/60 [&_code]:text-[#ffc700] [&_code]:border [&_code]:border-white/15">
               {activeArticle.content}
             </article>
           </div>
@@ -952,14 +980,14 @@ export default function DocsPage() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t-4 border-black bg-white py-6 text-center text-xs font-black uppercase mt-12">
+      <footer className="border-t border-white/10 bg-[#0e0f12] py-6 text-center text-xs font-black uppercase mt-12 text-neutral-500">
         Pixorva Documentation Platform © 2026. Billed with precision.
       </footer>
 
       {/* Floating Mobile Sidebar Trigger Button */}
       <button 
         onClick={() => setSidebarOpen(true)}
-        className="md:hidden fixed bottom-6 right-6 z-30 bg-yellow-400 text-black border-2 border-black p-3.5 rounded-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none hover:bg-black hover:text-white transition flex items-center justify-center animate-bounce"
+        className="md:hidden fixed bottom-6 right-6 z-30 bg-[#ffc700] text-black border-2 border-black p-3.5 rounded-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none hover:bg-white hover:text-black transition flex items-center justify-center animate-bounce"
       >
         <FileText size={20} />
       </button>
