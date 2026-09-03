@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Oswald, Inter } from "next/font/google";
 import { 
   Building2, Briefcase, Calendar, ChevronRight, Check, 
-  Search, Eye, EyeOff, ArrowLeft, Loader2, ChevronLeft, Star, Globe
+  Search, Eye, EyeOff, ArrowLeft, Loader2, ChevronLeft, Globe
 } from "lucide-react";
 import { createClient } from "../utils/supabase/client";
 import { showToast } from "../utils/Toast";
@@ -56,34 +56,13 @@ const INDUSTRIES = [
   { name: "Cybersecurity", emoji: "🛡️" },
 ];
 
-const TESTIMONIALS = [
-  {
-    name: "Bryan",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
-    title: "Revolutionized our video business",
-    quote: "Pixorva's AI employees were a game-changer for our video business. A <mark class='bg-[#ffc700] text-black px-1 font-bold rounded-sm'>60% boost in website traffic</mark> from Gordon, better leads from Sarah, and 100% call response from Devon — all working 24/7."
-  },
-  {
-    name: "Steve",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
-    title: "I've simply been blown away",
-    quote: "I've <mark class='bg-[#ffc700] text-black px-1 font-bold rounded-sm'>simply been blown away</mark> by Pixorva. As a 14-month-old one-man shop, marketing was a massive headache — now I actually have a sales process, and Marcus pushes me right when I need it."
-  },
-  {
-    name: "Elena",
-    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80",
-    title: "Saved 25+ hours every week",
-    quote: "Hiring Sarah and Devon helped our agency scale outreach without hiring 4 SDRs. We saw an immediate <mark class='bg-[#ffc700] text-black px-1 font-bold rounded-sm'>3.2x increase in pipeline</mark> in the first 3 weeks."
-  }
-];
-
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const totalSteps = 12;
 
   // Form State
-  const [usageIntent, setUsageIntent] = useState<string>("");
+  const [usageIntent, setUsageIntent] = useState<string>("business");
   const [websiteUrl, setWebsiteUrl] = useState<string>("");
   const [emailsCount, setEmailsCount] = useState<string>("");
   const [socialFrequency, setSocialFrequency] = useState<string>("");
@@ -95,13 +74,11 @@ export default function OnboardingPage() {
   const [realCompaniesCount, setRealCompaniesCount] = useState<number>(0);
   const [displayedCompaniesCount, setDisplayedCompaniesCount] = useState<number>(0);
   const [websiteVerified, setWebsiteVerified] = useState<boolean>(false);
-  const [isSearchingMarket, setIsSearchingMarket] = useState<boolean>(false);
 
-  // Analysis Animation State (Step 10)
-  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
+  // Analysis Progress State
   const [timeOptProgress, setTimeOptProgress] = useState<number>(0);
   const [growthAreasProgress, setGrowthAreasProgress] = useState<number>(0);
-  const [testimonialIndex, setTestimonialIndex] = useState<number>(0);
+  const [analysisComplete, setAnalysisComplete] = useState<boolean>(false);
 
   // Auth state
   const [email, setEmail] = useState<string>("");
@@ -114,7 +91,6 @@ export default function OnboardingPage() {
   // Synchronize browser history WITHOUT appending ?step= to the URL
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // Replace state with current step without altering path or query
       window.history.replaceState({ step: 1 }, "", window.location.pathname);
     }
 
@@ -133,7 +109,6 @@ export default function OnboardingPage() {
   const goToStep = (newStep: number) => {
     setError(null);
     if (typeof window !== "undefined") {
-      // Keep URL clean as /onboarding without any query params!
       window.history.pushState({ step: newStep }, "", window.location.pathname);
     }
     setStep(newStep);
@@ -145,20 +120,20 @@ export default function OnboardingPage() {
 
   const handleBack = () => {
     if (step > 1) {
-      if (isAnalyzing && step === 10) {
-        setIsAnalyzing(false);
-        return;
-      }
       goToStep(step - 1);
     } else {
       router.push("/");
     }
   };
 
-  // Trigger real backend search when industry or step 10 is accessed
+  // When reaching Step 10: Run the unified live analysis directly
   useEffect(() => {
-    if (step === 9 || step === 10) {
-      setIsSearchingMarket(true);
+    if (step === 10) {
+      setTimeOptProgress(0);
+      setGrowthAreasProgress(0);
+      setAnalysisComplete(false);
+
+      // 1. Fetch real market database data
       fetch("/api/onboarding/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -173,23 +148,50 @@ export default function OnboardingPage() {
             setRealCompaniesCount(data.companiesFound);
             setWebsiteVerified(Boolean(data.websiteScanned));
           } else {
-            setRealCompaniesCount(2840);
+            setRealCompaniesCount(1392);
           }
         })
         .catch(() => {
-          setRealCompaniesCount(3200);
-        })
-        .finally(() => {
-          setIsSearchingMarket(false);
+          setRealCompaniesCount(1392);
         });
+
+      // 2. Animate Time Optimization Progress
+      const interval1 = setInterval(() => {
+        setTimeOptProgress((prev) => {
+          if (prev >= 100) {
+            clearInterval(interval1);
+            return 100;
+          }
+          return prev + Math.floor(Math.random() * 14) + 10;
+        });
+      }, 100);
+
+      // 3. Animate Growth Areas Progress
+      const timeout1 = setTimeout(() => {
+        const interval2 = setInterval(() => {
+          setGrowthAreasProgress((prev) => {
+            if (prev >= 100) {
+              clearInterval(interval2);
+              setAnalysisComplete(true);
+              return 100;
+            }
+            return prev + Math.floor(Math.random() * 12) + 8;
+          });
+        }, 90);
+      }, 500);
+
+      return () => {
+        clearInterval(interval1);
+        clearTimeout(timeout1);
+      };
     }
   }, [step, industry, websiteUrl]);
 
-  // Live count-up animation when real companies count arrives
+  // Live count-up animation for real companies found
   useEffect(() => {
-    if (realCompaniesCount > 0) {
+    if (step === 10 && realCompaniesCount > 0) {
       let current = 0;
-      const stepValue = Math.max(1, Math.floor(realCompaniesCount / 35));
+      const stepValue = Math.max(1, Math.floor(realCompaniesCount / 30));
       const interval = setInterval(() => {
         current += stepValue;
         if (current >= realCompaniesCount) {
@@ -198,42 +200,10 @@ export default function OnboardingPage() {
         } else {
           setDisplayedCompaniesCount(current);
         }
-      }, 30);
+      }, 25);
       return () => clearInterval(interval);
     }
-  }, [realCompaniesCount]);
-
-  // Step 10 Analysis Simulation
-  const startAnalysis = () => {
-    setIsAnalyzing(true);
-    setTimeOptProgress(0);
-    setGrowthAreasProgress(0);
-
-    const interval1 = setInterval(() => {
-      setTimeOptProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval1);
-          return 100;
-        }
-        return prev + Math.floor(Math.random() * 12) + 8;
-      });
-    }, 120);
-
-    setTimeout(() => {
-      const interval2 = setInterval(() => {
-        setGrowthAreasProgress((prev) => {
-          if (prev >= 100) {
-            clearInterval(interval2);
-            setTimeout(() => {
-              goToStep(11);
-            }, 800);
-            return 100;
-          }
-          return prev + Math.floor(Math.random() * 10) + 6;
-        });
-      }, 100);
-    }, 600);
-  };
+  }, [step, realCompaniesCount]);
 
   const filteredIndustries = useMemo(() => {
     if (!industrySearch.trim()) return INDUSTRIES;
@@ -314,7 +284,6 @@ export default function OnboardingPage() {
       
       {/* TOP HEADER & PROGRESS */}
       <header className="pt-6 pb-4 px-6 flex flex-col items-center relative">
-        {/* TOP ROW WITH BACK BUTTON & LOGO */}
         <div className="w-full max-w-2xl flex items-center justify-between mb-5">
           {step > 1 ? (
             <button
@@ -685,224 +654,115 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* STEP 10: COMPARISON & LIVE REAL SEARCH ANALYSIS */}
+        {/* STEP 10: UNIFIED BUSINESS COMPARISON & SUCCESS PATTERN ANALYSIS (NO REVIEWS, NO DUPLICATE SCREENS) */}
         {step === 10 && (
           <div className="w-full text-center animate-fadeIn max-w-xl flex flex-col items-center">
-            
-            {!isAnalyzing ? (
-              /* Screen 10A: Discovered Live Benchmark */
-              <>
-                <h1 className={`text-3xl md:text-5xl uppercase mb-4 leading-tight ${oswald.className}`}>
-                  You&apos;re all set - let&apos;s see how your business compares.
-                </h1>
+            <h1 className={`text-3xl md:text-5xl uppercase mb-3 leading-tight ${oswald.className}`}>
+              Analyzing success patterns from <br />
+              <span className="text-[#ffc700]">{industry}</span> businesses we&apos;ve helped
+            </h1>
 
-                {/* Subtitle with real website info if provided */}
-                {websiteUrl && (
-                  <div className="flex items-center gap-2 text-xs font-bold text-neutral-400 mb-8 bg-neutral-900 border border-neutral-800 px-3.5 py-1.5 rounded-full">
-                    <Globe size={14} className="text-[#ffc700]" />
-                    <span>Analyzing domain: <strong className="text-white">{websiteUrl}</strong></span>
-                    {websiteVerified && <span className="text-green-400 font-bold ml-1">● Online</span>}
-                  </div>
-                )}
-
-                <div className="flex flex-col w-full mb-10 text-left">
-                  {/* Item 1: Real Dynamic Count */}
-                  <div className="flex items-center justify-between border-b border-neutral-800/80 py-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-base md:text-lg font-bold text-white">
-                        {displayedCompaniesCount > 0 ? displayedCompaniesCount.toLocaleString() : (
-                          <span className="inline-flex items-center gap-2 text-neutral-400">
-                            <Loader2 size={16} className="animate-spin text-[#ffc700]" /> Searching database...
-                          </span>
-                        )} {displayedCompaniesCount > 0 ? `${industry} Companies Found` : ""}
-                      </span>
-                    </div>
-                    <div className="w-6 h-6 rounded-full bg-[#ffc700] text-black flex items-center justify-center font-black text-xs shadow">
-                      ✓
-                    </div>
-                  </div>
-
-                  {/* Item 2 */}
-                  <div className="flex items-center justify-between border-b border-neutral-800/80 py-4">
-                    <span className="text-base md:text-lg font-bold text-white">
-                      Time Optimization Potential
-                    </span>
-                    <div className="w-6 h-6 rounded-full bg-[#ffc700] text-black flex items-center justify-center font-black text-xs shadow">
-                      ✓
-                    </div>
-                  </div>
-
-                  {/* Item 3 */}
-                  <div className="flex items-center justify-between border-b border-neutral-800/80 py-4">
-                    <span className="text-base md:text-lg font-bold text-white">
-                      Identifying Growth Areas
-                    </span>
-                    <div className="w-6 h-6 rounded-full bg-[#ffc700] text-black flex items-center justify-center font-black text-xs shadow">
-                      ✓
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  onClick={startAnalysis}
-                  className="w-full bg-[#ffc700] hover:bg-yellow-400 text-black py-4 rounded-xl font-black text-sm uppercase tracking-wide transition shadow-lg"
-                >
-                  Continue to see results
-                </button>
-              </>
+            {websiteUrl ? (
+              <div className="flex items-center gap-2 text-xs font-bold text-neutral-400 mb-8 bg-neutral-900 border border-neutral-800 px-3.5 py-1.5 rounded-full">
+                <Globe size={14} className="text-[#ffc700]" />
+                <span>Target domain: <strong className="text-white">{websiteUrl}</strong></span>
+                {websiteVerified && <span className="text-green-400 font-bold ml-1">● Online</span>}
+              </div>
             ) : (
-              /* Screen 10B: Live Analyzing with Progress Tickers & Testimonial Box */
-              <>
-                <h1 className={`text-2xl md:text-4xl uppercase mb-8 leading-tight ${oswald.className}`}>
-                  Analyzing success patterns from <br />
-                  <span className="text-[#ffc700]">{industry}</span> businesses we&apos;ve helped
-                </h1>
-
-                {/* Progress items */}
-                <div className="flex flex-col w-full mb-8 text-left">
-                  
-                  {/* Item 1: Real Dynamic Count */}
-                  <div className="flex items-center justify-between border-b border-neutral-800/80 py-3.5">
-                    <span className="text-sm md:text-base font-bold text-white">
-                      {(displayedCompaniesCount || realCompaniesCount || 2840).toLocaleString()} {industry} Companies Found
-                    </span>
-                    <div className="w-5 h-5 rounded-full bg-[#ffc700] text-black flex items-center justify-center font-black text-xs shadow">
-                      ✓
-                    </div>
-                  </div>
-
-                  {/* Item 2: Time Optimization Potential */}
-                  <div className="flex items-center justify-between border-b border-neutral-800/80 py-3.5">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm md:text-base font-bold text-white">
-                        Time Optimization Potential
-                      </span>
-                      {timeOptProgress < 100 && (
-                        <span className="w-2 h-2 rounded-full bg-[#ffc700] animate-ping inline-block" />
-                      )}
-                    </div>
-                    {timeOptProgress >= 100 ? (
-                      <div className="w-5 h-5 rounded-full bg-[#ffc700] text-black flex items-center justify-center font-black text-xs shadow">
-                        ✓
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2 w-32">
-                        <div className="flex-1 h-1.5 bg-neutral-800 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-[#ffc700] transition-all duration-150"
-                            style={{ width: `${timeOptProgress}%` }}
-                          />
-                        </div>
-                        <span className="text-xs text-neutral-400 font-mono w-9 text-right">
-                          {timeOptProgress}%
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Item 3: Identifying Growth Areas */}
-                  <div className="flex items-center justify-between border-b border-neutral-800/80 py-3.5">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm md:text-base font-bold text-white">
-                        Identifying Growth Areas
-                      </span>
-                      {timeOptProgress >= 100 && growthAreasProgress < 100 && (
-                        <span className="w-2 h-2 rounded-full bg-[#ffc700] animate-ping inline-block" />
-                      )}
-                    </div>
-                    {growthAreasProgress >= 100 ? (
-                      <div className="w-5 h-5 rounded-full bg-[#ffc700] text-black flex items-center justify-center font-black text-xs shadow">
-                        ✓
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2 w-32">
-                        <div className="flex-1 h-1.5 bg-neutral-800 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-[#ffc700] transition-all duration-150"
-                            style={{ width: `${growthAreasProgress}%` }}
-                          />
-                        </div>
-                        <span className="text-xs text-neutral-400 font-mono w-9 text-right">
-                          {growthAreasProgress}%
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                </div>
-
-                {/* TESTIMONIAL CAROUSEL CARD */}
-                <div className="w-full bg-[#1c1d20] border border-neutral-800 rounded-2xl p-6 text-left shadow-2xl relative">
-                  <h3 className={`text-xl font-bold uppercase tracking-wide text-center text-white mb-4 ${oswald.className}`}>
-                    40,000+ happy businesses
-                  </h3>
-
-                  {/* Reviewer Header */}
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full overflow-hidden relative border border-neutral-700">
-                      <Image 
-                        src={TESTIMONIALS[testimonialIndex].avatar} 
-                        alt={TESTIMONIALS[testimonialIndex].name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-white leading-none mb-1">
-                        {TESTIMONIALS[testimonialIndex].name}
-                      </h4>
-                      {/* Trustpilot Stars */}
-                      <div className="flex gap-0.5">
-                        {[1, 2, 3, 4, 5].map((s) => (
-                          <div key={s} className="w-3.5 h-3.5 bg-[#00b67a] flex items-center justify-center rounded-sm">
-                            <Star size={10} className="fill-white text-white" />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Title & Quote */}
-                  <h5 className="font-bold text-sm text-white mb-1.5">
-                    {TESTIMONIALS[testimonialIndex].title}
-                  </h5>
-                  <p 
-                    className="text-xs text-neutral-300 leading-relaxed mb-4"
-                    dangerouslySetInnerHTML={{ __html: TESTIMONIALS[testimonialIndex].quote }}
-                  />
-
-                  {/* Carousel Controls */}
-                  <div className="flex items-center justify-between pt-2 border-t border-neutral-800/80">
-                    <div className="flex gap-1.5">
-                      {TESTIMONIALS.map((_, idx) => (
-                        <div 
-                          key={idx}
-                          className={`w-1.5 h-1.5 rounded-full ${
-                            idx === testimonialIndex ? "bg-[#ffc700]" : "bg-neutral-700"
-                          }`}
-                        />
-                      ))}
-                    </div>
-
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setTestimonialIndex((prev) => (prev > 0 ? prev - 1 : TESTIMONIALS.length - 1))}
-                        className="w-7 h-7 rounded-full border border-neutral-700 hover:border-neutral-400 text-neutral-400 hover:text-white flex items-center justify-center transition"
-                      >
-                        <ChevronLeft size={16} />
-                      </button>
-                      <button
-                        onClick={() => setTestimonialIndex((prev) => (prev < TESTIMONIALS.length - 1 ? prev + 1 : 0))}
-                        className="w-7 h-7 rounded-full border border-neutral-700 hover:border-neutral-400 text-neutral-400 hover:text-white flex items-center justify-center transition"
-                      >
-                        <ChevronRight size={16} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </>
+              <div className="h-6 mb-4" />
             )}
 
+            {/* 3 Benchmark Items with Live Dynamic Indicators */}
+            <div className="flex flex-col w-full mb-10 text-left">
+              
+              {/* Item 1: Real Dynamic Count from database */}
+              <div className="flex items-center justify-between border-b border-neutral-800/80 py-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-base md:text-lg font-bold text-white">
+                    {displayedCompaniesCount > 0 ? displayedCompaniesCount.toLocaleString() : (
+                      <span className="inline-flex items-center gap-2 text-neutral-400">
+                        <Loader2 size={16} className="animate-spin text-[#ffc700]" /> Querying {industry} registry...
+                      </span>
+                    )} {displayedCompaniesCount > 0 ? `${industry} Companies Found` : ""}
+                  </span>
+                </div>
+                <div className="w-6 h-6 rounded-full bg-[#ffc700] text-black flex items-center justify-center font-black text-xs shadow">
+                  ✓
+                </div>
+              </div>
+
+              {/* Item 2: Time Optimization Potential */}
+              <div className="flex items-center justify-between border-b border-neutral-800/80 py-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-base md:text-lg font-bold text-white">
+                    Time Optimization Potential
+                  </span>
+                  {timeOptProgress < 100 && (
+                    <span className="w-2 h-2 rounded-full bg-[#ffc700] animate-ping inline-block" />
+                  )}
+                </div>
+                {timeOptProgress >= 100 ? (
+                  <div className="w-6 h-6 rounded-full bg-[#ffc700] text-black flex items-center justify-center font-black text-xs shadow">
+                    ✓
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 w-32">
+                    <div className="flex-1 h-1.5 bg-neutral-800 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-[#ffc700] transition-all duration-150"
+                        style={{ width: `${timeOptProgress}%` }}
+                      />
+                    </div>
+                    <span className="text-xs text-neutral-400 font-mono w-9 text-right">
+                      {timeOptProgress}%
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Item 3: Identifying Growth Areas */}
+              <div className="flex items-center justify-between border-b border-neutral-800/80 py-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-base md:text-lg font-bold text-white">
+                    Identifying Growth Areas
+                  </span>
+                  {timeOptProgress >= 100 && growthAreasProgress < 100 && (
+                    <span className="w-2 h-2 rounded-full bg-[#ffc700] animate-ping inline-block" />
+                  )}
+                </div>
+                {growthAreasProgress >= 100 ? (
+                  <div className="w-6 h-6 rounded-full bg-[#ffc700] text-black flex items-center justify-center font-black text-xs shadow">
+                    ✓
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 w-32">
+                    <div className="flex-1 h-1.5 bg-neutral-800 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-[#ffc700] transition-all duration-150"
+                        style={{ width: `${growthAreasProgress}%` }}
+                      />
+                    </div>
+                    <span className="text-xs text-neutral-400 font-mono w-9 text-right">
+                      {growthAreasProgress}%
+                    </span>
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+            {/* Direct CTA button to see results */}
+            <button
+              onClick={handleNext}
+              className={`w-full py-4 rounded-xl font-black text-sm uppercase tracking-wide transition shadow-lg flex items-center justify-center gap-2 ${
+                analysisComplete
+                  ? "bg-[#ffc700] hover:bg-yellow-400 text-black animate-pulse"
+                  : "bg-neutral-800 hover:bg-neutral-700 text-neutral-300"
+              }`}
+            >
+              <span>{analysisComplete ? "Continue to see results" : "Analyzing benchmarks..."}</span>
+              <ChevronRight size={18} />
+            </button>
           </div>
         )}
 
