@@ -509,8 +509,8 @@ export default function AgentDetailPage() {
         </div>
         
         {/* INFINITE SCROLLING MARQUEE MATCHING LANDING PAGE */}
-        <div className="w-full overflow-hidden relative">
-          <div className="animate-marquee flex gap-6">
+        <div className="w-full overflow-hidden relative py-6">
+          <div className="animate-marquee flex gap-6 py-2">
             {[...teamList, ...teamList].map((item, i) => (
               <Link key={`team-marquee-${i}`} href={item.path} className="inline-block transition transform hover:scale-105 active:scale-95 shrink-0">
                 <div className={`w-[160px] h-[160px] rounded-2xl border-4 border-black ${item.color} shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden`}>
