@@ -417,34 +417,36 @@ export default function SettingsPage() {
       </div>
 
       {/* 2. TOP NAVBAR */}
-      <nav className="bg-[#141519]/80 backdrop-blur-xl border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-50 shadow-md">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/"
-            className="bg-black/50 text-white p-2 rounded-xl hover:bg-[#ffc700] hover:text-black transition border border-white/15 flex items-center justify-center shrink-0 shadow-sm"
-            aria-label="Back to Home"
-          >
-            <ArrowLeft size={18} />
-          </Link>
-          <div>
-            <h1 className={`text-2xl md:text-3xl font-black uppercase tracking-wider ${oswald.className} flex items-center gap-2`}>
-              <span>SETTINGS</span>
-            </h1>
+      <nav className="bg-[#141519]/80 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50 shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between w-full">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/"
+              className="bg-black/50 text-white p-2 rounded-xl hover:bg-[#ffc700] hover:text-black transition border border-white/15 flex items-center justify-center shrink-0 shadow-sm"
+              aria-label="Back to Home"
+            >
+              <ArrowLeft size={18} />
+            </Link>
+            <div>
+              <h1 className={`text-2xl md:text-3xl font-black uppercase tracking-wider ${oswald.className} flex items-center gap-2 text-white`}>
+                <span>SETTINGS</span>
+              </h1>
+            </div>
           </div>
-        </div>
 
-        {/* Live agent switcher header badge */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleNextAgent}
-            className="hidden md:flex items-center gap-2 bg-black/50 hover:bg-black/70 border border-white/15 text-neutral-300 hover:text-white px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow-sm"
-          >
-            <Shuffle size={13} className="text-[#ffc700]" />
-            <span>Agent: <strong className="text-white">{currentAgent.name}</strong></span>
-          </button>
+          {/* Live agent switcher header badge */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleNextAgent}
+              className="hidden md:flex items-center gap-2 bg-black/50 hover:bg-black/70 border border-white/15 text-neutral-300 hover:text-white px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow-sm"
+            >
+              <Shuffle size={13} className="text-[#ffc700]" />
+              <span>Agent: <strong className="text-white">{currentAgent.name}</strong></span>
+            </button>
 
-          <div className="bg-[#ffc700] text-black border border-yellow-300 px-3.5 py-1.5 rounded-xl font-black text-xs uppercase tracking-wider shadow-sm">
-            {plan !== "free" ? plan.replace("_", " ") : "Free Tier"}
+            <div className="bg-[#ffc700] text-black border border-yellow-300 px-3.5 py-1.5 rounded-xl font-black text-xs uppercase tracking-wider shadow-sm">
+              {plan !== "free" ? plan.replace("_", " ") : "Free Tier"}
+            </div>
           </div>
         </div>
       </nav>

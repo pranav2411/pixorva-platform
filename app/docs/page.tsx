@@ -849,20 +849,22 @@ export default function DocsPage() {
     <div className={`min-h-screen bg-[#0e0f12] text-white ${inter.className} flex flex-col selection:bg-[#ffc700] selection:text-black`}>
       
       {/* Top Header */}
-      <header className="bg-[#141519]/90 backdrop-blur-xl border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-50 shadow-md">
-        <div className="flex items-center gap-3">
-          <Link href="/" className="bg-black/50 text-white p-2 rounded-xl hover:bg-[#ffc700] hover:text-black transition border border-white/15 shadow-sm flex items-center justify-center shrink-0">
-            <ArrowLeft size={16} />
-          </Link>
-          <h1 className={`text-2xl font-black uppercase tracking-wider text-white ${oswald.className}`}>Developer Docs</h1>
-        </div>
-        <div className="bg-[#ffc700] text-black border border-yellow-300 px-3 py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wider shadow-sm">
-          Live Spec v1.4.0
+      <header className="bg-[#141519]/90 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50 shadow-md">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between w-full">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="bg-black/50 text-white p-2 rounded-xl hover:bg-[#ffc700] hover:text-black transition border border-white/15 shadow-sm flex items-center justify-center shrink-0">
+              <ArrowLeft size={16} />
+            </Link>
+            <h1 className={`text-2xl font-black uppercase tracking-wider text-white ${oswald.className}`}>Developer Docs</h1>
+          </div>
+          <div className="bg-[#ffc700] text-black border border-yellow-300 px-3 py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wider shadow-sm">
+            Live Spec v1.4.0
+          </div>
         </div>
       </header>
 
       {/* Main Container */}
-      <div className="flex-grow flex flex-col md:flex-row max-w-7xl mx-auto w-full p-4 md:p-8 gap-6">
+      <div className="flex-grow flex flex-col md:flex-row max-w-7xl mx-auto w-full px-6 py-6 md:py-8 gap-6">
         
         {/* Mobile Backdrop overlay */}
         {sidebarOpen && (
