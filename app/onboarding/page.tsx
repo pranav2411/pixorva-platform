@@ -83,8 +83,7 @@ export default function OnboardingPage() {
   // Auth state
   const [email, setEmail] = useState<string>("");
   const [fullName, setFullName] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [magicLinkSent, setMagicLinkSent] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -246,20 +245,16 @@ export default function OnboardingPage() {
       setError("Please enter your name");
       return;
     }
-    if (!password || password.length < 6) {
-      setError("Password must be at least 6 characters");
-      return;
-    }
 
     setLoading(true);
     setError(null);
 
     try {
       const supabase = createClient();
-      const { data, error: signUpError } = await supabase.auth.signUp({
+      const { error: otpError } = await supabase.auth.signInWithOtp({
         email: email.trim(),
-        password,
         options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=/trial`,
           data: {
             full_name: fullName.trim(),
             industry,
@@ -269,12 +264,13 @@ export default function OnboardingPage() {
         }
       });
 
-      if (signUpError) throw signUpError;
+      if (otpError) throw otpError;
 
-      showToast("Account created successfully! Welcome to Pixorva.", "success");
-      router.push("/trial");
+      setMagicLinkSent(true);
+      showToast("Magic link sent! Please check your email inbox.", "success");
     } catch (err: any) {
-      setError(err.message || "Failed to create account");
+      setError(err.message || "Failed to send magic link");
+    } finally {
       setLoading(false);
     }
   };
@@ -842,90 +838,96 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* STEP 12: REGISTER / PASSWORD */}
+        {/* STEP 12: REGISTER / MAGIC LINK DISPATCH (NO PASSWORD ASKED) */}
         {step === 12 && (
           <div className="w-full text-center animate-fadeIn max-w-md">
-            <h1 className={`text-3xl md:text-4xl uppercase mb-2 ${oswald.className}`}>
-              Reach your goals with Pixorva
-            </h1>
-            <p className="text-sm text-neutral-400 mb-6">
-              Sign up to see how AI employees can help you succeed
-            </p>
+            {!magicLinkSent ? (
+              <>
+                <h1 className={`text-3xl md:text-4xl uppercase mb-2 ${oswald.className}`}>
+                  Reach your goals with Pixorva
+                </h1>
+                <p className="text-sm text-neutral-400 mb-6">
+                  Sign up to see how AI employees can help you succeed
+                </p>
 
-            {error && (
-              <div className="bg-red-950/50 border border-red-500 text-red-200 px-4 py-2.5 rounded-xl text-xs mb-5 text-left">
-                {error}
-              </div>
-            )}
+                {error && (
+                  <div className="bg-red-950/50 border border-red-500 text-red-200 px-4 py-2.5 rounded-xl text-xs mb-5 text-left">
+                    {error}
+                  </div>
+                )}
 
-            {/* EMAIL PILL BADGE */}
-            <div className="flex items-center gap-3 bg-neutral-900 border border-neutral-800 px-4 py-2.5 rounded-xl mb-6 text-left">
-              <div className="w-7 h-7 rounded-full bg-neutral-700 text-white font-bold text-xs flex items-center justify-center uppercase">
-                {email[0] || "U"}
-              </div>
-              <span className="text-sm font-semibold text-neutral-300 truncate">
-                {email}
-              </span>
-            </div>
+                {/* EMAIL PILL BADGE */}
+                <div className="flex items-center gap-3 bg-neutral-900 border border-neutral-800 px-4 py-2.5 rounded-xl mb-6 text-left">
+                  <div className="w-7 h-7 rounded-full bg-neutral-700 text-white font-bold text-xs flex items-center justify-center uppercase">
+                    {email[0] || "U"}
+                  </div>
+                  <span className="text-sm font-semibold text-neutral-300 truncate">
+                    {email.toUpperCase()}
+                  </span>
+                </div>
 
-            {/* REGISTER FORM */}
-            <form onSubmit={handleRegister} className="flex flex-col gap-4 text-left">
-              <div>
-                <label className="text-xs text-neutral-400 font-bold block mb-1.5">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="Your name"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required
-                  className="w-full bg-neutral-900 border border-neutral-700 focus:border-[#ffc700] rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition placeholder:text-neutral-500"
-                />
-              </div>
+                {/* REGISTER FORM WITHOUT PASSWORD */}
+                <form onSubmit={handleRegister} className="flex flex-col gap-4 text-left">
+                  <div>
+                    <label className="text-xs text-neutral-400 font-bold block mb-1.5">
+                      Name
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Your name"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required
+                      autoFocus
+                      className="w-full bg-neutral-900 border border-neutral-700 focus:border-[#ffc700] rounded-xl px-4 py-3.5 text-white text-sm focus:outline-none transition placeholder:text-neutral-500"
+                    />
+                  </div>
 
-              <div>
-                <label className="text-xs text-neutral-400 font-bold block mb-1.5">
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="w-full bg-neutral-900 border border-neutral-700 focus:border-[#ffc700] rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition placeholder:text-neutral-500 pr-10"
-                  />
                   <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition"
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-[#ffc700] hover:bg-yellow-400 text-black py-4 rounded-xl font-black text-sm uppercase tracking-wide transition shadow-lg mt-3 flex items-center justify-center gap-2 disabled:opacity-50"
                   >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    {loading && <Loader2 size={16} className="animate-spin" />}
+                    <span>Register</span>
+                  </button>
+                </form>
+
+                <div className="mt-6 flex justify-start">
+                  <button
+                    onClick={handleBack}
+                    className="text-xs font-bold text-neutral-400 hover:text-white flex items-center gap-1.5 transition"
+                  >
+                    <ArrowLeft size={14} />
+                    <span>Back</span>
                   </button>
                 </div>
+              </>
+            ) : (
+              /* MAGIC LINK SENT SUCCESS CONFIRMATION */
+              <div className="py-4">
+                <div className="w-16 h-16 bg-[#ffc700]/10 border-2 border-[#ffc700] rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl">
+                  ✉️
+                </div>
+                <h2 className={`text-3xl md:text-4xl uppercase mb-3 leading-tight ${oswald.className}`}>
+                  Check your inbox!
+                </h2>
+                <p className="text-sm text-neutral-300 mb-6 leading-relaxed">
+                  We sent a magic sign-in link to <strong className="text-[#ffc700]">{email}</strong>. Click the link in your email to instantly access your Pixorva AI workforce.
+                </p>
+                <div className="p-4 bg-neutral-900 border border-neutral-800 rounded-xl mb-6 text-xs text-neutral-400 text-left">
+                  💡 No password needed! If you don&apos;t see the email within 1 minute, be sure to check your spam/junk folder.
+                </div>
+                <button
+                  onClick={handleRegister}
+                  disabled={loading}
+                  className="w-full bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-white py-3.5 rounded-xl font-bold text-xs uppercase tracking-wide transition flex items-center justify-center gap-2"
+                >
+                  {loading && <Loader2 size={14} className="animate-spin" />}
+                  <span>Resend Magic Link</span>
+                </button>
               </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-[#ffc700] hover:bg-yellow-400 text-black py-3.5 rounded-xl font-black text-sm uppercase tracking-wide transition shadow-lg mt-2 flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                {loading && <Loader2 size={16} className="animate-spin" />}
-                <span>Register</span>
-              </button>
-            </form>
-
-            <div className="mt-6 flex justify-start">
-              <button
-                onClick={handleBack}
-                className="text-xs font-bold text-neutral-400 hover:text-white flex items-center gap-1.5 transition"
-              >
-                <ArrowLeft size={14} />
-                <span>Back</span>
-              </button>
-            </div>
+            )}
           </div>
         )}
 
@@ -938,3 +940,4 @@ export default function OnboardingPage() {
     </div>
   );
 }
+
