@@ -26,13 +26,31 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // 1. Retrieve real API Keys
+    // 1. Retrieve user profile
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    // 2. Retrieve all active agents for this user
+    const { data: allAgents } = await supabase
+      .from('agents')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+
+    const agentsList = allAgents || [];
+    const subscriptionAgents = agentsList.filter(a => !a.is_paid_individually);
+    const paidAgents = agentsList;
+
+    // 3. Retrieve real API Keys
     const apiKeys = await LocalDb.getApiKeys(supabase, user.id);
 
-    // 2. Retrieve real Billing Invoices
+    // 4. Retrieve real Billing Invoices
     const payments = await LocalDb.getPayments(supabase, user.id);
 
-    // 3. Retrieve real LLM telemetry usage (Calculate dynamically from tasks list)
+    // 5. Retrieve LLM usage
     const { data: totalRuns } = await supabase
       .from('tasks')
       .select('result')
@@ -46,11 +64,10 @@ export async function GET() {
       runHours: totalRuns ? totalRuns.length * 0.05 : 0
     };
 
-    // 4. Retrieve current caller session details (IP Address & User-Agent)
+    // 6. Retrieve session details
     const userAgentRaw = headersList.get('user-agent') || 'Unknown Device';
     const clientIp = headersList.get('x-forwarded-for') || headersList.get('x-real-ip') || '127.0.0.1';
 
-    // Parse user agent simply for display
     let deviceName = 'Web Browser';
     if (/macintosh|mac os x/i.test(userAgentRaw)) deviceName = 'Chrome Browser • macOS';
     else if (/windows/i.test(userAgentRaw)) deviceName = 'Chrome Browser • Windows';
@@ -58,19 +75,23 @@ export async function GET() {
     else if (/android/i.test(userAgentRaw)) deviceName = 'Chrome Mobile • Android';
     else if (/linux/i.test(userAgentRaw)) deviceName = 'Firefox Browser • Linux';
 
-    // 5. Parse location (mock location lookup from IP for realism)
     let location = 'Jaipur, Rajasthan, India';
     if (clientIp.startsWith('127.') || clientIp.includes('::1')) {
       location = 'Local Development Session';
     }
 
-    // 6. Return dynamic payload
     return NextResponse.json({
       success: true,
+      email: user.email || profile?.email || '',
+      fullName: profile?.full_name || user.user_metadata?.full_name || '',
+      userId: user.id,
+      plan: profile?.plan || 'free',
+      paidAgents,
+      subscriptionAgents,
       apiKeys,
       payments,
       usage,
-      session: {
+      activeSession: {
         device: deviceName,
         ip: clientIp.split(',')[0].trim(),
         location,

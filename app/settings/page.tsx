@@ -455,65 +455,11 @@ export default function SettingsPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-          {/* LEFT RAIL / SIDEBAR (4 Columns) */}
-          <aside className="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
+          {/* LEFT RAIL / SIDEBAR (3 Columns - STATIC, NOT SCROLLABLE) */}
+          <aside className="lg:col-span-3 space-y-6">
             
-            {/* LIVE AI WORKFORCE AGENT SPOTLIGHT CARD */}
-            <div className="bg-[#16171b]/95 backdrop-blur-xl border border-neutral-800 rounded-3xl p-5 shadow-2xl overflow-hidden relative group">
-              
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2 text-xs font-bold text-neutral-400">
-                  <span className="w-2 h-2 rounded-full bg-green-400 animate-ping inline-block" />
-                  <span className="text-green-400 uppercase tracking-wider text-[11px] font-black">Live AI Workforce</span>
-                </div>
-                <button
-                  onClick={handleNextAgent}
-                  title="Switch video to next agent"
-                  className="p-1.5 rounded-lg bg-neutral-900 border border-neutral-700 hover:border-[#ffc700] text-neutral-400 hover:text-[#ffc700] transition flex items-center gap-1 text-[11px] font-bold"
-                >
-                  <Shuffle size={13} />
-                  <span>Next</span>
-                </button>
-              </div>
-
-              {/* Video Player */}
-              <div className="relative rounded-2xl overflow-hidden aspect-video sm:aspect-square w-full border border-neutral-700/80 shadow-inner bg-black mb-4">
-                <video
-                  key={currentAgent.video}
-                  src={currentAgent.video}
-                  poster={currentAgent.poster}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
-                <div className="absolute bottom-3 left-3 right-3 text-left pointer-events-none">
-                  <h3 className={`text-xl font-black uppercase text-white ${oswald.className}`}>
-                    {currentAgent.name}
-                  </h3>
-                  <span className="text-xs font-bold text-[#ffc700] uppercase tracking-wide">
-                    {currentAgent.role}
-                  </span>
-                </div>
-              </div>
-
-              <p className="text-xs text-neutral-400 leading-relaxed mb-4">
-                {currentAgent.desc}
-              </p>
-
-              <button
-                onClick={handleNextAgent}
-                className="w-full bg-neutral-900 hover:bg-[#ffc700] hover:text-black border border-neutral-700 hover:border-[#ffc700] text-white py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition flex items-center justify-center gap-2 shadow-sm"
-              >
-                <Shuffle size={14} />
-                <span>Shuffle AI Employee Video</span>
-              </button>
-            </div>
-
-            {/* QUICK JUMP NAVIGATION */}
-            <div className="bg-[#16171b]/95 backdrop-blur-xl border border-neutral-800 rounded-3xl p-5 shadow-xl hidden lg:block">
+            {/* QUICK JUMP NAVIGATION (STATIC) */}
+            <div className="bg-[#16171b]/95 backdrop-blur-xl border border-neutral-800 rounded-3xl p-5 shadow-xl">
               <h4 className="text-xs font-black uppercase tracking-wider text-neutral-400 mb-3 px-2">
                 Quick Jump
               </h4>
@@ -549,10 +495,23 @@ export default function SettingsPage() {
               </nav>
             </div>
 
+            {/* ACTIVE TEAM SUMMARY BADGE */}
+            <div className="bg-[#16171b]/95 backdrop-blur-xl border border-neutral-800 rounded-3xl p-5 shadow-xl">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold uppercase text-neutral-400">My Active Team</span>
+                <span className="text-xs font-bold uppercase bg-green-950 text-green-400 border border-green-800 px-2.5 py-0.5 rounded-full">
+                  {paidAgents.length} Running
+                </span>
+              </div>
+              <p className="text-[11px] text-neutral-500 leading-relaxed">
+                All {paidAgents.length} provisioned AI staff members are active in your workspace.
+              </p>
+            </div>
+
           </aside>
 
-          {/* RIGHT RAIL / MAIN CONTENT (8 Columns) */}
-          <div className="lg:col-span-8 space-y-8">
+          {/* RIGHT RAIL / MAIN CONTENT (9 Columns) */}
+          <div className="lg:col-span-9 space-y-8">
 
             {/* SECTION 1: PROFILE DETAILS */}
             <section id="profile" className="bg-[#16171b]/95 backdrop-blur-xl border border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-2xl scroll-mt-24">
