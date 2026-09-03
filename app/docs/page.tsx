@@ -798,6 +798,13 @@ export default function DocsPage() {
     return articles.find(a => a.id === activeTab) || articles[0];
   }, [activeTab]);
 
+  const selectedAgentName = useMemo(() => {
+    if (activeArticle.category !== 'agents') return null;
+    const raw = activeArticle.id.replace('agent-', '').trim();
+    if (!raw) return null;
+    return raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
+  }, [activeArticle]);
+
   return (
     <div className={`min-h-screen bg-gray-50 text-black ${inter.className} flex flex-col`}>
       
@@ -891,37 +898,56 @@ export default function DocsPage() {
         </aside>
 
         {/* Right content viewer */}
-        <main className="flex-grow bg-white border-4 border-black rounded-3xl p-6 md:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] min-h-[500px]">
-          {/* Breadcrumbs */}
-          <div className="flex items-center gap-1.5 text-[9px] font-black uppercase text-gray-400 mb-4">
-            <span>Pixorva</span>
-            <span>/</span>
-            <span>Docs</span>
-            <span>/</span>
-            <span className="text-yellow-600">
-              {categories.find(c => c.id === activeArticle.category)?.name}
-            </span>
-          </div>
-
-          {/* Article Header */}
-          <div className="flex items-start gap-4 border-b-2 border-gray-100 pb-6 mb-6">
-            <div className="bg-yellow-400 p-3 rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] shrink-0">
-              {activeArticle.icon}
+        <main className="flex-grow bg-white border-4 border-black rounded-3xl p-6 md:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] min-h-[500px] relative overflow-hidden">
+          {/* Ambient Video Player behind selected Agent Doc */}
+          {selectedAgentName && (
+            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
+              <video
+                key={selectedAgentName}
+                src={`/GIF/${selectedAgentName}.mp4`}
+                poster={`/GIF/${selectedAgentName}.png`}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover opacity-25 scale-100"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/65 to-white/85" />
             </div>
-            <div>
-              <h2 className={`text-3xl uppercase leading-tight font-black ${oswald.className}`}>
-                {activeArticle.title}
-              </h2>
-              <p className="text-xs text-gray-500 font-medium mt-1">
-                {activeArticle.subtitle}
-              </p>
-            </div>
-          </div>
+          )}
 
-          {/* Article Content */}
-          <article className="prose max-w-none text-sm text-gray-800">
-            {activeArticle.content}
-          </article>
+          <div className="relative z-10">
+            {/* Breadcrumbs */}
+            <div className="flex items-center gap-1.5 text-[9px] font-black uppercase text-gray-400 mb-4">
+              <span>Pixorva</span>
+              <span>/</span>
+              <span>Docs</span>
+              <span>/</span>
+              <span className="text-yellow-600">
+                {categories.find(c => c.id === activeArticle.category)?.name}
+              </span>
+            </div>
+
+            {/* Article Header */}
+            <div className="flex items-start gap-4 border-b-2 border-gray-100 pb-6 mb-6">
+              <div className="bg-yellow-400 p-3 rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] shrink-0">
+                {activeArticle.icon}
+              </div>
+              <div>
+                <h2 className={`text-3xl uppercase leading-tight font-black ${oswald.className}`}>
+                  {activeArticle.title}
+                </h2>
+                <p className="text-xs text-gray-500 font-medium mt-1">
+                  {activeArticle.subtitle}
+                </p>
+              </div>
+            </div>
+
+            {/* Article Content */}
+            <article className="prose max-w-none text-sm text-gray-800">
+              {activeArticle.content}
+            </article>
+          </div>
         </main>
       </div>
 
