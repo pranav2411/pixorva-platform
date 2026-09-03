@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import AgentAvatar from '../components/AgentAvatar';
 import { 
@@ -40,6 +40,15 @@ export default function DocsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedText, setCopiedText] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const selectTab = (id: string) => {
+    setActiveTab(id);
+    setSidebarOpen(false);
+    try {
+      localStorage.setItem('pixorva_docs_active_tab', id);
+      window.history.replaceState(null, '', `#${id}`);
+    } catch (e) {}
+  };
 
   const handleCopyCode = (code: string, id: string) => {
     navigator.clipboard.writeText(code);
@@ -805,6 +814,37 @@ export default function DocsPage() {
     return raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
   }, [activeArticle]);
 
+  // Sync activeTab with URL hash and localStorage on mount
+  useEffect(() => {
+    // 1. Check URL hash first
+    const hash = window.location.hash.replace('#', '').trim();
+    if (hash && articles.some(a => a.id === hash)) {
+      setActiveTab(hash);
+      return;
+    }
+
+    // 2. Check localStorage next
+    try {
+      const saved = localStorage.getItem('pixorva_docs_active_tab');
+      if (saved && articles.some(a => a.id === saved)) {
+        setActiveTab(saved);
+        window.history.replaceState(null, '', `#${saved}`);
+      }
+    } catch (e) {}
+  }, []);
+
+  // Listen for browser back/forward hash navigation
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '').trim();
+      if (hash && articles.some(a => a.id === hash)) {
+        setActiveTab(hash);
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
   return (
     <div className={`min-h-screen bg-[#0e0f12] text-white ${inter.className} flex flex-col selection:bg-[#ffc700] selection:text-black`}>
       
@@ -875,10 +915,7 @@ export default function DocsPage() {
                     {catArticles.map(art => (
                       <li key={art.id}>
                         <button
-                          onClick={() => {
-                            setActiveTab(art.id);
-                            setSidebarOpen(false);
-                          }}
+                          onClick={() => selectTab(art.id)}
                           className={`w-full text-left py-1.5 px-2 rounded-lg text-xs font-bold transition flex items-center justify-between ${
                             activeTab === art.id 
                               ? 'bg-[#ffc700] text-black border border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' 
@@ -924,7 +961,7 @@ export default function DocsPage() {
               </Link>
               <span>/</span>
               <button 
-                onClick={() => { setActiveTab('intro'); setSearchQuery(''); }}
+                onClick={() => { selectTab('intro'); setSearchQuery(''); }}
                 className="hover:text-[#ffc700] transition uppercase font-black"
               >
                 Docs
@@ -948,7 +985,7 @@ export default function DocsPage() {
                 </Link>
               ) : (
                 <button 
-                  onClick={() => setActiveTab('intro')}
+                  onClick={() => selectTab('intro')}
                   className="text-[#ffc700] hover:underline transition font-black uppercase"
                 >
                   {categories.find(c => c.id === activeArticle.category)?.name}
