@@ -7,7 +7,7 @@ import { Oswald, Inter } from "next/font/google";
 import {
   ArrowLeft, Save, User as UserIcon, Loader2, Zap, X, Trash2,
   Shield, User, CreditCard, Key, Activity, Smartphone, Shuffle,
-  Check, Globe, ExternalLink, Code2, Copy, AlertTriangle
+  Check, Globe, ExternalLink, Code2, Copy, AlertTriangle, Pencil, Plus
 } from "lucide-react";
 import Link from "next/link";
 import { showToast } from "../utils/Toast";
@@ -37,6 +37,14 @@ export default function SettingsPage() {
   const [email, setEmail] = useState("");
   const [userId, setUserId] = useState("");
   const [plan, setPlan] = useState("free");
+
+  // --- CONNECTED WEBSITES ---
+  const [websites, setWebsites] = useState<any[]>([]);
+  const [newWebsiteUrl, setNewWebsiteUrl] = useState("");
+  const [addingWebsite, setAddingWebsite] = useState(false);
+  const [editingWebsiteId, setEditingWebsiteId] = useState<string | null>(null);
+  const [editingWebsiteUrl, setEditingWebsiteUrl] = useState("");
+  const [savingWebsite, setSavingWebsite] = useState(false);
 
   const [subscriptionAgents, setSubscriptionAgents] = useState<any[]>([]);
   const [paidAgents, setPaidAgents] = useState<any[]>([]);
@@ -101,6 +109,7 @@ export default function SettingsPage() {
         setSubscriptionAgents(data.subscriptionAgents || []);
         setPaidAgents(data.paidAgents || []);
         setApiKeys(data.apiKeys || []);
+        setWebsites(data.websites || []);
         setPayments(data.payments || []);
         setActiveSession(data.activeSession || null);
 
@@ -138,6 +147,84 @@ export default function SettingsPage() {
       showToast("Profile updated successfully!", "success");
     }
     setSaving(false);
+  };
+
+  // --- WEBSITE CRUD HANDLERS ---
+  const handleAddWebsite = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!newWebsiteUrl.trim()) {
+      showToast("Please enter a website URL", "error");
+      return;
+    }
+    setSavingWebsite(true);
+    try {
+      const res = await fetch("/api/settings/websites", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: newWebsiteUrl.trim() })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to add website");
+      }
+      setWebsites((prev) => [...prev, data.website]);
+      setNewWebsiteUrl("");
+      setAddingWebsite(false);
+      showToast("Website added successfully!", "success");
+    } catch (err: any) {
+      showToast(err.message || "Failed to add website", "error");
+    } finally {
+      setSavingWebsite(false);
+    }
+  };
+
+  const handleUpdateWebsite = async (id: string) => {
+    if (!editingWebsiteUrl.trim()) {
+      showToast("Please enter a valid website URL", "error");
+      return;
+    }
+    setSavingWebsite(true);
+    try {
+      const res = await fetch("/api/settings/websites", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, url: editingWebsiteUrl.trim() })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to update website");
+      }
+      let finalUrl = editingWebsiteUrl.trim();
+      if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
+        finalUrl = `https://${finalUrl}`;
+      }
+      setWebsites((prev) => prev.map((w) => (w.id === id ? { ...w, url: finalUrl } : w)));
+      setEditingWebsiteId(null);
+      setEditingWebsiteUrl("");
+      showToast("Website updated successfully!", "success");
+    } catch (err: any) {
+      showToast(err.message || "Failed to update website", "error");
+    } finally {
+      setSavingWebsite(false);
+    }
+  };
+
+  const handleDeleteWebsite = async (id: string) => {
+    try {
+      const res = await fetch("/api/settings/websites", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to delete website");
+      }
+      setWebsites((prev) => prev.filter((w) => w.id !== id));
+      showToast("Website removed!", "success");
+    } catch (err: any) {
+      showToast(err.message || "Failed to delete website", "error");
+    }
   };
 
   // 2. Cancel Bundled Subscription
@@ -557,6 +644,159 @@ export default function SettingsPage() {
                   {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
                   <span>Save Changes</span>
                 </button>
+
+                {/* YOUR WEBSITES SECTION */}
+                <div className="pt-6 border-t border-white/10">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-neutral-300">
+                        Connected Websites
+                      </label>
+                      <p className="text-[11px] text-neutral-400 mt-0.5">
+                        Websites linked during onboarding or added here for AI workforce domain knowledge.
+                      </p>
+                    </div>
+                    {!addingWebsite && (
+                      <button
+                        onClick={() => setAddingWebsite(true)}
+                        className="bg-black/60 hover:bg-[#ffc700] hover:text-black text-neutral-200 border border-white/15 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm"
+                      >
+                        <Plus size={14} />
+                        <span>Add Website</span>
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Add Website Form */}
+                  {addingWebsite && (
+                    <form onSubmit={handleAddWebsite} className="p-4 bg-black/60 border border-white/15 rounded-2xl mb-4 space-y-3 animate-in fade-in duration-200">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-black uppercase text-[#ffc700]">Add New Website</span>
+                        <button
+                          type="button"
+                          onClick={() => { setAddingWebsite(false); setNewWebsiteUrl(""); }}
+                          className="text-neutral-400 hover:text-white transition"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <div className="relative flex-grow">
+                          <Globe size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-500" />
+                          <input
+                            type="text"
+                            value={newWebsiteUrl}
+                            onChange={(e) => setNewWebsiteUrl(e.target.value)}
+                            placeholder="https://example.com"
+                            className="w-full pl-10 pr-4 py-2.5 bg-black/80 border border-white/20 rounded-xl text-white text-xs placeholder-neutral-500 focus:outline-none focus:border-[#ffc700] transition"
+                            autoFocus
+                          />
+                        </div>
+                        <button
+                          type="submit"
+                          disabled={savingWebsite || !newWebsiteUrl.trim()}
+                          className="bg-[#ffc700] hover:bg-yellow-400 text-black px-5 py-2.5 rounded-xl font-black uppercase text-xs tracking-wider transition disabled:opacity-50 flex items-center justify-center gap-1.5 shadow-sm shrink-0"
+                        >
+                          {savingWebsite ? <Loader2 className="animate-spin" size={14} /> : <Plus size={14} />}
+                          <span>Add</span>
+                        </button>
+                      </div>
+                    </form>
+                  )}
+
+                  {/* List of Websites */}
+                  <div className="space-y-2.5">
+                    {websites.length === 0 ? (
+                      <div className="p-5 border border-dashed border-white/15 rounded-2xl text-center bg-black/20">
+                        <Globe size={24} className="mx-auto text-neutral-500 mb-2 opacity-60" />
+                        <p className="text-xs text-neutral-400 font-medium">No websites connected yet.</p>
+                        <p className="text-[11px] text-neutral-500 mt-1">Add your business or portfolio website so your AI team knows your domain.</p>
+                      </div>
+                    ) : (
+                      websites.map((site) => {
+                        const isEditing = editingWebsiteId === site.id;
+                        return (
+                          <div
+                            key={site.id}
+                            className="p-3.5 bg-black/40 border border-white/10 hover:border-white/20 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition"
+                          >
+                            {isEditing ? (
+                              <div className="flex-grow flex items-center gap-2">
+                                <Globe size={16} className="text-[#ffc700] shrink-0" />
+                                <input
+                                  type="text"
+                                  value={editingWebsiteUrl}
+                                  onChange={(e) => setEditingWebsiteUrl(e.target.value)}
+                                  className="flex-grow px-3 py-1.5 bg-black border border-white/20 rounded-lg text-xs text-white focus:outline-none focus:border-[#ffc700]"
+                                  autoFocus
+                                />
+                                <button
+                                  onClick={() => handleUpdateWebsite(site.id)}
+                                  disabled={savingWebsite}
+                                  className="bg-emerald-500 text-black p-1.5 rounded-lg hover:bg-emerald-400 transition"
+                                  title="Save"
+                                >
+                                  <Check size={14} />
+                                </button>
+                                <button
+                                  onClick={() => { setEditingWebsiteId(null); setEditingWebsiteUrl(""); }}
+                                  className="bg-neutral-800 text-neutral-300 p-1.5 rounded-lg hover:bg-neutral-700 transition"
+                                  title="Cancel"
+                                >
+                                  <X size={14} />
+                                </button>
+                              </div>
+                            ) : (
+                              <>
+                                <div className="flex items-center gap-3 overflow-hidden">
+                                  <div className="bg-[#ffc700]/15 text-[#ffc700] p-2 rounded-xl border border-[#ffc700]/25 shrink-0">
+                                    <Globe size={16} />
+                                  </div>
+                                  <div className="overflow-hidden">
+                                    <a
+                                      href={site.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-xs font-bold text-white hover:text-[#ffc700] transition flex items-center gap-1.5 truncate"
+                                    >
+                                      <span className="truncate">{site.url}</span>
+                                      <ExternalLink size={12} className="opacity-60 shrink-0" />
+                                    </a>
+                                    <span className="text-[10px] text-neutral-500 block mt-0.5">
+                                      Connected {site.created || "Active"}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+                                  <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">
+                                    Live
+                                  </span>
+                                  <button
+                                    onClick={() => {
+                                      setEditingWebsiteId(site.id);
+                                      setEditingWebsiteUrl(site.url);
+                                    }}
+                                    className="text-neutral-400 hover:text-white p-1.5 rounded-lg hover:bg-white/5 transition"
+                                    title="Edit URL"
+                                  >
+                                    <Pencil size={14} />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteWebsite(site.id)}
+                                    className="text-neutral-400 hover:text-red-400 p-1.5 rounded-lg hover:bg-white/5 transition"
+                                    title="Delete Website"
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
               </div>
             </section>
 

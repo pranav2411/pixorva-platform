@@ -17,6 +17,13 @@ export interface PaymentLog {
   created: string;
 }
 
+export interface WebsiteItem {
+  id: string;
+  userId: string;
+  url: string;
+  created: string;
+}
+
 export const LocalDb = {
   // --- API KEYS ---
   async getApiKeys(supabase: any, userId: string): Promise<ApiKey[]> {
@@ -227,5 +234,96 @@ export const LocalDb = {
       razorpayId,
       created: new Date(data.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
     };
+  },
+
+  // --- CONNECTED WEBSITES ---
+  async getWebsites(supabase: any, userId: string, defaultWebsite?: string): Promise<WebsiteItem[]> {
+    const { data: sitesData } = await supabase
+      .from('agents')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('schedule', 'WEBSITE')
+      .order('created_at', { ascending: true });
+
+    if (sitesData && sitesData.length > 0) {
+      return sitesData.map((s: any) => ({
+        id: s.id,
+        userId: s.user_id,
+        url: s.goal || s.instructions || '',
+        created: new Date(s.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+      }));
+    }
+
+    // If no website stored yet but user provided one during onboarding, automatically seed it!
+    if (defaultWebsite && defaultWebsite.trim()) {
+      try {
+        const added = await this.addWebsite(supabase, userId, defaultWebsite.trim());
+        return [added];
+      } catch (err) {
+        console.error("Failed to seed default onboarding website:", err);
+      }
+    }
+
+    return [];
+  },
+
+  async addWebsite(supabase: any, userId: string, url: string): Promise<WebsiteItem> {
+    let cleanUrl = url.trim();
+    if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+      cleanUrl = `https://${cleanUrl}`;
+    }
+
+    const { data, error } = await supabase
+      .from('agents')
+      .insert({
+        user_id: userId,
+        name: `[WEBSITE] ${cleanUrl}`,
+        goal: cleanUrl,
+        instructions: cleanUrl,
+        schedule: 'WEBSITE',
+        steps: []
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return {
+      id: data.id,
+      userId: data.user_id,
+      url: data.goal,
+      created: new Date(data.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+    };
+  },
+
+  async updateWebsite(supabase: any, userId: string, id: string, newUrl: string): Promise<boolean> {
+    let cleanUrl = newUrl.trim();
+    if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+      cleanUrl = `https://${cleanUrl}`;
+    }
+
+    const { error } = await supabase
+      .from('agents')
+      .update({
+        name: `[WEBSITE] ${cleanUrl}`,
+        goal: cleanUrl,
+        instructions: cleanUrl
+      })
+      .eq('id', id)
+      .eq('user_id', userId)
+      .eq('schedule', 'WEBSITE');
+
+    return !error;
+  },
+
+  async deleteWebsite(supabase: any, userId: string, id: string): Promise<boolean> {
+    const { error } = await supabase
+      .from('agents')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', userId)
+      .eq('schedule', 'WEBSITE');
+
+    return !error;
   }
 };

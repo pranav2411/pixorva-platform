@@ -80,6 +80,9 @@ export async function GET() {
       location = 'Local Development Session';
     }
 
+    // 5b. Retrieve connected websites (seeds from onboarding metadata if present)
+    const websites = await LocalDb.getWebsites(supabase, user.id, user.user_metadata?.website);
+
     return NextResponse.json({
       success: true,
       email: user.email || profile?.email || '',
@@ -89,6 +92,7 @@ export async function GET() {
       paidAgents,
       subscriptionAgents,
       apiKeys,
+      websites,
       payments,
       usage,
       activeSession: {
