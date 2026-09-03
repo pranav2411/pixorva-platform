@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { createClient } from "../utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { Oswald, Inter } from "next/font/google";
-import { 
-  ArrowLeft, Save, User as UserIcon, Loader2, Zap, X, Trash2, 
-  Shield, User, CreditCard, Key, Activity, Smartphone, Shuffle, 
+import {
+  ArrowLeft, Save, User as UserIcon, Loader2, Zap, X, Trash2,
+  Shield, User, CreditCard, Key, Activity, Smartphone, Shuffle,
   Check, Globe, ExternalLink, Code2, Copy, AlertTriangle
 } from "lucide-react";
 import Link from "next/link";
@@ -37,10 +37,10 @@ export default function SettingsPage() {
   const [email, setEmail] = useState("");
   const [userId, setUserId] = useState("");
   const [plan, setPlan] = useState("free");
-  
+
   const [subscriptionAgents, setSubscriptionAgents] = useState<any[]>([]);
   const [paidAgents, setPaidAgents] = useState<any[]>([]);
-  
+
   // Background Agent Video Showcase state
   const [currentAgentIndex, setCurrentAgentIndex] = useState(0);
 
@@ -350,7 +350,7 @@ export default function SettingsPage() {
       if (res.status === 200 && data.success) {
         setPlaygroundResult(data.result);
         showToast("API run executed successfully!", "success");
-        
+
         const refreshRes = await fetch("/api/settings/data");
         const refreshData = await refreshRes.json();
         if (refreshData.success) {
@@ -396,7 +396,7 @@ export default function SettingsPage() {
 
   return (
     <div className={`min-h-screen bg-[#0e0f12] text-white relative selection:bg-[#ffc700] selection:text-black ${inter.className}`}>
-      
+
       {/* 1. CINEMATIC FULL-SCREEN AMBIENT BACKGROUND VIDEO LAYER */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none select-none">
         <video
@@ -419,8 +419,8 @@ export default function SettingsPage() {
       {/* 2. TOP NAVBAR */}
       <nav className="bg-[#141519]/80 backdrop-blur-xl border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-50 shadow-md">
         <div className="flex items-center gap-4">
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="bg-black/50 text-white p-2 rounded-xl hover:bg-[#ffc700] hover:text-black transition border border-white/15 flex items-center justify-center shrink-0 shadow-sm"
             aria-label="Back to Home"
           >
@@ -429,9 +429,6 @@ export default function SettingsPage() {
           <div>
             <h1 className={`text-2xl md:text-3xl font-black uppercase tracking-wider ${oswald.className} flex items-center gap-2`}>
               <span>SETTINGS</span>
-              <span className="text-[#ffc700] text-sm font-sans font-semibold tracking-normal normal-case border border-white/15 bg-black/50 px-2.5 py-0.5 rounded-full hidden sm:inline-block">
-                Workspace Console
-              </span>
             </h1>
           </div>
         </div>
@@ -458,7 +455,7 @@ export default function SettingsPage() {
 
           {/* LEFT RAIL / SIDEBAR (3 Columns - PINNED TO SCREEN, NEVER SCROLLS WITH RIGHT PART) */}
           <aside className="lg:col-span-3 space-y-6 lg:sticky lg:top-24 lg:self-start z-20">
-            
+
             {/* QUICK JUMP NAVIGATION */}
             <div className="bg-[#121316]/60 backdrop-blur-md border border-white/10 rounded-3xl p-5 shadow-xl">
               <h4 className="text-xs font-black uppercase tracking-wider text-neutral-400 mb-3 px-2">
@@ -528,11 +525,11 @@ export default function SettingsPage() {
                   <label className="block text-xs font-bold uppercase text-neutral-300 mb-2">
                     Email Address
                   </label>
-                  <input 
-                    type="text" 
-                    value={email} 
-                    disabled 
-                    className="w-full px-4 py-3.5 bg-black/40 border border-white/10 rounded-xl text-neutral-400 font-mono text-sm cursor-not-allowed backdrop-blur-sm" 
+                  <input
+                    type="text"
+                    value={email}
+                    disabled
+                    className="w-full px-4 py-3.5 bg-black/40 border border-white/10 rounded-xl text-neutral-400 font-mono text-sm cursor-not-allowed backdrop-blur-sm"
                   />
                   <p className="text-xs text-neutral-400 mt-2">Email address is verified and permanently linked to your workspace.</p>
                 </div>
@@ -541,16 +538,16 @@ export default function SettingsPage() {
                   <label className="block text-xs font-bold uppercase text-neutral-300 mb-2">
                     Full Name
                   </label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="Ex. John Doe"
-                    className="w-full px-4 py-3.5 bg-black/50 border border-white/20 rounded-xl text-white focus:outline-none focus:border-[#ffc700] transition text-sm font-medium backdrop-blur-sm" 
+                    className="w-full px-4 py-3.5 bg-black/50 border border-white/20 rounded-xl text-white focus:outline-none focus:border-[#ffc700] transition text-sm font-medium backdrop-blur-sm"
                   />
                 </div>
 
-                <button 
+                <button
                   onClick={updateProfile}
                   disabled={saving}
                   className="bg-[#ffc700] hover:bg-yellow-400 text-black px-8 py-3.5 rounded-xl font-black uppercase text-xs tracking-wider transition-all flex items-center gap-2 shadow-lg disabled:opacity-50"
@@ -628,15 +625,15 @@ export default function SettingsPage() {
                         <code className="text-xs bg-black/70 border border-white/15 px-3 py-1.5 rounded font-mono block text-neutral-300 w-fit select-all mb-3">
                           {k.token}
                         </code>
-                        
+
                         <div className="flex justify-between items-center text-[10px] font-bold uppercase text-neutral-300 mb-1.5">
                           <span>Live Daily Quota Usage</span>
                           <span className="text-white font-mono">{k.usedToday.toLocaleString()} / {k.dailyLimit.toLocaleString()} tokens</span>
                         </div>
                         <div className="w-full bg-black/60 rounded-full h-2 overflow-hidden border border-white/10">
-                          <div 
-                            className="bg-[#ffc700] h-full rounded-full transition-all duration-300" 
-                            style={{ width: `${Math.min((k.usedToday / k.dailyLimit) * 100, 100)}%` }} 
+                          <div
+                            className="bg-[#ffc700] h-full rounded-full transition-all duration-300"
+                            style={{ width: `${Math.min((k.usedToday / k.dailyLimit) * 100, 100)}%` }}
                           />
                         </div>
                       </div>
@@ -720,14 +717,14 @@ export default function SettingsPage() {
                       <label className="block text-xs font-bold uppercase text-neutral-300 mb-1.5">Equivalent Curl Request</label>
                       <div className="bg-black/70 border border-white/15 text-green-400 p-4 rounded-xl font-mono text-[10px] overflow-x-auto select-all max-h-[140px] backdrop-blur-sm">
                         <pre>
-{`curl -X POST "${typeof window !== 'undefined' ? window.location.origin : 'https://pixorva.com'}/api/run-agent" \\
+                          {`curl -X POST "${typeof window !== 'undefined' ? window.location.origin : 'https://pixorva.com'}/api/run-agent" \\
 -H "Content-Type: application/json" \\
 -H "Authorization: Bearer ${selectedPlaygroundKey || 'px_live_...'}" \\
 -d '${JSON.stringify({
-  input: playgroundPrompt,
-  agentId: selectedAgentId || 'your-agent-uuid',
-  agentRole: availablePlaygroundAgents.find(a => a.id === selectedAgentId)?.name || 'AI-Agent'
-}, null, 2)}'`}
+                            input: playgroundPrompt,
+                            agentId: selectedAgentId || 'your-agent-uuid',
+                            agentRole: availablePlaygroundAgents.find(a => a.id === selectedAgentId)?.name || 'AI-Agent'
+                          }, null, 2)}'`}
                         </pre>
                       </div>
                     </div>
@@ -779,9 +776,9 @@ export default function SettingsPage() {
                         <span className="font-bold text-xs uppercase text-green-400 bg-green-950/80 px-3 py-1 rounded-lg border border-green-800/80">
                           ₹{p.amount.toLocaleString()} Paid
                         </span>
-                        <Link 
-                          href={`/sample_receipt.html?amount=${p.amount}&plan=${encodeURIComponent(p.planName)}&razorpayId=${p.razorpayId}`} 
-                          target="_blank" 
+                        <Link
+                          href={`/sample_receipt.html?amount=${p.amount}&plan=${encodeURIComponent(p.planName)}&razorpayId=${p.razorpayId}`}
+                          target="_blank"
                           className="bg-black/60 hover:bg-[#ffc700] hover:text-black border border-white/20 px-3 py-1.5 rounded-lg text-xs font-bold uppercase text-white transition shadow-sm"
                         >
                           View Invoice
@@ -873,7 +870,7 @@ export default function SettingsPage() {
               </h2>
 
               <div className="space-y-6">
-                
+
                 {/* 1. Bundled Plans */}
                 <div className="border border-white/15 p-6 rounded-2xl bg-black/40 backdrop-blur-sm shadow-md">
                   <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
@@ -1005,7 +1002,7 @@ export default function SettingsPage() {
                                 Hired Subscription • {price}
                               </span>
                             </div>
-                            <button 
+                            <button
                               onClick={() => setSelectedAgentToCancel(agent)}
                               className="bg-red-950/70 hover:bg-red-900 text-red-300 px-3.5 py-1.5 rounded-lg border border-red-800 text-[10px] font-bold uppercase transition"
                             >
@@ -1043,7 +1040,7 @@ export default function SettingsPage() {
               Are you sure you want to cancel your platform bundle subscription? You will immediately lose slot access and all included employee slots will be terminated.
             </p>
             <div className="flex flex-col gap-3">
-              <button 
+              <button
                 disabled={cancelling}
                 onClick={handleCancelSubscription}
                 className="w-full bg-red-600 hover:bg-red-700 text-white py-3.5 rounded-xl font-bold uppercase text-xs tracking-wider transition shadow-md flex items-center justify-center gap-2"
@@ -1075,7 +1072,7 @@ export default function SettingsPage() {
               Are you sure you want to cancel your Governance Control Tower subscription? You will lose Proxy gating and audit logs access immediately.
             </p>
             <div className="flex flex-col gap-3">
-              <button 
+              <button
                 disabled={cancelling}
                 onClick={handleCancelGovernance}
                 className="w-full bg-red-600 hover:bg-red-700 text-white py-3.5 rounded-xl font-bold uppercase text-xs tracking-wider transition shadow-md flex items-center justify-center gap-2"
@@ -1107,7 +1104,7 @@ export default function SettingsPage() {
               Are you sure you want to terminate the hiring subscription for <strong>{selectedAgentToCancel.name.split("(")[0]}</strong>? This employee will be removed from your office immediately.
             </p>
             <div className="flex flex-col gap-3">
-              <button 
+              <button
                 disabled={cancelling}
                 onClick={handleCancelIndividual}
                 className="w-full bg-red-600 hover:bg-red-700 text-white py-3.5 rounded-xl font-bold uppercase text-xs tracking-wider transition shadow-md flex items-center justify-center gap-2"
@@ -1139,7 +1136,7 @@ export default function SettingsPage() {
               Warning: Under GDPR and DPDPA, this triggers total erasure of your profile and deletes all hired employees and credentials permanently from database storage. This action is irreversible.
             </p>
             <div className="flex flex-col gap-3">
-              <button 
+              <button
                 disabled={erasing}
                 onClick={handleRequestErasure}
                 className="w-full bg-red-600 hover:bg-red-700 text-white py-3.5 rounded-xl font-bold uppercase text-xs tracking-wider transition shadow-md flex items-center justify-center gap-2"
