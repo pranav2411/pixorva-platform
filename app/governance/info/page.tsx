@@ -57,9 +57,9 @@ export default function GovernanceInfoPage() {
     setPurchasing(true);
 
     const steps = [
-      { name: "Universal AI Proxy Gateway", description: "Relay prompts to any external LLM endpoint", icon: "Activity" },
-      { name: "Immutable Auditing Vault", description: "Audit trail log generation", icon: "FileCode" },
-      { name: "Admission Policy Gate", description: "Rate limiting and content filters", icon: "Lock" }
+      { name: "Proxy Gateway", description: "Universal LLM Relay", icon: "Activity" },
+      { name: "Auditing Vault", description: "Audit trail logs", icon: "FileCode" },
+      { name: "Policy Gate", description: "Rate limits & filters", icon: "Lock" }
     ];
 
     await triggerRazorpayCheckout({
@@ -119,7 +119,7 @@ export default function GovernanceInfoPage() {
       <main className="max-w-4xl mx-auto px-6 mt-12">
         <div className="bg-[#141519]/80 backdrop-blur-xl border border-white/15 rounded-2xl p-8 md:p-12 shadow-2xl text-center mb-12 text-white">
           <div className="inline-block bg-[#ffc700]/20 text-[#ffc700] border border-[#ffc700]/30 rounded-lg px-3 py-1 font-bold text-xs uppercase mb-4">
-            🛡️ Universal Compliance Control Tower
+            Universal Compliance Control Tower
           </div>
           <h2 className={`text-4xl md:text-5xl uppercase tracking-tighter mb-4 ${oswald.className} leading-none text-white`}>
             Secure & Audit Any LLM in the World

@@ -473,7 +473,7 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
                   </div>
               </div>
               <div className="bg-[#ffc700] text-black border border-yellow-300 px-3 py-1.5 rounded font-black text-xs uppercase tracking-wide shadow-sm">
-                🛡️ Universal Audit Active
+                Universal Audit Active
               </div>
           </div>
       </div>
@@ -617,7 +617,11 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
                           <h4 className={`font-bold text-xs uppercase ${isSelected ? 'text-black font-black' : 'text-white'}`}>{p.name}</h4>
                           <span className={`text-[9px] font-semibold block mt-0.5 ${isSelected ? 'text-black/75 font-bold' : 'text-neutral-400'}`}>{p.model}</span>
                         </div>
-                        <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded border ${p.status === 'Connected' ? (isSelected ? 'bg-black text-[#ffc700] border-black' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30') : 'bg-white/10 text-neutral-400 border-white/20'}`}>
+                        <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded border ${
+                          p.status === 'Connected' 
+                            ? (isSelected ? 'bg-black text-[#ffc700] border-black shadow-sm' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30') 
+                            : (isSelected ? 'bg-black text-white border-black font-black shadow-sm' : 'bg-white/10 text-neutral-400 border-white/20')
+                        }`}>
                           {p.status}
                         </span>
                       </div>

@@ -50,9 +50,20 @@ export const triggerRazorpayCheckout = async (params: CheckoutParams) => {
         isSubscription: params.isSubscription !== false,
         notes: {
           userId: params.userId,
-          agentName: params.agentName ? params.agentName.replace(/[^\x00-\x7F]/g, "") : "",
-          icon: params.icon ? params.icon.replace(/[^\x00-\x7F]/g, "") : "",
-          steps: params.steps ? JSON.stringify(params.steps).replace(/[^\x00-\x7F]/g, "") : "[]",
+          agentName: params.agentName ? params.agentName.replace(/[^\x00-\x7F]/g, "").slice(0, 80) : "",
+          icon: params.icon ? params.icon.replace(/[^\x00-\x7F]/g, "").slice(0, 40) : "",
+          steps: (() => {
+            if (!params.steps || params.steps.length === 0) return "[]";
+            let str = JSON.stringify(params.steps).replace(/[^\x00-\x7F]/g, "");
+            if (str.length > 240) {
+              const compact = params.steps.map((s: any) => ({
+                name: typeof s === "string" ? s : (s.name || "Task"),
+                icon: typeof s === "object" && s.icon ? s.icon : "Zap"
+              }));
+              str = JSON.stringify(compact).replace(/[^\x00-\x7F]/g, "");
+            }
+            return str.slice(0, 245);
+          })(),
           isPlan: params.isPlan ? "true" : "false",
           planCode: params.planCode || ""
         }
