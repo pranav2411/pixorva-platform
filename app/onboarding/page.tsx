@@ -172,6 +172,9 @@ export default function OnboardingPage() {
             if (prev >= 100) {
               clearInterval(interval2);
               setAnalysisComplete(true);
+              setTimeout(() => {
+                goToStep(11);
+              }, 1200);
               return 100;
             }
             return prev + Math.floor(Math.random() * 12) + 8;
@@ -747,16 +750,16 @@ export default function OnboardingPage() {
 
             </div>
 
-            {/* Direct CTA button to see results */}
+            {/* Direct CTA button */}
             <button
               onClick={handleNext}
               className={`w-full py-4 rounded-xl font-black text-sm uppercase tracking-wide transition shadow-lg flex items-center justify-center gap-2 ${
                 analysisComplete
-                  ? "bg-[#ffc700] hover:bg-yellow-400 text-black animate-pulse"
+                  ? "bg-[#ffc700] hover:bg-yellow-400 text-black shadow-[0px_4px_20px_rgba(255,199,0,0.3)]"
                   : "bg-neutral-800 hover:bg-neutral-700 text-neutral-300"
               }`}
             >
-              <span>{analysisComplete ? "Continue to see results" : "Analyzing benchmarks..."}</span>
+              <span>{analysisComplete ? "Continue" : "Analyzing benchmarks..."}</span>
               <ChevronRight size={18} />
             </button>
           </div>
