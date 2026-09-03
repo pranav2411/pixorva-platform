@@ -447,32 +447,32 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
 
   if (loading) {
     return (
-      <div className={`min-h-screen bg-gray-50 flex items-center justify-center ${inter.className}`}>
-        <div className="bg-white border-4 border-black p-8 rounded-xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-center max-w-sm">
-          <RefreshCw className="animate-spin mx-auto text-black mb-4" size={32} />
-          <h3 className={`text-xl uppercase ${oswald.className}`}>Verifying Access Credentials...</h3>
-          <p className="text-xs text-gray-500 font-bold uppercase mt-2">Continuous Compliance Control Tower</p>
+      <div className={`min-h-screen bg-[#0e0f12] flex items-center justify-center ${inter.className}`}>
+        <div className="bg-[#141519] border border-white/15 p-8 rounded-2xl shadow-2xl text-center max-w-sm text-white">
+          <RefreshCw className="animate-spin mx-auto text-[#ffc700] mb-4" size={32} />
+          <h3 className={`text-xl uppercase ${oswald.className} text-white`}>Verifying Access Credentials...</h3>
+          <p className="text-xs text-neutral-400 font-bold uppercase mt-2">Continuous Compliance Control Tower</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen bg-gray-50 text-black ${inter.className} pb-12`}>
+    <div className={`min-h-screen bg-[#0e0f12] text-white ${inter.className} pb-12 selection:bg-[#ffc700] selection:text-black`}>
       
       {/* HEADER */}
-      <div className="bg-white border-b-4 border-black sticky top-0 z-20">
+      <div className="bg-[#141519]/90 backdrop-blur-xl border-b border-white/10 sticky top-0 z-20 shadow-md">
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-4">
-                  <Link href="/" className="bg-black text-white p-2 rounded hover:bg-yellow-400 hover:text-black transition border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:shadow-none hover:translate-y-1">
+                  <Link href="/" className="bg-black/50 text-white p-2 rounded-xl hover:bg-[#ffc700] hover:text-black transition border border-white/15 shadow-sm flex items-center justify-center">
                     <ArrowLeft size={20}/>
                   </Link>
                   <div>
-                    <h1 className={`text-2xl md:text-3xl uppercase ${oswald.className} tracking-tighter leading-none`}>AI Governance Lab</h1>
-                    <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wide">Universal LLM Proxy Control Tower</span>
+                    <h1 className={`text-2xl md:text-3xl uppercase ${oswald.className} tracking-tighter leading-none text-white`}>AI Governance Lab</h1>
+                    <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wide">Universal LLM Proxy Control Tower</span>
                   </div>
               </div>
-              <div className="bg-yellow-400 text-black border-2 border-black px-3 py-1.5 rounded font-black text-xs uppercase tracking-wide shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+              <div className="bg-[#ffc700] text-black border border-yellow-300 px-3 py-1.5 rounded font-black text-xs uppercase tracking-wide shadow-sm">
                 🛡️ Universal Audit Active
               </div>
           </div>
@@ -483,36 +483,36 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
         {/* METRICS ROW */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           
-          <div className="bg-white border-4 border-black p-4 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-between">
+          <div className="bg-[#141519]/80 backdrop-blur-xl border border-white/15 p-4 rounded-2xl shadow-xl flex items-center justify-between text-white">
             <div>
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Total Proxied Requests</span>
-              <span className={`text-2xl font-black ${oswald.className}`}>{totalRequests.toLocaleString()}</span>
+              <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest block">Total Proxied Requests</span>
+              <span className={`text-2xl font-black ${oswald.className} text-white`}>{totalRequests.toLocaleString()}</span>
             </div>
-            <div className="bg-blue-100 p-2 border-2 border-black rounded-lg"><Cpu size={20}/></div>
+            <div className="bg-blue-500/20 text-blue-400 p-2.5 border border-blue-500/30 rounded-xl"><Cpu size={20}/></div>
           </div>
 
-          <div className="bg-white border-4 border-black p-4 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-between">
+          <div className="bg-[#141519]/80 backdrop-blur-xl border border-white/15 p-4 rounded-2xl shadow-xl flex items-center justify-between text-white">
             <div>
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Blocked Violations</span>
-              <span className={`text-2xl font-black text-red-500 ${oswald.className}`}>{violationsBlocked}</span>
+              <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest block">Blocked Violations</span>
+              <span className={`text-2xl font-black text-red-400 ${oswald.className}`}>{violationsBlocked}</span>
             </div>
-            <div className="bg-red-100 p-2 border-2 border-black rounded-lg"><ShieldAlert size={20} className="text-red-500"/></div>
+            <div className="bg-red-500/20 text-red-400 p-2.5 border border-red-500/30 rounded-xl"><ShieldAlert size={20} className="text-red-400"/></div>
           </div>
 
-          <div className="bg-white border-4 border-black p-4 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-between">
+          <div className="bg-[#141519]/80 backdrop-blur-xl border border-white/15 p-4 rounded-2xl shadow-xl flex items-center justify-between text-white">
             <div>
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Average Latency</span>
-              <span className={`text-2xl font-black ${oswald.className}`}>{avgLatency}ms</span>
+              <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest block">Average Latency</span>
+              <span className={`text-2xl font-black text-emerald-400 ${oswald.className}`}>{avgLatency}ms</span>
             </div>
-            <div className="bg-green-100 p-2 border-2 border-black rounded-lg"><Activity size={20} className="text-green-600"/></div>
+            <div className="bg-emerald-500/20 text-emerald-400 p-2.5 border border-emerald-500/30 rounded-xl"><Activity size={20} className="text-emerald-400"/></div>
           </div>
 
-          <div className="bg-white border-4 border-black p-4 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-between">
+          <div className="bg-[#141519]/80 backdrop-blur-xl border border-white/15 p-4 rounded-2xl shadow-xl flex items-center justify-between text-white">
             <div>
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Proxy Accrued Costs</span>
-              <span className={`text-2xl font-black ${oswald.className}`}>${totalCost.toFixed(2)}</span>
+              <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest block">Proxy Accrued Costs</span>
+              <span className={`text-2xl font-black text-[#ffc700] ${oswald.className}`}>${totalCost.toFixed(2)}</span>
             </div>
-            <div className="bg-yellow-100 p-2 border-2 border-black rounded-lg"><DollarSign size={20} className="text-yellow-600"/></div>
+            <div className="bg-[#ffc700]/20 text-[#ffc700] p-2.5 border border-[#ffc700]/30 rounded-xl"><DollarSign size={20} className="text-[#ffc700]"/></div>
           </div>
 
         </div>
@@ -522,84 +522,84 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
           
           {/* COLUMN 1: PROVIDERS REGISTRY (5 COLS) */}
           <div className="lg:col-span-5 flex flex-col">
-            <div className="bg-white border-4 border-black rounded-xl p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex-grow flex flex-col justify-between">
+            <div className="bg-[#141519]/80 backdrop-blur-xl border border-white/15 rounded-2xl p-6 shadow-xl flex-grow flex flex-col justify-between text-white">
               <div>
-                <div className="flex justify-between items-center mb-4 pb-3 border-b-2 border-gray-100">
+                <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
                   <div className="flex items-center gap-2">
-                    <Database size={20} className="text-black" />
-                    <h2 className={`text-xl uppercase ${oswald.className}`}>LLM Registry</h2>
+                    <Database size={20} className="text-[#ffc700]" />
+                    <h2 className={`text-xl uppercase ${oswald.className} text-white`}>LLM Registry</h2>
                   </div>
                   <button 
                     onClick={() => setShowAddProvider(!showAddProvider)}
-                    className="bg-black text-white hover:bg-yellow-400 hover:text-black transition text-xs font-bold uppercase px-3 py-1.5 rounded border border-black flex items-center gap-1.5"
+                    className="bg-[#ffc700] text-black hover:bg-yellow-400 transition text-xs font-black uppercase px-3 py-1.5 rounded border border-black flex items-center gap-1.5 shadow-sm"
                   >
                     <Plus size={14} /> Add Provider
                   </button>
                 </div>
 
                 {showAddProvider ? (
-                  <form onSubmit={handleAddProviderSubmit} className="bg-yellow-50 border-2 border-black p-4 rounded-xl mb-4 space-y-3 animate-in slide-in-from-top-4 duration-200 text-black">
-                    <h4 className="text-xs font-black uppercase text-yellow-800">Integrate Custom LLM</h4>
+                  <form onSubmit={handleAddProviderSubmit} className="bg-black/60 border border-white/15 p-4 rounded-xl mb-4 space-y-3 animate-in slide-in-from-top-4 duration-200 text-white">
+                    <h4 className="text-xs font-black uppercase text-[#ffc700]">Integrate Custom LLM</h4>
                     <div className="space-y-2">
                       <div>
-                        <label className="block text-[9px] font-black uppercase text-gray-600">Provider Name *</label>
+                        <label className="block text-[9px] font-black uppercase text-neutral-400">Provider Name *</label>
                         <input 
                           type="text" 
                           required 
                           value={newProvName} 
                           onChange={(e) => setNewProvName(e.target.value)} 
                           placeholder="e.g. Local Llama Server" 
-                          className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none" 
+                          className="w-full text-xs p-2 bg-black/80 border border-white/20 rounded focus:outline-none focus:border-[#ffc700] text-white placeholder-neutral-500" 
                         />
                       </div>
                       <div>
-                        <label className="block text-[9px] font-black uppercase text-gray-600">Proxy Target Model *</label>
+                        <label className="block text-[9px] font-black uppercase text-neutral-400">Proxy Target Model *</label>
                         <input 
                           type="text" 
                           required 
                           value={newProvModel} 
                           onChange={(e) => setNewProvModel(e.target.value)} 
                           placeholder="meta-llama/Meta-Llama-3-8B-Instruct" 
-                          className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none" 
+                          className="w-full text-xs p-2 bg-black/80 border border-white/20 rounded focus:outline-none focus:border-[#ffc700] text-white placeholder-neutral-500" 
                         />
                       </div>
                       <div>
-                        <label className="block text-[9px] font-black uppercase text-gray-600">Target Endpoint Url *</label>
+                        <label className="block text-[9px] font-black uppercase text-neutral-400">Target Endpoint Url *</label>
                         <input 
                           type="url" 
                           required 
                           value={newProvEndpoint} 
                           onChange={(e) => setNewProvEndpoint(e.target.value)} 
                           placeholder="http://your-gpu-ip:8000/v1" 
-                          className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none" 
+                          className="w-full text-xs p-2 bg-black/80 border border-white/20 rounded focus:outline-none focus:border-[#ffc700] text-white placeholder-neutral-500" 
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="block text-[9px] font-black uppercase text-gray-600">API Key / Token (Optional)</label>
+                          <label className="block text-[9px] font-black uppercase text-neutral-400">API Key / Token (Optional)</label>
                           <input 
                             type="password" 
                             value={newProvKey} 
                             onChange={(e) => setNewProvKey(e.target.value)} 
                             placeholder="••••••••••••" 
-                            className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none" 
+                            className="w-full text-xs p-2 bg-black/80 border border-white/20 rounded focus:outline-none focus:border-[#ffc700] text-white placeholder-neutral-500" 
                           />
                         </div>
                         <div>
-                          <label className="block text-[9px] font-black uppercase text-gray-600">Label/Role</label>
+                          <label className="block text-[9px] font-black uppercase text-neutral-400">Label/Role</label>
                           <input 
                             type="text" 
                             value={newProvRole} 
                             onChange={(e) => setNewProvRole(e.target.value)} 
                             placeholder="Llama-3 Server" 
-                            className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none" 
+                            className="w-full text-xs p-2 bg-black/80 border border-white/20 rounded focus:outline-none focus:border-[#ffc700] text-white placeholder-neutral-500" 
                           />
                         </div>
                       </div>
                     </div>
                     <div className="flex gap-2 pt-2">
-                      <button type="submit" className="flex-grow bg-black text-white hover:bg-yellow-400 hover:text-black py-2 rounded text-xs font-bold uppercase transition">Connect Endpoint</button>
-                      <button type="button" onClick={() => setShowAddProvider(false)} className="px-3 bg-white border-2 border-black hover:bg-red-50 py-2 rounded text-xs font-bold uppercase transition">Cancel</button>
+                      <button type="submit" className="flex-grow bg-[#ffc700] text-black hover:bg-yellow-400 py-2 rounded text-xs font-black uppercase transition">Connect Endpoint</button>
+                      <button type="button" onClick={() => setShowAddProvider(false)} className="px-3 bg-black/40 border border-white/20 hover:bg-white/10 text-neutral-300 py-2 rounded text-xs font-bold uppercase transition">Cancel</button>
                     </div>
                   </form>
                 ) : null}
@@ -611,13 +611,13 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
                       <div 
                         key={p.id}
                         onClick={() => setSandboxProvider(p.id)}
-                        className={`p-4 border-2 rounded-xl transition cursor-pointer flex justify-between items-center ${isSelected ? 'bg-black text-white border-black shadow' : 'bg-gray-50 text-black border-gray-200 hover:border-black'}`}
+                        className={`p-4 border rounded-xl transition cursor-pointer flex justify-between items-center ${isSelected ? 'bg-[#ffc700] text-black border-black shadow' : 'bg-black/40 text-neutral-200 border-white/10 hover:border-white/30'}`}
                       >
                         <div>
-                          <h4 className="font-bold text-xs uppercase">{p.name}</h4>
-                          <span className="text-[9px] font-semibold opacity-60 block mt-0.5">{p.model}</span>
+                          <h4 className={`font-bold text-xs uppercase ${isSelected ? 'text-black font-black' : 'text-white'}`}>{p.name}</h4>
+                          <span className={`text-[9px] font-semibold block mt-0.5 ${isSelected ? 'text-black/75 font-bold' : 'text-neutral-400'}`}>{p.model}</span>
                         </div>
-                        <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded border-2 ${p.status === 'Connected' ? 'bg-green-400 text-black border-black' : 'bg-gray-200 text-gray-500 border-gray-300'}`}>
+                        <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded border ${p.status === 'Connected' ? (isSelected ? 'bg-black text-[#ffc700] border-black' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30') : 'bg-white/10 text-neutral-400 border-white/20'}`}>
                           {p.status}
                         </span>
                       </div>
@@ -626,11 +626,11 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
                 </div>
               </div>
 
-              <div className="bg-gray-50 border-2 border-black p-4 rounded-xl mt-6 text-black space-y-3">
-                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block pb-1 border-b border-gray-200">Configure Selected Provider</span>
+              <div className="bg-black/50 border border-white/15 p-4 rounded-xl mt-6 text-white space-y-3">
+                <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest block pb-1 border-b border-white/10">Configure Selected Provider</span>
                 
                 <div>
-                  <label className="block text-[8px] font-black uppercase text-gray-500">Endpoint URL</label>
+                  <label className="block text-[8px] font-black uppercase text-neutral-400">Endpoint URL</label>
                   <input 
                     type="text" 
                     value={(providers.find(p => p.id === sandboxProvider) || providers[0]).endpoint}
@@ -638,13 +638,13 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
                       const val = e.target.value;
                       setProviders(prev => prev.map(p => p.id === sandboxProvider ? { ...p, endpoint: val } : p));
                     }}
-                    className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none mt-1 font-mono"
+                    className="w-full text-xs p-2 bg-black/80 border border-white/20 rounded focus:outline-none focus:border-[#ffc700] mt-1 font-mono text-white"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[8px] font-black uppercase text-gray-500">Target Model</label>
+                    <label className="block text-[8px] font-black uppercase text-neutral-400">Target Model</label>
                     <input 
                       type="text" 
                       value={(providers.find(p => p.id === sandboxProvider) || providers[0]).model}
@@ -652,11 +652,11 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
                         const val = e.target.value;
                         setProviders(prev => prev.map(p => p.id === sandboxProvider ? { ...p, model: val } : p));
                       }}
-                      className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none mt-1"
+                      className="w-full text-xs p-2 bg-black/80 border border-white/20 rounded focus:outline-none focus:border-[#ffc700] mt-1 text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-[8px] font-black uppercase text-red-500 font-bold">Your API Key *</label>
+                    <label className="block text-[8px] font-black uppercase text-[#ffc700] font-bold">Your API Key *</label>
                     <input 
                       type="password" 
                       value={(providers.find(p => p.id === sandboxProvider) || providers[0]).apiKey || ""}
@@ -665,7 +665,7 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
                         setProviders(prev => prev.map(p => p.id === sandboxProvider ? { ...p, apiKey: val, status: val.trim() ? "Connected" : "Not Configured" } : p));
                       }}
                       placeholder="Enter API Key"
-                      className="w-full text-xs p-2 bg-white border-2 border-black rounded focus:outline-none mt-1"
+                      className="w-full text-xs p-2 bg-black/80 border border-white/20 rounded focus:outline-none focus:border-[#ffc700] mt-1 text-white"
                     />
                   </div>
                 </div>
@@ -675,14 +675,14 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
 
           {/* COLUMN 2: UNIVERSAL PROXY GATEWAY SANDBOX (7 COLS) */}
           <div className="lg:col-span-7 flex flex-col">
-            <div className="bg-white border-4 border-black rounded-xl p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex-grow flex flex-col justify-between">
+            <div className="bg-[#141519]/80 backdrop-blur-xl border border-white/15 rounded-2xl p-6 shadow-xl flex-grow flex flex-col justify-between text-white">
               <div>
-                <div className="flex justify-between items-center mb-4 pb-3 border-b-2 border-gray-100">
+                <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
                   <div className="flex items-center gap-2">
-                    <Activity size={20} className="text-black" />
-                    <h2 className={`text-xl uppercase ${oswald.className}`}>Proxy Gateway Sandbox</h2>
+                    <Activity size={20} className="text-[#ffc700]" />
+                    <h2 className={`text-xl uppercase ${oswald.className} text-white`}>Proxy Gateway Sandbox</h2>
                   </div>
-                  <span className="text-xs font-black uppercase px-3 py-1 rounded border-2 bg-yellow-400 border-black">
+                  <span className="text-xs font-black uppercase px-3 py-1 rounded border bg-[#ffc700] text-black border-black shadow-sm">
                     Live Testing
                   </span>
                 </div>
@@ -690,13 +690,13 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
                 {/* Tester panel */}
                 <div className="space-y-4 mb-4">
                   <div>
-                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Enter Test Prompt</label>
+                    <label className="block text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1">Enter Test Prompt</label>
                     <textarea 
                       value={sandboxPrompt} 
                       onChange={(e) => setSandboxPrompt(e.target.value)} 
                       rows={3}
                       placeholder="e.g. Write a script to fetch server status (Try containing 'hack' or 'exploit' to test Content Filters)"
-                      className="w-full text-xs p-3 bg-gray-50 border-2 border-black rounded-xl focus:outline-none focus:ring-0 leading-relaxed placeholder-gray-400 text-black"
+                      className="w-full text-xs p-3 bg-black/60 border border-white/15 rounded-xl focus:outline-none focus:border-[#ffc700] leading-relaxed placeholder-neutral-500 text-white"
                     />
                   </div>
 
@@ -704,16 +704,16 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
                     <button 
                       disabled={sendingSandbox || !sandboxPrompt.trim()}
                       onClick={handleSendSandbox}
-                      className="bg-black text-white hover:bg-yellow-400 hover:text-black transition px-6 py-3 rounded-lg border-2 border-black font-black uppercase text-xs tracking-wider disabled:opacity-50"
+                      className="bg-[#ffc700] text-black hover:bg-yellow-400 transition px-6 py-3 rounded-lg border border-black font-black uppercase text-xs tracking-wider disabled:opacity-50 shadow-sm"
                     >
                       {sendingSandbox ? "Routing..." : "Send via Proxy"}
                     </button>
                     
                     {sandboxMeta && (
-                      <div className="flex gap-4 text-[9px] font-black uppercase bg-gray-100 border border-gray-200 px-3 py-2 rounded-lg text-gray-500">
-                        <span>Latency: <strong className="text-black">{sandboxMeta.latency}ms</strong></span>
-                        <span>Tokens: <strong className="text-black">{sandboxMeta.inTokens + sandboxMeta.outTokens}</strong></span>
-                        <span>Cost: <strong className="text-black">${sandboxMeta.cost.toFixed(5)}</strong></span>
+                      <div className="flex gap-4 text-[9px] font-black uppercase bg-black/50 border border-white/15 px-3 py-2 rounded-lg text-neutral-400">
+                        <span>Latency: <strong className="text-white">{sandboxMeta.latency}ms</strong></span>
+                        <span>Tokens: <strong className="text-white">{sandboxMeta.inTokens + sandboxMeta.outTokens}</strong></span>
+                        <span>Cost: <strong className="text-[#ffc700]">${sandboxMeta.cost.toFixed(5)}</strong></span>
                       </div>
                     )}
                   </div>
@@ -721,8 +721,8 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
                   {/* Sandbox Response Output */}
                   {sandboxResponse && (
                     <div className="space-y-1 animate-in zoom-in-95 duration-200">
-                      <span className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Gateway Response Output</span>
-                      <div className={`p-4 border-2 border-black rounded-xl font-medium text-xs break-words leading-relaxed max-h-48 overflow-y-auto ${sandboxResponse.includes('403 Forbidden') ? 'bg-red-50 text-red-800 border-red-200' : 'bg-gray-50 text-gray-800'}`}>
+                      <span className="block text-[10px] font-black text-neutral-400 uppercase tracking-widest">Gateway Response Output</span>
+                      <div className={`p-4 border rounded-xl font-medium text-xs break-words leading-relaxed max-h-48 overflow-y-auto ${sandboxResponse.includes('403 Forbidden') ? 'bg-red-500/10 text-red-400 border-red-500/30' : 'bg-black/60 text-neutral-200 border-white/15'}`}>
                         {sandboxResponse}
                       </div>
                     </div>
@@ -732,27 +732,27 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
               </div>
 
               {/* Assessment Dials */}
-              <div className="border-t-2 border-gray-100 pt-6">
-                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-3">Model Compliance Verification</span>
+              <div className="border-t border-white/10 pt-6">
+                <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest block mb-3">Model Compliance Verification</span>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <button 
                     disabled={testingBias}
                     onClick={runBiasTest}
-                    className="bg-black text-white hover:bg-yellow-400 hover:text-black py-3 rounded-lg border-2 border-black font-bold uppercase text-[10px] flex items-center justify-center gap-2 transition disabled:opacity-50"
+                    className="bg-black/50 text-white hover:bg-[#ffc700] hover:text-black hover:border-black py-3 rounded-lg border border-white/15 font-bold uppercase text-[10px] flex items-center justify-center gap-2 transition disabled:opacity-50"
                   >
                     <RefreshCw size={14} className={testingBias ? "animate-spin" : ""} /> {testingBias ? "Evaluating..." : "Run Bias Test"}
                   </button>
                   <button 
                     disabled={testingDrift}
                     onClick={runDriftTest}
-                    className="bg-black text-white hover:bg-yellow-400 hover:text-black py-3 rounded-lg border-2 border-black font-bold uppercase text-[10px] flex items-center justify-center gap-2 transition disabled:opacity-50"
+                    className="bg-black/50 text-white hover:bg-[#ffc700] hover:text-black hover:border-black py-3 rounded-lg border border-white/15 font-bold uppercase text-[10px] flex items-center justify-center gap-2 transition disabled:opacity-50"
                   >
                     <RefreshCw size={14} className={testingDrift ? "animate-spin" : ""} /> {testingDrift ? "Analyzing..." : "PSI Drift Test"}
                   </button>
                   <button 
                     disabled={scanningSec}
                     onClick={runVulnerabilityScan}
-                    className="bg-yellow-400 text-black hover:bg-black hover:text-white py-3 rounded-lg border-2 border-black font-bold uppercase text-[10px] flex items-center justify-center gap-2 transition disabled:opacity-50"
+                    className="bg-[#ffc700] text-black hover:bg-yellow-400 py-3 rounded-lg border border-black font-black uppercase text-[10px] flex items-center justify-center gap-2 transition disabled:opacity-50 shadow-sm"
                   >
                     <Play size={14} className={scanningSec ? "animate-spin" : ""} /> {scanningSec ? "Scanning..." : "Vulnerability Scan"}
                   </button>
@@ -769,65 +769,65 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
           
           {/* COLUMN 1: POLICY GATEWAY (6 COLS) */}
           <div className="lg:col-span-6 flex flex-col">
-            <div className="bg-white border-4 border-black rounded-xl p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex-grow flex flex-col justify-between">
+            <div className="bg-[#141519]/80 backdrop-blur-xl border border-white/15 rounded-2xl p-6 shadow-xl flex-grow flex flex-col justify-between text-white">
               <div>
-                <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-gray-100">
-                  <Lock size={20} className="text-black" />
-                  <h2 className={`text-xl uppercase ${oswald.className}`}>Policy Enforcement Gateway</h2>
+                <div className="flex items-center gap-2 mb-4 pb-3 border-b border-white/10">
+                  <Lock size={20} className="text-[#ffc700]" />
+                  <h2 className={`text-xl uppercase ${oswald.className} text-white`}>Policy Enforcement Gateway</h2>
                 </div>
 
                 {/* Switch Toggles */}
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   
-                  <div className="bg-gray-50 border-2 border-black p-3.5 rounded-xl flex items-center justify-between">
+                  <div className="bg-black/40 border border-white/15 p-3.5 rounded-xl flex items-center justify-between">
                     <div>
-                      <h4 className="text-[10px] font-black uppercase">Content Filter</h4>
-                      <p className="text-[8px] text-gray-400 font-bold uppercase leading-none mt-1">Block toxic output</p>
+                      <h4 className="text-[10px] font-black uppercase text-white">Content Filter</h4>
+                      <p className="text-[8px] text-neutral-400 font-bold uppercase leading-none mt-1">Block toxic output</p>
                     </div>
                     <button 
                       onClick={() => setContentFiltering(!contentFiltering)}
-                      className={`w-11 h-6 rounded-full border-2 border-black transition relative ${contentFiltering ? 'bg-green-400' : 'bg-gray-200'}`}
+                      className={`w-11 h-6 rounded-full border border-white/20 transition relative ${contentFiltering ? 'bg-emerald-500' : 'bg-neutral-700'}`}
                     >
-                      <span className={`w-4 h-4 rounded-full bg-white border border-black absolute top-0.5 transition-all ${contentFiltering ? 'left-5' : 'left-0.5'}`} />
+                      <span className={`w-4 h-4 rounded-full bg-white absolute top-0.5 transition-all ${contentFiltering ? 'left-5' : 'left-0.5'}`} />
                     </button>
                   </div>
 
-                  <div className="bg-gray-50 border-2 border-black p-3.5 rounded-xl flex items-center justify-between">
+                  <div className="bg-black/40 border border-white/15 p-3.5 rounded-xl flex items-center justify-between">
                     <div>
-                      <h4 className="text-[10px] font-black uppercase">Rate Limiting</h4>
-                      <p className="text-[8px] text-gray-400 font-bold uppercase leading-none mt-1">Throttling endpoints</p>
+                      <h4 className="text-[10px] font-black uppercase text-white">Rate Limiting</h4>
+                      <p className="text-[8px] text-neutral-400 font-bold uppercase leading-none mt-1">Throttling endpoints</p>
                     </div>
                     <button 
                       onClick={() => setRateLimiting(!rateLimiting)}
-                      className={`w-11 h-6 rounded-full border-2 border-black transition relative ${rateLimiting ? 'bg-green-400' : 'bg-gray-200'}`}
+                      className={`w-11 h-6 rounded-full border border-white/20 transition relative ${rateLimiting ? 'bg-emerald-500' : 'bg-neutral-700'}`}
                     >
-                      <span className={`w-4 h-4 rounded-full bg-white border border-black absolute top-0.5 transition-all ${rateLimiting ? 'left-5' : 'left-0.5'}`} />
+                      <span className={`w-4 h-4 rounded-full bg-white absolute top-0.5 transition-all ${rateLimiting ? 'left-5' : 'left-0.5'}`} />
                     </button>
                   </div>
 
-                  <div className="bg-gray-50 border-2 border-black p-3.5 rounded-xl flex items-center justify-between">
+                  <div className="bg-black/40 border border-white/15 p-3.5 rounded-xl flex items-center justify-between">
                     <div>
-                      <h4 className="text-[10px] font-black uppercase">Quota Enforce</h4>
-                      <p className="text-[8px] text-gray-400 font-bold uppercase leading-none mt-1">Cap API billing cost</p>
+                      <h4 className="text-[10px] font-black uppercase text-white">Quota Enforce</h4>
+                      <p className="text-[8px] text-neutral-400 font-bold uppercase leading-none mt-1">Cap API billing cost</p>
                     </div>
                     <button 
                       onClick={() => setQuotaEnforcement(!quotaEnforcement)}
-                      className={`w-11 h-6 rounded-full border-2 border-black transition relative ${quotaEnforcement ? 'bg-green-400' : 'bg-gray-200'}`}
+                      className={`w-11 h-6 rounded-full border border-white/20 transition relative ${quotaEnforcement ? 'bg-emerald-500' : 'bg-neutral-700'}`}
                     >
-                      <span className={`w-4 h-4 rounded-full bg-white border border-black absolute top-0.5 transition-all ${quotaEnforcement ? 'left-5' : 'left-0.5'}`} />
+                      <span className={`w-4 h-4 rounded-full bg-white absolute top-0.5 transition-all ${quotaEnforcement ? 'left-5' : 'left-0.5'}`} />
                     </button>
                   </div>
 
-                  <div className="bg-gray-50 border-2 border-black p-3.5 rounded-xl flex items-center justify-between">
+                  <div className="bg-black/40 border border-white/15 p-3.5 rounded-xl flex items-center justify-between">
                     <div>
-                      <h4 className="text-[10px] font-black uppercase">Block High-Risk</h4>
-                      <p className="text-[8px] text-gray-400 font-bold uppercase leading-none mt-1">Admission Control</p>
+                      <h4 className="text-[10px] font-black uppercase text-white">Block High-Risk</h4>
+                      <p className="text-[8px] text-neutral-400 font-bold uppercase leading-none mt-1">Admission Control</p>
                     </div>
                     <button 
                       onClick={() => setBlockUnapproved(!blockUnapproved)}
-                      className={`w-11 h-6 rounded-full border-2 border-black transition relative ${blockUnapproved ? 'bg-green-400' : 'bg-gray-200'}`}
+                      className={`w-11 h-6 rounded-full border border-white/20 transition relative ${blockUnapproved ? 'bg-emerald-500' : 'bg-neutral-700'}`}
                     >
-                      <span className={`w-4 h-4 rounded-full bg-white border border-black absolute top-0.5 transition-all ${blockUnapproved ? 'left-5' : 'left-0.5'}`} />
+                      <span className={`w-4 h-4 rounded-full bg-white absolute top-0.5 transition-all ${blockUnapproved ? 'left-5' : 'left-0.5'}`} />
                     </button>
                   </div>
 
@@ -835,12 +835,12 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
 
                 {/* YAML editor */}
                 <div>
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Runtime YAML Config</label>
+                  <label className="block text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1.5">Runtime YAML Config</label>
                   <textarea 
                     value={yamlConfig} 
                     onChange={(e) => setYamlConfig(e.target.value)} 
                     rows={8}
-                    className="w-full font-mono text-[10px] bg-gray-900 text-green-400 p-3 rounded-xl border-2 border-black focus:outline-none focus:ring-0 leading-relaxed"
+                    className="w-full font-mono text-[10px] bg-black/90 text-emerald-400 p-3 rounded-xl border border-white/20 focus:outline-none focus:border-[#ffc700] leading-relaxed"
                   />
                 </div>
               </div>
@@ -848,7 +848,7 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
               <div className="mt-4">
                 <button 
                   onClick={() => showToast("Gateway Policy applied successfully!", "success")}
-                  className="w-full bg-black text-white hover:bg-yellow-400 hover:text-black transition py-3 rounded-lg border-2 border-black font-bold uppercase text-[10px]"
+                  className="w-full bg-[#ffc700] text-black hover:bg-yellow-400 transition py-3 rounded-lg border border-black font-black uppercase text-[10px]"
                 >
                   Apply Gateway Rules
                 </button>
@@ -859,29 +859,29 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
 
           {/* COLUMN 2: AUDIT LOGS & EXPORT (6 COLS) */}
           <div className="lg:col-span-6 flex flex-col">
-            <div className="bg-white border-4 border-black rounded-xl p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex-grow flex flex-col justify-between">
+            <div className="bg-[#141519]/80 backdrop-blur-xl border border-white/15 rounded-2xl p-6 shadow-xl flex-grow flex flex-col justify-between text-white">
               <div>
-                <div className="flex justify-between items-center mb-4 pb-3 border-b-2 border-gray-100">
+                <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
                   <div className="flex items-center gap-2">
-                    <FileCode size={20} className="text-black" />
-                    <h2 className={`text-xl uppercase ${oswald.className}`}>Audit Vault Logs</h2>
+                    <FileCode size={20} className="text-[#ffc700]" />
+                    <h2 className={`text-xl uppercase ${oswald.className} text-white`}>Audit Vault Logs</h2>
                   </div>
-                  <span className="text-[10px] font-bold text-gray-400 uppercase">Immutable Vault</span>
+                  <span className="text-[10px] font-bold text-neutral-400 uppercase">Immutable Vault</span>
                 </div>
 
                 <div className="space-y-4 max-h-[360px] overflow-y-auto pr-1">
                   {audits.map((item, idx) => {
                     return (
-                      <div key={idx} className="bg-gray-50 border-2 border-black p-3.5 rounded-xl flex items-start gap-3">
-                        <div className={`p-1.5 rounded-lg border border-black mt-0.5 ${item.status === 'success' ? 'bg-green-200' : item.status === 'error' ? 'bg-red-200' : item.status === 'warning' ? 'bg-yellow-200' : 'bg-blue-200'}`}>
+                      <div key={idx} className="bg-black/40 border border-white/15 p-3.5 rounded-xl flex items-start gap-3">
+                        <div className={`p-1.5 rounded-lg border mt-0.5 ${item.status === 'success' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' : item.status === 'error' ? 'bg-red-500/20 text-red-400 border-red-500/40' : item.status === 'warning' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40' : 'bg-blue-500/20 text-blue-400 border-blue-500/40'}`}>
                           <ShieldCheck size={14} />
                         </div>
                         <div className="flex-grow">
                           <div className="flex justify-between items-center">
-                            <h4 className="text-[10px] font-black uppercase leading-none">{item.event}</h4>
-                            <span className="text-[8px] font-bold text-gray-400 uppercase leading-none">{item.time}</span>
+                            <h4 className="text-[10px] font-black uppercase leading-none text-white">{item.event}</h4>
+                            <span className="text-[8px] font-bold text-neutral-400 uppercase leading-none">{item.time}</span>
                           </div>
-                          <p className="text-[10px] text-gray-600 font-medium leading-tight mt-1">{item.details}</p>
+                          <p className="text-[10px] text-neutral-300 font-medium leading-tight mt-1">{item.details}</p>
                         </div>
                       </div>
                     );
@@ -892,7 +892,7 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
               <div className="mt-6">
                 <button 
                   onClick={triggerEvidenceExport}
-                  className="w-full bg-yellow-400 text-black hover:bg-black hover:text-white transition py-4 rounded-xl border-4 border-black font-black uppercase text-xs tracking-wider shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5 flex items-center justify-center gap-2"
+                  className="w-full bg-[#ffc700] text-black hover:bg-yellow-400 transition py-4 rounded-xl border border-black font-black uppercase text-xs tracking-wider shadow-lg flex items-center justify-center gap-2"
                 >
                   <Download size={16} /> Download Evidence Pack
                 </button>
