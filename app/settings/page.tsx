@@ -395,7 +395,7 @@ export default function SettingsPage() {
   const hiredIndividuals = paidAgents.filter(a => a.name !== "Governance Control Tower");
 
   return (
-    <div className={`min-h-screen bg-[#0e0f12] text-white relative overflow-x-hidden selection:bg-[#ffc700] selection:text-black ${inter.className}`}>
+    <div className={`min-h-screen bg-[#0e0f12] text-white relative selection:bg-[#ffc700] selection:text-black ${inter.className}`}>
       
       {/* 1. CINEMATIC FULL-SCREEN AMBIENT BACKGROUND VIDEO LAYER */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none select-none">
@@ -407,21 +407,21 @@ export default function SettingsPage() {
           loop
           muted
           playsInline
-          className="w-full h-full object-cover opacity-55 scale-100 transition-opacity duration-700"
+          className="w-full h-full object-cover opacity-65 scale-100 transition-opacity duration-700"
         />
         {/* Soft readable overlay that lets the AI agent video shine through */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0e0f12]/60 via-[#0e0f12]/45 to-[#0e0f12]/65" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0e0f12]/50 via-[#0e0f12]/35 to-[#0e0f12]/55" />
         {/* Ambient Glow Spheres */}
         <div className="absolute top-1/4 -left-20 w-96 h-96 bg-[#ffc700]/15 rounded-full filter blur-3xl pointer-events-none" />
         <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-yellow-500/10 rounded-full filter blur-3xl pointer-events-none" />
       </div>
 
       {/* 2. TOP NAVBAR */}
-      <nav className="bg-[#141519]/90 backdrop-blur-xl border-b border-neutral-800 px-6 py-4 flex items-center justify-between sticky top-0 z-50 shadow-md">
+      <nav className="bg-[#141519]/80 backdrop-blur-xl border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-50 shadow-md">
         <div className="flex items-center gap-4">
           <Link 
             href="/" 
-            className="bg-neutral-900 text-white p-2 rounded-xl hover:bg-[#ffc700] hover:text-black transition border border-neutral-700 flex items-center justify-center shrink-0 shadow-sm"
+            className="bg-black/50 text-white p-2 rounded-xl hover:bg-[#ffc700] hover:text-black transition border border-white/15 flex items-center justify-center shrink-0 shadow-sm"
             aria-label="Back to Home"
           >
             <ArrowLeft size={18} />
@@ -429,7 +429,7 @@ export default function SettingsPage() {
           <div>
             <h1 className={`text-2xl md:text-3xl font-black uppercase tracking-wider ${oswald.className} flex items-center gap-2`}>
               <span>SETTINGS</span>
-              <span className="text-[#ffc700] text-sm font-sans font-semibold tracking-normal normal-case border border-neutral-700 bg-neutral-900/80 px-2.5 py-0.5 rounded-full hidden sm:inline-block">
+              <span className="text-[#ffc700] text-sm font-sans font-semibold tracking-normal normal-case border border-white/15 bg-black/50 px-2.5 py-0.5 rounded-full hidden sm:inline-block">
                 Workspace Console
               </span>
             </h1>
@@ -440,7 +440,7 @@ export default function SettingsPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={handleNextAgent}
-            className="hidden md:flex items-center gap-2 bg-neutral-900/90 hover:bg-neutral-800 border border-neutral-700 text-neutral-300 hover:text-white px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow-sm"
+            className="hidden md:flex items-center gap-2 bg-black/50 hover:bg-black/70 border border-white/15 text-neutral-300 hover:text-white px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow-sm"
           >
             <Shuffle size={13} className="text-[#ffc700]" />
             <span>Agent: <strong className="text-white">{currentAgent.name}</strong></span>
@@ -454,13 +454,13 @@ export default function SettingsPage() {
 
       {/* 3. WIDE RESPONSIVE DASHBOARD LAYOUT */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
 
-          {/* LEFT RAIL / SIDEBAR (3 Columns - PINNED TO SCREEN, DOES NOT SCROLL WITH RIGHT PART) */}
-          <aside className="lg:col-span-3 space-y-6 lg:sticky lg:top-24 lg:self-start">
+          {/* LEFT RAIL / SIDEBAR (3 Columns - PINNED TO SCREEN, NEVER SCROLLS WITH RIGHT PART) */}
+          <aside className="lg:col-span-3 space-y-6 lg:sticky lg:top-24 lg:self-start z-20">
             
             {/* QUICK JUMP NAVIGATION */}
-            <div className="bg-[#16171b]/95 backdrop-blur-xl border border-neutral-800 rounded-3xl p-5 shadow-xl">
+            <div className="bg-[#121316]/60 backdrop-blur-md border border-white/10 rounded-3xl p-5 shadow-xl">
               <h4 className="text-xs font-black uppercase tracking-wider text-neutral-400 mb-3 px-2">
                 Quick Jump
               </h4>
@@ -497,14 +497,14 @@ export default function SettingsPage() {
             </div>
 
             {/* ACTIVE TEAM SUMMARY BADGE */}
-            <div className="bg-[#16171b]/95 backdrop-blur-xl border border-neutral-800 rounded-3xl p-5 shadow-xl">
+            <div className="bg-[#121316]/60 backdrop-blur-md border border-white/10 rounded-3xl p-5 shadow-xl">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold uppercase text-neutral-400">My Active Team</span>
-                <span className="text-xs font-bold uppercase bg-green-950 text-green-400 border border-green-800 px-2.5 py-0.5 rounded-full">
+                <span className="text-xs font-bold uppercase bg-green-950/80 text-green-400 border border-green-800/80 px-2.5 py-0.5 rounded-full">
                   {paidAgents.length} Running
                 </span>
               </div>
-              <p className="text-[11px] text-neutral-500 leading-relaxed">
+              <p className="text-[11px] text-neutral-400 leading-relaxed">
                 All {paidAgents.length} provisioned AI staff members are active in your workspace.
               </p>
             </div>
@@ -515,7 +515,7 @@ export default function SettingsPage() {
           <div className="lg:col-span-9 space-y-8">
 
             {/* SECTION 1: PROFILE DETAILS */}
-            <section id="profile" className="bg-[#16171b]/95 backdrop-blur-xl border border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-2xl scroll-mt-24">
+            <section id="profile" className="bg-[#121316]/60 backdrop-blur-xl border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl scroll-mt-24">
               <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
                 <div className="bg-[#ffc700] text-black p-2.5 rounded-xl shadow-sm">
                   <UserIcon size={22} />
@@ -525,20 +525,20 @@ export default function SettingsPage() {
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-xs font-bold uppercase text-neutral-400 mb-2">
+                  <label className="block text-xs font-bold uppercase text-neutral-300 mb-2">
                     Email Address
                   </label>
                   <input 
                     type="text" 
                     value={email} 
                     disabled 
-                    className="w-full px-4 py-3.5 bg-neutral-900 border border-neutral-800 rounded-xl text-neutral-500 font-mono text-sm cursor-not-allowed" 
+                    className="w-full px-4 py-3.5 bg-black/40 border border-white/10 rounded-xl text-neutral-400 font-mono text-sm cursor-not-allowed backdrop-blur-sm" 
                   />
-                  <p className="text-xs text-neutral-500 mt-2">Email address is verified and permanently linked to your workspace.</p>
+                  <p className="text-xs text-neutral-400 mt-2">Email address is verified and permanently linked to your workspace.</p>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase text-neutral-400 mb-2">
+                  <label className="block text-xs font-bold uppercase text-neutral-300 mb-2">
                     Full Name
                   </label>
                   <input 
@@ -546,7 +546,7 @@ export default function SettingsPage() {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="Ex. John Doe"
-                    className="w-full px-4 py-3.5 bg-neutral-900 border border-neutral-700 rounded-xl text-white focus:outline-none focus:border-[#ffc700] transition text-sm font-medium" 
+                    className="w-full px-4 py-3.5 bg-black/50 border border-white/20 rounded-xl text-white focus:outline-none focus:border-[#ffc700] transition text-sm font-medium backdrop-blur-sm" 
                   />
                 </div>
 
@@ -562,14 +562,14 @@ export default function SettingsPage() {
             </section>
 
             {/* SECTION 2: DEVELOPER API CONSOLE */}
-            <section id="api-console" className="bg-[#16171b]/95 backdrop-blur-xl border border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-2xl scroll-mt-24">
+            <section id="api-console" className="bg-[#121316]/60 backdrop-blur-xl border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl scroll-mt-24">
               <h2 className="text-2xl font-bold mb-3 flex items-center gap-3">
                 <div className="bg-[#ffc700] text-black p-2.5 rounded-xl shadow-sm">
                   <Key size={22} />
                 </div>
                 <span>Developer API Console</span>
               </h2>
-              <p className="text-xs text-neutral-400 mb-6 leading-relaxed">
+              <p className="text-xs text-neutral-300 mb-6 leading-relaxed">
                 Generate custom developer API keys to integrate Pixorva agents into external Slack channels, GitHub webhooks, or programmatic workflows.
               </p>
 
@@ -580,7 +580,7 @@ export default function SettingsPage() {
                   placeholder="Key name (e.g. Slack bot, CI pipeline)"
                   value={newKeyName}
                   onChange={(e) => setNewKeyName(e.target.value)}
-                  className="flex-grow px-4 py-3 bg-neutral-900 border border-neutral-700 rounded-xl text-xs font-bold text-white focus:outline-none focus:border-[#ffc700] transition"
+                  className="flex-grow px-4 py-3 bg-black/50 border border-white/20 rounded-xl text-xs font-bold text-white focus:outline-none focus:border-[#ffc700] transition backdrop-blur-sm"
                 />
                 <button
                   onClick={handleCreateApiKey}
@@ -592,17 +592,17 @@ export default function SettingsPage() {
 
               {/* Keys List */}
               {apiKeys.length === 0 ? (
-                <div className="border border-dashed border-neutral-800 p-6 rounded-2xl text-center text-xs text-neutral-500 font-bold bg-neutral-900/50">
+                <div className="border border-dashed border-white/15 p-6 rounded-2xl text-center text-xs text-neutral-400 font-bold bg-black/30 backdrop-blur-sm">
                   No API keys generated yet. Enter a description above to create one.
                 </div>
               ) : (
                 <div className="space-y-4">
                   {apiKeys.map(k => (
-                    <div key={k.id} className="flex flex-col border border-neutral-800 p-5 rounded-2xl bg-neutral-900/80 gap-3">
+                    <div key={k.id} className="flex flex-col border border-white/15 p-5 rounded-2xl bg-black/40 backdrop-blur-sm gap-3">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div>
                           <p className="font-bold text-sm uppercase text-white mb-1">{k.name}</p>
-                          <span className="text-[11px] text-neutral-500 font-medium block">Created on {k.created}</span>
+                          <span className="text-[11px] text-neutral-400 font-medium block">Created on {k.created}</span>
                         </div>
                         <div className="flex gap-2">
                           <button
@@ -610,30 +610,30 @@ export default function SettingsPage() {
                               navigator.clipboard.writeText(k.token);
                               showToast("API Key copied to clipboard!", "success");
                             }}
-                            className="bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 px-3.5 py-1.5 rounded-lg text-[10px] font-bold uppercase text-white transition flex items-center gap-1"
+                            className="bg-black/60 hover:bg-neutral-800 border border-white/20 px-3.5 py-1.5 rounded-lg text-[10px] font-bold uppercase text-white transition flex items-center gap-1"
                           >
                             <Copy size={12} />
                             <span>Copy</span>
                           </button>
                           <button
                             onClick={() => handleRevokeApiKey(k.id, k.name)}
-                            className="bg-red-950/60 hover:bg-red-900 border border-red-800/80 text-red-300 px-3.5 py-1.5 rounded-lg text-[10px] font-bold uppercase transition"
+                            className="bg-red-950/70 hover:bg-red-900 border border-red-800/80 text-red-300 px-3.5 py-1.5 rounded-lg text-[10px] font-bold uppercase transition"
                           >
                             Revoke
                           </button>
                         </div>
                       </div>
 
-                      <div className="border-t border-neutral-800 pt-3">
-                        <code className="text-xs bg-black/60 border border-neutral-800 px-3 py-1.5 rounded font-mono block text-neutral-300 w-fit select-all mb-3">
+                      <div className="border-t border-white/10 pt-3">
+                        <code className="text-xs bg-black/70 border border-white/15 px-3 py-1.5 rounded font-mono block text-neutral-300 w-fit select-all mb-3">
                           {k.token}
                         </code>
                         
-                        <div className="flex justify-between items-center text-[10px] font-bold uppercase text-neutral-400 mb-1.5">
+                        <div className="flex justify-between items-center text-[10px] font-bold uppercase text-neutral-300 mb-1.5">
                           <span>Live Daily Quota Usage</span>
                           <span className="text-white font-mono">{k.usedToday.toLocaleString()} / {k.dailyLimit.toLocaleString()} tokens</span>
                         </div>
-                        <div className="w-full bg-neutral-800 rounded-full h-2 overflow-hidden">
+                        <div className="w-full bg-black/60 rounded-full h-2 overflow-hidden border border-white/10">
                           <div 
                             className="bg-[#ffc700] h-full rounded-full transition-all duration-300" 
                             style={{ width: `${Math.min((k.usedToday / k.dailyLimit) * 100, 100)}%` }} 
@@ -648,14 +648,14 @@ export default function SettingsPage() {
 
             {/* SECTION 3: INTERACTIVE API PLAYGROUND */}
             {apiKeys.length > 0 && (
-              <section id="playground" className="bg-[#16171b]/95 backdrop-blur-xl border border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-2xl scroll-mt-24">
+              <section id="playground" className="bg-[#121316]/60 backdrop-blur-xl border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl scroll-mt-24">
                 <h2 className="text-2xl font-bold mb-3 flex items-center gap-3">
                   <div className="bg-[#ffc700] text-black p-2.5 rounded-xl shadow-sm">
                     <Code2 size={22} />
                   </div>
                   <span>Interactive API Sandbox</span>
                 </h2>
-                <p className="text-xs text-neutral-400 mb-6 leading-relaxed">
+                <p className="text-xs text-neutral-300 mb-6 leading-relaxed">
                   Test your live integration keys directly inside this playground sandbox. Execution logs and quota increment in real time.
                 </p>
 
@@ -663,44 +663,44 @@ export default function SettingsPage() {
                   {/* Left Controls */}
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-xs font-bold uppercase text-neutral-400 mb-1.5">Select Authorization Key</label>
+                      <label className="block text-xs font-bold uppercase text-neutral-300 mb-1.5">Select Authorization Key</label>
                       <select
                         value={selectedPlaygroundKey}
                         onChange={(e) => setSelectedPlaygroundKey(e.target.value)}
-                        className="w-full bg-neutral-900 border border-neutral-700 rounded-xl p-3 text-xs font-bold text-white focus:outline-none focus:border-[#ffc700]"
+                        className="w-full bg-black/50 border border-white/20 rounded-xl p-3 text-xs font-bold text-white focus:outline-none focus:border-[#ffc700] backdrop-blur-sm"
                       >
                         {apiKeys.map(k => (
-                          <option key={k.id} value={k.token}>{k.name} ({k.token.slice(0, 12)}...)</option>
+                          <option key={k.id} value={k.token} className="bg-[#121316] text-white">{k.name} ({k.token.slice(0, 12)}...)</option>
                         ))}
                       </select>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold uppercase text-neutral-400 mb-1.5">Target AI Agent</label>
+                      <label className="block text-xs font-bold uppercase text-neutral-300 mb-1.5">Target AI Agent</label>
                       {availablePlaygroundAgents.length === 0 ? (
-                        <div className="border border-dashed border-neutral-800 p-3 rounded-xl text-center text-xs font-bold text-neutral-500 bg-neutral-900">
+                        <div className="border border-dashed border-white/15 p-3 rounded-xl text-center text-xs font-bold text-neutral-400 bg-black/30">
                           No hired agents found.
                         </div>
                       ) : (
                         <select
                           value={selectedAgentId}
                           onChange={(e) => setSelectedAgentId(e.target.value)}
-                          className="w-full bg-neutral-900 border border-neutral-700 rounded-xl p-3 text-xs font-bold text-white focus:outline-none focus:border-[#ffc700]"
+                          className="w-full bg-black/50 border border-white/20 rounded-xl p-3 text-xs font-bold text-white focus:outline-none focus:border-[#ffc700] backdrop-blur-sm"
                         >
                           {availablePlaygroundAgents.map(a => (
-                            <option key={a.id} value={a.id}>{a.name}</option>
+                            <option key={a.id} value={a.id} className="bg-[#121316] text-white">{a.name}</option>
                           ))}
                         </select>
                       )}
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold uppercase text-neutral-400 mb-1.5">Prompt Message</label>
+                      <label className="block text-xs font-bold uppercase text-neutral-300 mb-1.5">Prompt Message</label>
                       <textarea
                         rows={3}
                         value={playgroundPrompt}
                         onChange={(e) => setPlaygroundPrompt(e.target.value)}
-                        className="w-full bg-neutral-900 border border-neutral-700 rounded-xl p-3 text-xs font-medium text-white focus:outline-none focus:border-[#ffc700] resize-none"
+                        className="w-full bg-black/50 border border-white/20 rounded-xl p-3 text-xs font-medium text-white focus:outline-none focus:border-[#ffc700] resize-none backdrop-blur-sm"
                       />
                     </div>
 
@@ -717,8 +717,8 @@ export default function SettingsPage() {
                   {/* Right Viewports */}
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-xs font-bold uppercase text-neutral-400 mb-1.5">Equivalent Curl Request</label>
-                      <div className="bg-black/90 border border-neutral-800 text-green-400 p-4 rounded-xl font-mono text-[10px] overflow-x-auto select-all max-h-[140px]">
+                      <label className="block text-xs font-bold uppercase text-neutral-300 mb-1.5">Equivalent Curl Request</label>
+                      <div className="bg-black/70 border border-white/15 text-green-400 p-4 rounded-xl font-mono text-[10px] overflow-x-auto select-all max-h-[140px] backdrop-blur-sm">
                         <pre>
 {`curl -X POST "${typeof window !== 'undefined' ? window.location.origin : 'https://pixorva.com'}/api/run-agent" \\
 -H "Content-Type: application/json" \\
@@ -733,16 +733,16 @@ export default function SettingsPage() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold uppercase text-neutral-400 mb-1.5">Execution Result</label>
-                      <div className="bg-neutral-900 border border-neutral-800 p-4 rounded-xl font-mono text-xs min-h-[120px] max-h-[150px] overflow-y-auto text-neutral-200">
+                      <label className="block text-xs font-bold uppercase text-neutral-300 mb-1.5">Execution Result</label>
+                      <div className="bg-black/50 border border-white/15 p-4 rounded-xl font-mono text-xs min-h-[120px] max-h-[150px] overflow-y-auto text-neutral-200 backdrop-blur-sm">
                         {playgroundLoading ? (
-                          <span className="text-neutral-500 font-bold flex items-center gap-2">
+                          <span className="text-neutral-400 font-bold flex items-center gap-2">
                             <Loader2 size={14} className="animate-spin text-[#ffc700]" /> Streaming model response...
                           </span>
                         ) : playgroundResult ? (
                           <pre className="whitespace-pre-wrap">{playgroundResult}</pre>
                         ) : (
-                          <span className="text-neutral-500 italic">Execute run above to view response outputs.</span>
+                          <span className="text-neutral-400 italic">Execute run above to view response outputs.</span>
                         )}
                       </div>
                     </div>
@@ -752,37 +752,37 @@ export default function SettingsPage() {
             )}
 
             {/* SECTION 4: BILLING & RECEIPTS */}
-            <section id="billing" className="bg-[#16171b]/95 backdrop-blur-xl border border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-2xl scroll-mt-24">
+            <section id="billing" className="bg-[#121316]/60 backdrop-blur-xl border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl scroll-mt-24">
               <h2 className="text-2xl font-bold mb-3 flex items-center gap-3">
                 <div className="bg-[#ffc700] text-black p-2.5 rounded-xl shadow-sm">
                   <CreditCard size={22} />
                 </div>
                 <span>Receipt Billing History</span>
               </h2>
-              <p className="text-xs text-neutral-400 mb-6 leading-relaxed">
+              <p className="text-xs text-neutral-300 mb-6 leading-relaxed">
                 View recent payment receipts and corresponding tax invoices compiled for your account subscriptions.
               </p>
 
               <div className="space-y-4">
                 {payments.length === 0 ? (
-                  <div className="border border-dashed border-neutral-800 p-6 rounded-2xl text-center text-xs text-neutral-500 font-bold bg-neutral-900/50">
+                  <div className="border border-dashed border-white/15 p-6 rounded-2xl text-center text-xs text-neutral-400 font-bold bg-black/30 backdrop-blur-sm">
                     No payments recorded yet. Invoices will automatically appear here once subscriptions are created.
                   </div>
                 ) : (
                   payments.map(p => (
-                    <div key={p.id} className="flex flex-col sm:flex-row sm:items-center justify-between border border-neutral-800 p-4 rounded-2xl bg-neutral-900/80 gap-4">
+                    <div key={p.id} className="flex flex-col sm:flex-row sm:items-center justify-between border border-white/15 p-4 rounded-2xl bg-black/40 backdrop-blur-sm gap-4">
                       <div>
                         <p className="font-bold text-sm uppercase text-white mb-1">{p.planName}</p>
-                        <span className="text-xs text-neutral-500 font-mono block">Paid on {p.created} • Razorpay {p.razorpayId}</span>
+                        <span className="text-xs text-neutral-400 font-mono block">Paid on {p.created} • Razorpay {p.razorpayId}</span>
                       </div>
                       <div className="flex items-center gap-4">
-                        <span className="font-bold text-xs uppercase text-green-400 bg-green-950/60 px-3 py-1 rounded-lg border border-green-800/80">
+                        <span className="font-bold text-xs uppercase text-green-400 bg-green-950/80 px-3 py-1 rounded-lg border border-green-800/80">
                           ₹{p.amount.toLocaleString()} Paid
                         </span>
                         <Link 
                           href={`/sample_receipt.html?amount=${p.amount}&plan=${encodeURIComponent(p.planName)}&razorpayId=${p.razorpayId}`} 
                           target="_blank" 
-                          className="bg-neutral-800 hover:bg-[#ffc700] hover:text-black border border-neutral-700 px-3 py-1.5 rounded-lg text-xs font-bold uppercase text-white transition shadow-sm"
+                          className="bg-black/60 hover:bg-[#ffc700] hover:text-black border border-white/20 px-3 py-1.5 rounded-lg text-xs font-bold uppercase text-white transition shadow-sm"
                         >
                           View Invoice
                         </Link>
@@ -794,20 +794,20 @@ export default function SettingsPage() {
             </section>
 
             {/* SECTION 5: ACTIVE SESSION SECURITY */}
-            <section id="security" className="bg-[#16171b]/95 backdrop-blur-xl border border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-2xl scroll-mt-24">
+            <section id="security" className="bg-[#121316]/60 backdrop-blur-xl border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl scroll-mt-24">
               <h2 className="text-2xl font-bold mb-3 flex items-center gap-3">
                 <div className="bg-[#ffc700] text-black p-2.5 rounded-xl shadow-sm">
                   <Smartphone size={22} />
                 </div>
                 <span>Active Session Security</span>
               </h2>
-              <p className="text-xs text-neutral-400 mb-6 leading-relaxed">
+              <p className="text-xs text-neutral-300 mb-6 leading-relaxed">
                 Monitor authentication devices signed into your Pixorva account. Revoke older sessions if you suspect security friction.
               </p>
 
               <div className="space-y-3 mb-6">
                 {activeSession ? (
-                  <div className="flex justify-between items-center border border-neutral-800 p-4 rounded-2xl bg-neutral-900/80">
+                  <div className="flex justify-between items-center border border-white/15 p-4 rounded-2xl bg-black/40 backdrop-blur-sm">
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-sm text-white">{activeSession.device}</span>
@@ -815,13 +815,13 @@ export default function SettingsPage() {
                           Current Session
                         </span>
                       </div>
-                      <span className="text-xs text-neutral-500 font-mono mt-1 block">
+                      <span className="text-xs text-neutral-400 font-mono mt-1 block">
                         {activeSession.location} • IP: {activeSession.ip}
                       </span>
                     </div>
                   </div>
                 ) : (
-                  <div className="border border-dashed border-neutral-800 p-4 rounded-2xl text-center text-xs text-neutral-500 font-bold bg-neutral-900/50">
+                  <div className="border border-dashed border-white/15 p-4 rounded-2xl text-center text-xs text-neutral-400 font-bold bg-black/30 backdrop-blur-sm">
                     Loading session logs...
                   </div>
                 )}
@@ -829,34 +829,34 @@ export default function SettingsPage() {
 
               <button
                 onClick={handleRevokeAllSessions}
-                className="w-full bg-red-950/60 hover:bg-red-900 text-red-300 py-3.5 px-6 border border-red-800 rounded-xl font-black uppercase text-xs tracking-wider transition shadow-md flex items-center justify-center gap-2"
+                className="w-full bg-red-950/70 hover:bg-red-900 text-red-300 py-3.5 px-6 border border-red-800 rounded-xl font-black uppercase text-xs tracking-wider transition shadow-md flex items-center justify-center gap-2"
               >
                 Revoke All Other Sessions
               </button>
             </section>
 
             {/* SECTION 6: COMPLIANCE & DATA ERASURE */}
-            <section id="compliance" className="bg-[#16171b]/95 backdrop-blur-xl border border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-2xl scroll-mt-24">
+            <section id="compliance" className="bg-[#121316]/60 backdrop-blur-xl border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl scroll-mt-24">
               <h2 className="text-2xl font-bold mb-3 flex items-center gap-3">
                 <div className="bg-[#ffc700] text-black p-2.5 rounded-xl shadow-sm">
                   <Shield size={22} />
                 </div>
                 <span>Compliance & Data Sovereignty</span>
               </h2>
-              <p className="text-xs text-neutral-400 mb-6 leading-relaxed">
+              <p className="text-xs text-neutral-300 mb-6 leading-relaxed">
                 In accordance with India DPDPA, EU GDPR, and CCPA standards, you hold full sovereignty over your stored data. Access data portability archives or request total erasure here.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <button
                   onClick={handleDownloadArchive}
-                  className="bg-neutral-900 hover:bg-neutral-800 text-white py-3.5 px-6 rounded-xl border border-neutral-700 font-black uppercase text-xs tracking-wider transition flex items-center justify-center gap-2"
+                  className="bg-black/50 hover:bg-neutral-800 text-white py-3.5 px-6 rounded-xl border border-white/20 font-black uppercase text-xs tracking-wider transition flex items-center justify-center gap-2 backdrop-blur-sm"
                 >
                   Download Data Archive
                 </button>
                 <button
                   onClick={() => setShowErasureModal(true)}
-                  className="bg-red-950/60 hover:bg-red-900 text-red-300 py-3.5 px-6 rounded-xl border border-red-800 font-black uppercase text-xs tracking-wider transition flex items-center justify-center gap-2"
+                  className="bg-red-950/70 hover:bg-red-900 text-red-300 py-3.5 px-6 rounded-xl border border-red-800 font-black uppercase text-xs tracking-wider transition flex items-center justify-center gap-2 backdrop-blur-sm"
                 >
                   Request Data Erasure
                 </button>
@@ -864,7 +864,7 @@ export default function SettingsPage() {
             </section>
 
             {/* SECTION 7: SUBSCRIPTION & PLAN STATUS */}
-            <section id="subscriptions" className="bg-[#16171b]/95 backdrop-blur-xl border border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-2xl scroll-mt-24">
+            <section id="subscriptions" className="bg-[#121316]/60 backdrop-blur-xl border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl scroll-mt-24">
               <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
                 <div className="bg-[#ffc700] text-black p-2.5 rounded-xl shadow-sm">
                   <Zap size={22} />
@@ -875,13 +875,13 @@ export default function SettingsPage() {
               <div className="space-y-6">
                 
                 {/* 1. Bundled Plans */}
-                <div className="border border-neutral-800 p-6 rounded-2xl bg-neutral-900/80 shadow-md">
-                  <div className="flex justify-between items-center mb-4 pb-3 border-b border-neutral-800">
+                <div className="border border-white/15 p-6 rounded-2xl bg-black/40 backdrop-blur-sm shadow-md">
+                  <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
                     <h3 className="font-bold text-sm uppercase text-white flex items-center gap-2">
                       <CreditCard size={18} className="text-[#ffc700]" />
                       Growth Pro / Enterprise Bundle
                     </h3>
-                    <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border ${plan !== "free" ? "bg-green-950 text-green-400 border-green-800" : "bg-neutral-800 text-neutral-400 border-neutral-700"}`}>
+                    <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border ${plan !== "free" ? "bg-green-950/80 text-green-400 border-green-800" : "bg-neutral-800 text-neutral-400 border-neutral-700"}`}>
                       {plan !== "free" ? "Active" : "Inactive"}
                     </span>
                   </div>
@@ -889,18 +889,18 @@ export default function SettingsPage() {
                   {plan === "growth_pro" && (
                     <div className="space-y-4">
                       <p className={`text-xl font-black uppercase text-white ${oswald.className}`}>Growth Pro Plan (₹1,999/mo)</p>
-                      <div className="w-full bg-neutral-900 border border-neutral-800 rounded-xl p-4">
+                      <div className="w-full bg-black/50 border border-white/15 rounded-xl p-4">
                         <div className="flex justify-between items-center mb-2">
-                          <span className="text-xs font-bold uppercase text-neutral-400">Plan Slot Utilisation</span>
+                          <span className="text-xs font-bold uppercase text-neutral-300">Plan Slot Utilisation</span>
                           <span className="text-xs font-bold uppercase text-white">{subscriptionAgents.length} / 4 slots</span>
                         </div>
-                        <div className="w-full bg-neutral-800 rounded-full h-2.5 overflow-hidden">
+                        <div className="w-full bg-black/60 rounded-full h-2.5 overflow-hidden border border-white/10">
                           <div className="bg-[#ffc700] h-full rounded-full" style={{ width: `${(subscriptionAgents.length / 4) * 100}%` }} />
                         </div>
                       </div>
                       <button
                         onClick={() => setShowCancelModal(true)}
-                        className="w-full bg-red-950/60 hover:bg-red-900 text-red-300 py-2.5 rounded-xl border border-red-800 font-bold uppercase text-xs tracking-wider transition"
+                        className="w-full bg-red-950/70 hover:bg-red-900 text-red-300 py-2.5 rounded-xl border border-red-800 font-bold uppercase text-xs tracking-wider transition"
                       >
                         Cancel Growth Pro Subscription
                       </button>
@@ -910,10 +910,10 @@ export default function SettingsPage() {
                   {plan === "enterprise" && (
                     <div className="space-y-4">
                       <p className={`text-xl font-black uppercase text-white ${oswald.className}`}>Enterprise Plan (₹4,999/mo)</p>
-                      <p className="text-xs text-neutral-400">Allows unlimited hires and custom integrations across all channels.</p>
+                      <p className="text-xs text-neutral-300">Allows unlimited hires and custom integrations across all channels.</p>
                       <button
                         onClick={() => setShowCancelModal(true)}
-                        className="w-full bg-red-950/60 hover:bg-red-900 text-red-300 py-2.5 rounded-xl border border-red-800 font-bold uppercase text-xs tracking-wider transition"
+                        className="w-full bg-red-950/70 hover:bg-red-900 text-red-300 py-2.5 rounded-xl border border-red-800 font-bold uppercase text-xs tracking-wider transition"
                       >
                         Cancel Enterprise Subscription
                       </button>
@@ -922,7 +922,7 @@ export default function SettingsPage() {
 
                   {plan === "free" && (
                     <div className="space-y-3">
-                      <p className="text-xs text-neutral-500 italic">No bundled platform plan active.</p>
+                      <p className="text-xs text-neutral-400 italic">No bundled platform plan active.</p>
                       <Link href="/pricing" className="text-xs font-bold uppercase text-[#ffc700] hover:underline block">
                         Browse Platform Plans →
                       </Link>
@@ -931,13 +931,13 @@ export default function SettingsPage() {
                 </div>
 
                 {/* 2. Governance Control Tower Plan */}
-                <div className="border border-neutral-800 p-6 rounded-2xl bg-neutral-900/80 shadow-md">
-                  <div className="flex justify-between items-center mb-4 pb-3 border-b border-neutral-800">
+                <div className="border border-white/15 p-6 rounded-2xl bg-black/40 backdrop-blur-sm shadow-md">
+                  <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
                     <h3 className="font-bold text-sm uppercase text-white flex items-center gap-2">
                       <Shield size={18} className="text-[#ffc700]" />
                       Governance Gate
                     </h3>
-                    <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border ${hasGovernance ? "bg-green-950 text-green-400 border-green-800" : "bg-neutral-800 text-neutral-400 border-neutral-700"}`}>
+                    <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border ${hasGovernance ? "bg-green-950/80 text-green-400 border-green-800" : "bg-neutral-800 text-neutral-400 border-neutral-700"}`}>
                       {hasGovernance ? "Active" : "Inactive"}
                     </span>
                   </div>
@@ -945,17 +945,17 @@ export default function SettingsPage() {
                   {hasGovernance ? (
                     <div className="space-y-4">
                       <p className={`text-xl font-black uppercase text-white ${oswald.className}`}>Governance Control Tower (₹1,999/mo)</p>
-                      <p className="text-xs text-neutral-400 leading-normal">Grants proxy gating, auditing vaults, and admission policy checks.</p>
+                      <p className="text-xs text-neutral-300 leading-normal">Grants proxy gating, auditing vaults, and admission policy checks.</p>
                       <button
                         onClick={() => setShowCancelGovModal(true)}
-                        className="w-full bg-red-950/60 hover:bg-red-900 text-red-300 py-2.5 rounded-xl border border-red-800 font-bold uppercase text-xs tracking-wider transition"
+                        className="w-full bg-red-950/70 hover:bg-red-900 text-red-300 py-2.5 rounded-xl border border-red-800 font-bold uppercase text-xs tracking-wider transition"
                       >
                         Cancel Governance Subscription
                       </button>
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      <p className="text-xs text-neutral-500 italic">Governance Gate is locked.</p>
+                      <p className="text-xs text-neutral-400 italic">Governance Gate is locked.</p>
                       <Link href="/governance/info" className="text-xs font-bold uppercase text-[#ffc700] hover:underline block">
                         Subscribe to Governance Gate →
                       </Link>
@@ -964,19 +964,19 @@ export default function SettingsPage() {
                 </div>
 
                 {/* 3. Individual AI Employee Subscriptions */}
-                <div className="border border-neutral-800 p-6 rounded-2xl bg-neutral-900/80 shadow-md">
-                  <div className="flex justify-between items-center mb-4 pb-3 border-b border-neutral-800">
+                <div className="border border-white/15 p-6 rounded-2xl bg-black/40 backdrop-blur-sm shadow-md">
+                  <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
                     <h3 className="font-bold text-sm uppercase text-white flex items-center gap-2">
                       <User size={18} className="text-[#ffc700]" />
                       Individual AI Employee Subscriptions
                     </h3>
-                    <span className="text-xs font-bold uppercase text-white bg-neutral-800 px-2.5 py-0.5 rounded-full border border-neutral-700">
+                    <span className="text-xs font-bold uppercase text-white bg-black/60 px-2.5 py-0.5 rounded-full border border-white/20">
                       {hiredIndividuals.length} Hired
                     </span>
                   </div>
 
                   {hiredIndividuals.length === 0 ? (
-                    <p className="text-xs text-neutral-500 italic">No individually hired employee subscriptions active.</p>
+                    <p className="text-xs text-neutral-400 italic">No individually hired employee subscriptions active.</p>
                   ) : (
                     <div className="space-y-4">
                       {hiredIndividuals.map((agent) => {
@@ -998,7 +998,7 @@ export default function SettingsPage() {
                         else if (lowerName.includes("sam")) price = "₹499/mo";
 
                         return (
-                          <div key={agent.id} className="flex justify-between items-center border border-neutral-800 p-4 rounded-xl bg-neutral-900">
+                          <div key={agent.id} className="flex justify-between items-center border border-white/15 p-4 rounded-xl bg-black/40 backdrop-blur-sm">
                             <div>
                               <p className="font-bold text-sm uppercase text-white">{agent.name.split("(")[0]}</p>
                               <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wide mt-1 block">
@@ -1007,7 +1007,7 @@ export default function SettingsPage() {
                             </div>
                             <button 
                               onClick={() => setSelectedAgentToCancel(agent)}
-                              className="bg-red-950/60 hover:bg-red-900 text-red-300 px-3.5 py-1.5 rounded-lg border border-red-800 text-[10px] font-bold uppercase transition"
+                              className="bg-red-950/70 hover:bg-red-900 text-red-300 px-3.5 py-1.5 rounded-lg border border-red-800 text-[10px] font-bold uppercase transition"
                             >
                               Cancel Contract
                             </button>
