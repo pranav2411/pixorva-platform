@@ -407,11 +407,12 @@ export default function SettingsPage() {
           loop
           muted
           playsInline
-          className="w-full h-full object-cover opacity-20 filter blur-sm scale-105 transition-opacity duration-1000"
+          className="w-full h-full object-cover opacity-55 scale-100 transition-opacity duration-700"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0e0f12]/90 via-[#0e0f12]/85 to-[#0e0f12]/95" />
-        {/* Glow Spheres */}
-        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-[#ffc700]/10 rounded-full filter blur-3xl pointer-events-none" />
+        {/* Soft readable overlay that lets the AI agent video shine through */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0e0f12]/60 via-[#0e0f12]/45 to-[#0e0f12]/65" />
+        {/* Ambient Glow Spheres */}
+        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-[#ffc700]/15 rounded-full filter blur-3xl pointer-events-none" />
         <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-yellow-500/10 rounded-full filter blur-3xl pointer-events-none" />
       </div>
 
@@ -455,10 +456,10 @@ export default function SettingsPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-          {/* LEFT RAIL / SIDEBAR (3 Columns - STATIC, NOT SCROLLABLE) */}
-          <aside className="lg:col-span-3 space-y-6">
+          {/* LEFT RAIL / SIDEBAR (3 Columns - PINNED TO SCREEN, DOES NOT SCROLL WITH RIGHT PART) */}
+          <aside className="lg:col-span-3 space-y-6 lg:sticky lg:top-24 lg:self-start">
             
-            {/* QUICK JUMP NAVIGATION (STATIC) */}
+            {/* QUICK JUMP NAVIGATION */}
             <div className="bg-[#16171b]/95 backdrop-blur-xl border border-neutral-800 rounded-3xl p-5 shadow-xl">
               <h4 className="text-xs font-black uppercase tracking-wider text-neutral-400 mb-3 px-2">
                 Quick Jump
