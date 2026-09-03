@@ -214,14 +214,37 @@ export default function OnboardingPage() {
     );
   }, [industrySearch]);
 
-  const handleEmailContinue = (e: React.FormEvent) => {
+  const handleEmailContinue = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !email.includes("@")) {
       setError("Please enter a valid email address");
       return;
     }
     setError(null);
-    goToStep(12);
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/auth/check-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const data = await res.json();
+
+      if (data.exists) {
+        showToast("An account with this email already exists! Redirecting to login...", "success");
+        setTimeout(() => {
+          router.push(`/login?email=${encodeURIComponent(email.trim())}`);
+        }, 1000);
+        return;
+      }
+
+      goToStep(12);
+    } catch (err) {
+      goToStep(12);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -235,10 +258,26 @@ export default function OnboardingPage() {
     setError(null);
 
     try {
+      // 1. Double check if email already exists
+      const checkRes = await fetch("/api/auth/check-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const checkData = await checkRes.json();
+
+      if (checkData.exists) {
+        showToast("An account with this email already exists! Redirecting to login...", "success");
+        setTimeout(() => {
+          router.push(`/login?email=${encodeURIComponent(email.trim())}`);
+        }, 1000);
+        return;
+      }
+
       const supabase = createClient();
       // Using signUp triggers the "Confirm Your Email Address" template (no 8-digit code)
       const autoSecurePass = `Px_${Math.random().toString(36).slice(2)}${Date.now()}!`;
-      const { error: signUpError } = await supabase.auth.signUp({
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: email.trim(),
         password: autoSecurePass,
         options: {
@@ -253,6 +292,15 @@ export default function OnboardingPage() {
       });
 
       if (signUpError) throw signUpError;
+
+      // In Supabase, if user already exists, identities array is empty
+      if (signUpData?.user && signUpData.user.identities && signUpData.user.identities.length === 0) {
+        showToast("An account with this email already exists! Redirecting to login...", "success");
+        setTimeout(() => {
+          router.push(`/login?email=${encodeURIComponent(email.trim())}`);
+        }, 1000);
+        return;
+      }
 
       setMagicLinkSent(true);
       showToast("Confirmation email sent! Please check your email inbox.", "success");
