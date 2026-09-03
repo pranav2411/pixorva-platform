@@ -29,6 +29,40 @@ const SHOWCASE_AGENTS = [
   { name: "Sam", role: "Product Strategy", video: "/GIF/Sam.mp4", poster: "/GIF/Sam.png", desc: "Prioritizes user stories, synthesizes customer feedback & aligns roadmaps" },
 ];
 
+function WebsiteFavicon({ url }: { url: string }) {
+  const [hasError, setHasError] = useState(false);
+
+  let domain = "";
+  try {
+    const parsed = new URL(url.startsWith("http") ? url : `https://${url}`);
+    domain = parsed.hostname;
+  } catch {
+    domain = url.replace(/^https?:\/\//, "").split("/")[0];
+  }
+
+  // Google Favicon service with 128px high-resolution icons
+  const faviconUrl = domain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128` : "";
+
+  if (hasError || !domain || !faviconUrl) {
+    return (
+      <div className="bg-[#ffc700]/15 text-[#ffc700] p-2 rounded-xl border border-[#ffc700]/25 shrink-0 w-9 h-9 flex items-center justify-center">
+        <Globe size={16} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white/10 p-1.5 rounded-xl border border-white/15 shrink-0 w-9 h-9 flex items-center justify-center overflow-hidden shadow-sm">
+      <img
+        src={faviconUrl}
+        alt={domain}
+        className="w-5 h-5 object-contain rounded-sm"
+        onError={() => setHasError(true)}
+      />
+    </div>
+  );
+}
+
 export default function SettingsPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -722,7 +756,7 @@ export default function SettingsPage() {
                           >
                             {isEditing ? (
                               <div className="flex-grow flex items-center gap-2">
-                                <Globe size={16} className="text-[#ffc700] shrink-0" />
+                                <WebsiteFavicon url={editingWebsiteUrl || site.url} />
                                 <input
                                   type="text"
                                   value={editingWebsiteUrl}
@@ -749,9 +783,7 @@ export default function SettingsPage() {
                             ) : (
                               <>
                                 <div className="flex items-center gap-3 overflow-hidden">
-                                  <div className="bg-[#ffc700]/15 text-[#ffc700] p-2 rounded-xl border border-[#ffc700]/25 shrink-0">
-                                    <Globe size={16} />
-                                  </div>
+                                  <WebsiteFavicon url={site.url} />
                                   <div className="overflow-hidden">
                                     <a
                                       href={site.url}
