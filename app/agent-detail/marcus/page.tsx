@@ -544,7 +544,22 @@ export default function AgentDetailPage() {
           <p className="text-lg md:text-xl font-bold text-gray-800 leading-snug relative z-10 max-w-xl mx-auto">
             Marcus could have structured {(seconds * 0.03).toFixed(2)} viral referral loops, outbound-invited {(seconds * 6.6).toFixed(0)} leads, and boosted conversions +15%.
           </p>
-          <div className="pt-4 relative z-10">
+          <div className="pt-4 relative z-10 flex flex-col items-center gap-4">
+            <label className="flex items-center gap-2 cursor-pointer select-none bg-white/90 border-2 border-black px-4 py-2 rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              <input
+                type="checkbox"
+                checked={agreeHire}
+                onChange={(e) => setAgreeHire(e.target.checked)}
+                className="w-4 h-4 border-2 border-black rounded text-black bg-white accent-yellow-400 cursor-pointer"
+              />
+              <span className="text-xs font-bold text-gray-800">
+                I agree to Pixorva&apos;s{" "}
+                <Link href="/terms" target="_blank" className="underline text-blue-600 hover:text-black">Terms of Service</Link>{" "}
+                &amp;{" "}
+                <Link href="/privacy" target="_blank" className="underline text-blue-600 hover:text-black">Privacy Policy</Link>
+              </span>
+            </label>
+
             <button 
               onClick={handleHireNow}
               className="bg-yellow-400 text-black border-4 border-black px-8 py-3.5 rounded-xl font-black uppercase text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5"
