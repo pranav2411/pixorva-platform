@@ -319,20 +319,22 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* STEP 4: INTRODUCING EVA */}
+        {/* STEP 4: INTRODUCING SARAH */}
         {step === 4 && (
           <div className="w-full text-center animate-fadeIn max-w-lg flex flex-col items-center">
-            <div className="w-64 h-64 relative rounded-2xl overflow-hidden mb-6 border-2 border-neutral-700 shadow-2xl">
-              <Image 
-                src="/onboarding/eva.png"
-                alt="Eva - AI Executive Assistant"
-                fill
-                className="object-cover"
-                priority
+            <div className="w-64 h-64 relative rounded-2xl overflow-hidden mb-6 border-2 border-neutral-700 shadow-2xl bg-neutral-900">
+              <video 
+                src="/GIF/Sarah.mp4"
+                poster="/GIF/Sarah.png"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
               />
             </div>
             <h2 className={`text-2xl md:text-3xl font-black mb-6 ${oswald.className}`}>
-              Meet Eva, your AI Executive Assistant. She will tame your inbox.
+              Meet Sarah, your AI Executive Assistant. She will tame your inbox.
             </h2>
             <div className="flex flex-col gap-3 text-left w-full mb-8 text-sm text-neutral-300">
               <div className="flex items-center gap-3">
@@ -378,20 +380,22 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* STEP 6: INTRODUCING SONNY */}
+        {/* STEP 6: INTRODUCING MARCUS */}
         {step === 6 && (
           <div className="w-full text-center animate-fadeIn max-w-lg flex flex-col items-center">
-            <div className="w-64 h-64 relative rounded-2xl overflow-hidden mb-6 border-2 border-neutral-700 shadow-2xl">
-              <Image 
-                src="/onboarding/sonny.png"
-                alt="Sonny - AI Socials Agent"
-                fill
-                className="object-cover"
-                priority
+            <div className="w-64 h-64 relative rounded-2xl overflow-hidden mb-6 border-2 border-neutral-700 shadow-2xl bg-neutral-900">
+              <video 
+                src="/GIF/Marcus.mp4"
+                poster="/GIF/Marcus.png"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
               />
             </div>
             <h2 className={`text-2xl md:text-3xl font-black mb-6 ${oswald.className}`}>
-              Want to get more engagement? Stay consistent. Sonny will post on socials for you.
+              Want to get more engagement? Stay consistent. Marcus will post on socials for you.
             </h2>
             <div className="flex flex-col gap-3 text-left w-full mb-8 text-sm text-neutral-300">
               <div className="flex items-center gap-3">
@@ -437,20 +441,22 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* STEP 8: INTRODUCING PENNY */}
+        {/* STEP 8: INTRODUCING GORDON */}
         {step === 8 && (
           <div className="w-full text-center animate-fadeIn max-w-lg flex flex-col items-center">
-            <div className="w-64 h-64 relative rounded-2xl overflow-hidden mb-6 border-2 border-neutral-700 shadow-2xl">
-              <Image 
-                src="/onboarding/penny.png"
-                alt="Penny - AI SEO & Content Specialist"
-                fill
-                className="object-cover"
-                priority
+            <div className="w-64 h-64 relative rounded-2xl overflow-hidden mb-6 border-2 border-neutral-700 shadow-2xl bg-neutral-900">
+              <video 
+                src="/GIF/Gordon.mp4"
+                poster="/GIF/Gordon.png"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
               />
             </div>
             <h2 className={`text-2xl md:text-3xl font-black mb-6 ${oswald.className}`}>
-              To get more visitors from Google, Penny will create great content piece that ranks well on Google.
+              To get more visitors from Google, Gordon will create great content pieces that rank well on Google.
             </h2>
             <div className="flex flex-col gap-3 text-left w-full mb-8 text-sm text-neutral-300">
               <div className="flex items-center gap-3">
