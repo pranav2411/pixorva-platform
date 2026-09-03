@@ -118,17 +118,19 @@ export default function AgentDetailPage() {
   return (
     <div className={`min-h-screen bg-white text-black ${inter.className} flex flex-col`}>
       
-            {/* HEADER */}
+      {/* HEADER */}
       <header className="bg-white border-b-4 border-black px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-3">
-          <Link href="/employees" className="bg-black text-white p-2 rounded hover:bg-yellow-400 hover:text-black transition border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:shadow-none hover:translate-y-1 flex items-center justify-center shrink-0">
+          <Link href="/employees" className="bg-black text-white p-2 rounded-lg border-2 border-black hover:bg-yellow-400 hover:text-black transition shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-y-0.5 flex items-center justify-center shrink-0">
             <ArrowLeft size={16} />
           </Link>
-          <h1 className={`text-2xl font-black uppercase tracking-wider ${oswald.className}`}>Agent Profile</h1>
+          <span className={`text-2xl font-black uppercase tracking-wider ${oswald.className}`}>
+            Pixorva Marketplace
+          </span>
         </div>
-        <div className="bg-yellow-400 text-black border-2 border-black px-3 py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wider shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
-          Marketplace Teammate
-        </div>
+        <Link href="/employees" className="text-xs font-black uppercase border-2 border-black px-4 py-2 rounded-xl hover:bg-gray-50 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5">
+          Marketplace
+        </Link>
       </header>
 
       {/* HERO SECTION - Bespoke Background */}
@@ -262,18 +264,34 @@ export default function AgentDetailPage() {
       </section>
 
       {/* MEET AGENT BIO */}
-      <section className="bg-white border-b-4 border-black py-16 px-6">
-        <div className="max-w-4xl mx-auto text-center space-y-6">
+      <section className="relative overflow-hidden bg-black text-white border-b-4 border-black py-20 px-6">
+        {/* AGENT VIDEO BACKGROUND */}
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
+          <video
+            src="/GIF/Ruby.mp4"
+            poster="/GIF/Ruby.png"
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover opacity-45 scale-100"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/55 to-black/85" />
+        </div>
+
+        <div className="max-w-4xl mx-auto text-center space-y-6 relative z-10">
           <div className="flex justify-center mb-4">
-            <AgentAvatar id={employee.id} className="w-24 h-24 rounded-full" />
+            <div className="p-1 rounded-full border-2 border-[#ffc700] bg-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <AgentAvatar id={employee.id} className="w-24 h-24 rounded-full" />
+            </div>
           </div>
-          <h2 className={`text-3xl md:text-5xl uppercase font-black leading-none ${oswald.className}`}>
+          <h2 className={`text-3xl md:text-5xl uppercase font-black leading-none text-white ${oswald.className}`}>
             Meet Ruby.
           </h2>
-          <p className="text-base md:text-lg font-bold text-gray-500 uppercase tracking-wide">
+          <p className="text-base md:text-lg font-bold text-[#ffc700] uppercase tracking-wide">
             She&apos;ll make your life way easier.
           </p>
-          <p className="text-sm md:text-base text-gray-600 max-w-2xl mx-auto leading-relaxed font-medium">
+          <p className="text-sm md:text-base text-neutral-200 max-w-2xl mx-auto leading-relaxed font-medium">
             Ruby is your AI Backend Architect, a tireless teammate who lives inside your workspace channels.
             She clears the clutter, drafts outputs in your voice, compiles code, and automates pipelines.
             Think of her as the digital chief of staff you always wished you had: handling the busywork in the background
@@ -488,98 +506,20 @@ export default function AgentDetailPage() {
       </section>
 
       {/* TEAM LOVES TO COLLABORATE */}
-      <section className="bg-gray-50 py-16 border-b-4 border-black text-center overflow-hidden">
-        <div className="max-w-5xl mx-auto space-y-10 px-6">
+      <section className="bg-gray-50 py-16 px-6 border-b-4 border-black text-center overflow-hidden">
+        <div className="max-w-5xl mx-auto space-y-10">
           <h2 className={`text-3xl md:text-5xl uppercase font-black leading-none ${oswald.className}`}>
             Ruby Loves to work with a team
           </h2>
-        </div>
-        <div className="relative w-full overflow-hidden pt-4">
-          <div className="animate-marquee flex gap-6 py-2">
-            {/* First Sequence */}
-            {teamList.map((item, i) => {
-              const getDetails = (id: string) => {
-                const data: Record<string, { role: string; color: string }> = {
-                  'dev-1': { role: 'React Developer', color: 'bg-orange-500' },
-                  'dev-2': { role: 'Backend Architect', color: 'bg-emerald-500' },
-                  'dev-3': { role: 'QA Tester', color: 'bg-purple-600' },
-                  'dev-4': { role: 'Security Analyst', color: 'bg-teal-500' },
-                  'mkt-1': { role: 'Growth Hacker', color: 'bg-red-700' },
-                  'mkt-2': { role: 'Social Media Mgr', color: 'bg-orange-500' },
-                  'mkt-3': { role: 'SEO Blog Writer', color: 'bg-red-600' },
-                  'mkt-4': { role: 'Video Scripter', color: 'bg-indigo-600' },
-                  'sales-1': { role: 'SDR / Outreach', color: 'bg-pink-500' },
-                  'sales-2': { role: 'Lead Enricher', color: 'bg-sky-500' },
-                  'ops-1': { role: 'HR Manager', color: 'bg-fuchsia-500' },
-                  'ops-2': { role: 'Finance Analyst', color: 'bg-slate-600' },
-                  'ops-3': { role: 'Legal Assistant', color: 'bg-orange-700' },
-                  'ops-4': { role: 'Product Manager', color: 'bg-lime-500' },
-                  'sup-1': { role: 'Customer Support', color: 'bg-cyan-500' }
-                };
-                return data[id] || { role: 'AI Specialist', color: 'bg-blue-500' };
-              };
-              const details = getDetails(item.id);
-              return (
-                <Link key={`seq1-${i}`} href={item.path} className="inline-block transition transform hover:scale-105 active:scale-95 shrink-0">
-                  <div className={`w-[160px] h-[160px] rounded-2xl border-4 border-black ${details.color} shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden`}>
-                    <div 
-                      className={`absolute left-2.5 top-3 text-white/25 font-black text-[38px] tracking-tighter select-none leading-none ${oswald.className}`} 
-                      style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
-                    >
-                      {item.name}
-                    </div>
-                    <div className="absolute -bottom-1 -right-1 w-24 h-24 z-10">
-                      <AgentAvatar id={item.id} className="w-full h-full" />
-                    </div>
-                    <div className="absolute bottom-2.5 left-1/2 transform -translate-x-1/2 z-20 bg-yellow-400 text-black border-2 border-black px-2 py-0.5 rounded-lg text-[8px] font-black uppercase whitespace-nowrap tracking-wider shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                      {details.role}
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-            {/* Duplicate Sequence for seamless looping marquee */}
-            {teamList.map((item, i) => {
-              const getDetails = (id: string) => {
-                const data: Record<string, { role: string; color: string }> = {
-                  'dev-1': { role: 'React Developer', color: 'bg-orange-500' },
-                  'dev-2': { role: 'Backend Architect', color: 'bg-emerald-500' },
-                  'dev-3': { role: 'QA Tester', color: 'bg-purple-600' },
-                  'dev-4': { role: 'Security Analyst', color: 'bg-teal-500' },
-                  'mkt-1': { role: 'Growth Hacker', color: 'bg-red-700' },
-                  'mkt-2': { role: 'Social Media Mgr', color: 'bg-orange-500' },
-                  'mkt-3': { role: 'SEO Blog Writer', color: 'bg-red-600' },
-                  'mkt-4': { role: 'Video Scripter', color: 'bg-indigo-600' },
-                  'sales-1': { role: 'SDR / Outreach', color: 'bg-pink-500' },
-                  'sales-2': { role: 'Lead Enricher', color: 'bg-sky-500' },
-                  'ops-1': { role: 'HR Manager', color: 'bg-fuchsia-500' },
-                  'ops-2': { role: 'Finance Analyst', color: 'bg-slate-600' },
-                  'ops-3': { role: 'Legal Assistant', color: 'bg-orange-700' },
-                  'ops-4': { role: 'Product Manager', color: 'bg-lime-500' },
-                  'sup-1': { role: 'Customer Support', color: 'bg-cyan-500' }
-                };
-                return data[id] || { role: 'AI Specialist', color: 'bg-blue-500' };
-              };
-              const details = getDetails(item.id);
-              return (
-                <Link key={`seq2-${i}`} href={item.path} className="inline-block transition transform hover:scale-105 active:scale-95 shrink-0">
-                  <div className={`w-[160px] h-[160px] rounded-2xl border-4 border-black ${details.color} shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden`}>
-                    <div 
-                      className={`absolute left-2.5 top-3 text-white/25 font-black text-[38px] tracking-tighter select-none leading-none ${oswald.className}`} 
-                      style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
-                    >
-                      {item.name}
-                    </div>
-                    <div className="absolute -bottom-1 -right-1 w-24 h-24 z-10">
-                      <AgentAvatar id={item.id} className="w-full h-full" />
-                    </div>
-                    <div className="absolute bottom-2.5 left-1/2 transform -translate-x-1/2 z-20 bg-yellow-400 text-black border-2 border-black px-2 py-0.5 rounded-lg text-[8px] font-black uppercase whitespace-nowrap tracking-wider shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                      {details.role}
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
+          <div className="flex gap-4 justify-center items-center flex-wrap pt-4">
+            {teamList.map((item, i) => (
+              <Link key={i} href={item.path} className="block transition transform hover:scale-105 active:scale-95">
+                <div className="bg-white border-2 border-black p-2 rounded-2xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex flex-col items-center gap-1.5 w-20">
+                  <AgentAvatar id={item.id} className="w-8 h-8 rounded-full" />
+                  <span className="text-[8px] font-black uppercase text-gray-400">{item.name}</span>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
