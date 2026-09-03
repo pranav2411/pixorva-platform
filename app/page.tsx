@@ -252,7 +252,7 @@ export default function Home() {
           ) : (
             <Link href="/login" className="font-bold text-sm hover:text-yellow-600 transition">Log in</Link>
           )}
-          <Link href={user ? "/employees" : "/login"} className="bg-black text-white border-2 border-black px-5 py-2.5 rounded-lg text-xs font-bold uppercase hover:bg-yellow-400 hover:text-black hover:border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[2px] hover:shadow-none whitespace-nowrap">
+          <Link href={user ? "/employees" : "/onboarding"} className="bg-black text-white border-2 border-black px-5 py-2.5 rounded-lg text-xs font-bold uppercase hover:bg-yellow-400 hover:text-black hover:border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[2px] hover:shadow-none whitespace-nowrap">
             {user ? "Hire Staff" : "Get Started"}
           </Link>
         </div>
@@ -419,7 +419,7 @@ export default function Home() {
                 <Link href="/login" onClick={() => setMenuOpen(false)} className="w-full text-center bg-white text-black border-4 border-black py-3.5 rounded-xl font-black uppercase text-xs hover:bg-gray-50 transition shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none flex items-center justify-center">
                   Log In
                 </Link>
-                <Link href="/login" onClick={() => setMenuOpen(false)} className="w-full text-center bg-yellow-400 text-black border-4 border-black py-3.5 rounded-xl font-black uppercase text-xs hover:bg-black hover:text-white transition shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none flex items-center justify-center">
+                <Link href="/onboarding" onClick={() => setMenuOpen(false)} className="w-full text-center bg-yellow-400 text-black border-4 border-black py-3.5 rounded-xl font-black uppercase text-xs hover:bg-black hover:text-white transition shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none flex items-center justify-center">
                   Get Started
                 </Link>
               </>

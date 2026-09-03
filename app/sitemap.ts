@@ -10,6 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/studio',
     '/login',
     '/trial',
+    '/onboarding',
     '/workspace',
     '/governance',
     '/billing',
