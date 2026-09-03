@@ -60,21 +60,21 @@ export default function AgentDetailPage() {
   };
 
   const teamList = [
-    { name: 'Devon', id: 'dev-1', path: '/agent-detail/devon' },
-    { name: 'Ruby', id: 'dev-2', path: '/agent-detail/ruby' },
-    { name: 'Quinn', id: 'dev-3', path: '/agent-detail/quinn' },
-    { name: 'Cy', id: 'dev-4', path: '/agent-detail/cy' },
-    { name: 'Marcus', id: 'mkt-1', path: '/agent-detail/marcus' },
-    { name: 'Stella', id: 'mkt-2', path: '/agent-detail/stella' },
-    { name: 'Gordon', id: 'mkt-3', path: '/agent-detail/gordon' },
-    { name: 'Vic', id: 'mkt-4', path: '/agent-detail/vic' },
-    { name: 'Sarah', id: 'sales-1', path: '/agent-detail/sarah' },
-    { name: 'Larry', id: 'sales-2', path: '/agent-detail/larry' },
-    { name: 'Holly', id: 'ops-1', path: '/agent-detail/holly' },
-    { name: 'Finn', id: 'ops-2', path: '/agent-detail/finn' },
-    { name: 'Lawson', id: 'ops-3', path: '/agent-detail/lawson' },
-    { name: 'Pat', id: 'ops-4', path: '/agent-detail/pat' },
-    { name: 'Sam', id: 'sup-1', path: '/agent-detail/sam' }
+    { name: 'Devon', id: 'dev-1', role: 'React Developer', path: '/agent-detail/devon', color: 'bg-orange-500' },
+    { name: 'Ruby', id: 'dev-2', role: 'Backend Architect', path: '/agent-detail/ruby', color: 'bg-emerald-500' },
+    { name: 'Quinn', id: 'dev-3', role: 'QA Tester', path: '/agent-detail/quinn', color: 'bg-purple-600' },
+    { name: 'Cy', id: 'dev-4', role: 'Security Analyst', path: '/agent-detail/cy', color: 'bg-teal-500' },
+    { name: 'Marcus', id: 'mkt-1', role: 'Growth Hacker', path: '/agent-detail/marcus', color: 'bg-red-700' },
+    { name: 'Stella', id: 'mkt-2', role: 'Social Media Mgr', path: '/agent-detail/stella', color: 'bg-orange-500' },
+    { name: 'Gordon', id: 'mkt-3', role: 'SEO Blog Writer', path: '/agent-detail/gordon', color: 'bg-red-600' },
+    { name: 'Vic', id: 'mkt-4', role: 'Video Scripter', path: '/agent-detail/vic', color: 'bg-indigo-600' },
+    { name: 'Sarah', id: 'sales-1', role: 'SDR / Outreach', path: '/agent-detail/sarah', color: 'bg-pink-500' },
+    { name: 'Larry', id: 'sales-2', role: 'Lead Enricher', path: '/agent-detail/larry', color: 'bg-sky-500' },
+    { name: 'Holly', id: 'ops-1', role: 'HR Manager', path: '/agent-detail/holly', color: 'bg-fuchsia-500' },
+    { name: 'Finn', id: 'ops-2', role: 'Finance Analyst', path: '/agent-detail/finn', color: 'bg-slate-600' },
+    { name: 'Lawson', id: 'ops-3', role: 'Legal Assistant', path: '/agent-detail/lawson', color: 'bg-orange-700' },
+    { name: 'Pat', id: 'ops-4', role: 'Product Manager', path: '/agent-detail/pat', color: 'bg-lime-500' },
+    { name: 'Sam', id: 'sup-1', role: 'Customer Support', path: '/agent-detail/sam', color: 'bg-cyan-500' }
   ];
 
   const handleHireNow = async () => {
@@ -501,17 +501,38 @@ export default function AgentDetailPage() {
       </section>
 
       {/* TEAM LOVES TO COLLABORATE */}
-      <section className="bg-gray-50 py-16 px-6 border-b-4 border-black text-center overflow-hidden">
-        <div className="max-w-5xl mx-auto space-y-10">
+      <section className="bg-gray-50 py-16 border-b-4 border-black text-center overflow-hidden">
+        <div className="max-w-5xl mx-auto space-y-4 px-6 mb-8">
           <h2 className={`text-3xl md:text-5xl uppercase font-black leading-none ${oswald.className}`}>
             Quinn Loves to work with a team
           </h2>
-          <div className="flex gap-4 justify-center items-center flex-wrap pt-4">
-            {teamList.map((item, i) => (
-              <Link key={i} href={item.path} className="block transition transform hover:scale-105 active:scale-95">
-                <div className="bg-white border-2 border-black p-2 rounded-2xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex flex-col items-center gap-1.5 w-20">
-                  <AgentAvatar id={item.id} className="w-8 h-8 rounded-full" />
-                  <span className="text-[8px] font-black uppercase text-gray-400">{item.name}</span>
+        </div>
+        
+        {/* INFINITE SCROLLING MARQUEE MATCHING LANDING PAGE */}
+        <div className="w-full overflow-hidden relative">
+          <div className="animate-marquee flex gap-6">
+            {[...teamList, ...teamList].map((item, i) => (
+              <Link key={`team-marquee-${i}`} href={item.path} className="inline-block transition transform hover:scale-105 active:scale-95 shrink-0">
+                <div className={`w-[160px] h-[160px] rounded-2xl border-4 border-black ${item.color} shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden`}>
+                  
+                  {/* Large vertical background name */}
+                  <div 
+                    className={`absolute left-2.5 top-3 text-white/25 font-black text-[38px] tracking-tighter select-none leading-none ${oswald.className}`} 
+                    style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+                  >
+                    {item.name}
+                  </div>
+
+                  {/* Avatar illustration positioned absolute bottom-right */}
+                  <div className="absolute -bottom-1 -right-1 w-24 h-24 z-10">
+                    <AgentAvatar id={item.id} className="w-full h-full" />
+                  </div>
+
+                  {/* Yellow badge role pill at bottom */}
+                  <div className="absolute bottom-2.5 left-1/2 transform -translate-x-1/2 z-20 bg-yellow-400 text-black border-2 border-black px-2 py-0.5 rounded-lg text-[8px] font-black uppercase whitespace-nowrap tracking-wider shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                    {item.role}
+                  </div>
+
                 </div>
               </Link>
             ))}
