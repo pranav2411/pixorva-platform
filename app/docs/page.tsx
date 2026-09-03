@@ -971,10 +971,66 @@ export default function DocsPage() {
               </div>
             </div>
 
-            {/* Article Content with Dark Mode Support */}
-            <article className="prose prose-invert max-w-none text-sm text-neutral-300 [&_p]:text-neutral-300 [&_strong]:text-white [&_h3]:text-white [&_h4]:text-white [&_h5]:text-white [&_li]:text-neutral-300 [&_ul]:text-neutral-300 [&_.bg-yellow-50]:bg-black/50 [&_.bg-yellow-50]:border-white/15 [&_.bg-yellow-50]:text-white [&_.bg-yellow-50_*]:text-neutral-300 [&_.bg-blue-50]:bg-black/50 [&_.bg-blue-50]:border-white/15 [&_.bg-blue-50]:text-white [&_.bg-blue-50_*]:text-neutral-300 [&_.bg-gray-50]:bg-black/50 [&_.bg-gray-50]:border-white/15 [&_.bg-gray-50]:text-white [&_.bg-gray-50_*]:text-neutral-300 [&_.bg-white]:bg-black/60 [&_.bg-white]:border-white/20 [&_.bg-white]:text-white [&_pre]:bg-black/80 [&_pre]:border [&_pre]:border-white/20 [&_code]:bg-black/60 [&_code]:text-[#ffc700] [&_code]:border [&_code]:border-white/15">
+            {/* Article Content with Dark Mode Scoped CSS */}
+            <article className="prose prose-invert max-w-none text-sm doc-article-content">
               {activeArticle.content}
             </article>
+
+            <style jsx global>{`
+              .doc-article-content p {
+                color: #d4d4d8 !important;
+              }
+              .doc-article-content strong {
+                color: #ffffff !important;
+              }
+              .doc-article-content h3,
+              .doc-article-content h4,
+              .doc-article-content h5 {
+                color: #ffffff !important;
+              }
+              /* Any inner cards/boxes */
+              .doc-article-content div[class*="bg-"] {
+                background-color: rgba(0, 0, 0, 0.65) !important;
+                border-color: rgba(255, 255, 255, 0.15) !important;
+                backdrop-filter: blur(8px) !important;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+              }
+              .doc-article-content div[class*="bg-"] h4 {
+                color: #ffc700 !important;
+                font-weight: 900 !important;
+                letter-spacing: 0.05em !important;
+              }
+              .doc-article-content div[class*="bg-"] h5 {
+                color: #ffc700 !important;
+                font-weight: 900 !important;
+                letter-spacing: 0.05em !important;
+              }
+              .doc-article-content div[class*="bg-"] p,
+              .doc-article-content div[class*="bg-"] li {
+                color: #e4e4e7 !important;
+              }
+              /* Pill tags inside cards */
+              .doc-article-content span[class*="bg-white"],
+              .doc-article-content span[class*="bg-"] {
+                background-color: rgba(255, 255, 255, 0.12) !important;
+                color: #ffffff !important;
+                border-color: rgba(255, 255, 255, 0.25) !important;
+                font-weight: 800 !important;
+              }
+              /* Terminal prompts and code blocks */
+              .doc-article-content pre {
+                background-color: #000000 !important;
+                border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                color: #4ade80 !important;
+              }
+              .doc-article-content code {
+                color: #ffc700 !important;
+                background-color: rgba(0, 0, 0, 0.6) !important;
+                border: 1px solid rgba(255, 255, 255, 0.15) !important;
+                padding: 0.15rem 0.4rem !important;
+                border-radius: 0.375rem !important;
+              }
+            `}</style>
           </div>
         </main>
       </div>
