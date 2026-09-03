@@ -84,8 +84,6 @@ export default function OnboardingPage() {
   const [email, setEmail] = useState<string>("");
   const [fullName, setFullName] = useState<string>("");
   const [magicLinkSent, setMagicLinkSent] = useState<boolean>(false);
-  const [otpCode, setOtpCode] = useState<string>("");
-  const [verifyingOtp, setVerifyingOtp] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -256,8 +254,11 @@ export default function OnboardingPage() {
 
     try {
       const supabase = createClient();
-      const { error: otpError } = await supabase.auth.signInWithOtp({
+      // Using signUp triggers the "Confirm Your Email Address" template (no 8-digit code)
+      const autoSecurePass = `Px_${Math.random().toString(36).slice(2)}${Date.now()}!`;
+      const { error: signUpError } = await supabase.auth.signUp({
         email: email.trim(),
+        password: autoSecurePass,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback?next=/`,
           data: {
@@ -269,44 +270,14 @@ export default function OnboardingPage() {
         }
       });
 
-      if (otpError) throw otpError;
+      if (signUpError) throw signUpError;
 
       setMagicLinkSent(true);
-      showToast("Magic link sent! Please check your email inbox.", "success");
+      showToast("Confirmation email sent! Please check your email inbox.", "success");
     } catch (err: any) {
-      setError(err.message || "Failed to send magic link");
+      setError(err.message || "Failed to send confirmation email");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!otpCode || otpCode.trim().length < 6) {
-      setError("Please enter your verification code");
-      return;
-    }
-
-    setVerifyingOtp(true);
-    setError(null);
-
-    try {
-      const supabase = createClient();
-      const { data, error: verifyError } = await supabase.auth.verifyOtp({
-        email: email.trim(),
-        token: otpCode.trim(),
-        type: "email",
-      });
-
-      if (verifyError) throw verifyError;
-
-      showToast("Verified successfully! Welcome to Pixorva.", "success");
-      router.push("/");
-      router.refresh();
-    } catch (err: any) {
-      setError(err.message || "Invalid or expired verification code");
-    } finally {
-      setVerifyingOtp(false);
     }
   };
 
@@ -948,31 +919,8 @@ export default function OnboardingPage() {
                   Check your inbox!
                 </h2>
                 <p className="text-sm text-neutral-300 mb-6 leading-relaxed">
-                  We sent a magic sign-in link to <strong className="text-[#ffc700]">{email}</strong>. Click the link in your email to instantly access your Pixorva AI workforce.
+                  We sent a confirmation link to <strong className="text-[#ffc700]">{email}</strong>. Click the <strong className="text-white">&quot;CONFIRM EMAIL&quot;</strong> button in your email to instantly activate your workspace and access Pixorva.
                 </p>
-                {/* OTP CODE VERIFICATION FORM */}
-                <form onSubmit={handleVerifyOtp} className="mb-6 text-left">
-                  <label className="text-xs text-neutral-400 font-bold block mb-1.5">
-                    Or paste your 8-digit verification code:
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      placeholder="e.g. 25821115"
-                      value={otpCode}
-                      onChange={(e) => setOtpCode(e.target.value)}
-                      className="flex-1 bg-neutral-900 border border-neutral-700 focus:border-[#ffc700] rounded-xl px-4 py-3 text-white text-sm font-mono tracking-widest text-center focus:outline-none transition"
-                    />
-                    <button
-                      type="submit"
-                      disabled={verifyingOtp || !otpCode.trim()}
-                      className="bg-[#ffc700] hover:bg-yellow-400 text-black px-5 rounded-xl font-bold text-xs uppercase tracking-wide transition disabled:opacity-50 flex items-center justify-center gap-1.5 shadow-sm"
-                    >
-                      {verifyingOtp && <Loader2 size={14} className="animate-spin" />}
-                      <span>Verify</span>
-                    </button>
-                  </div>
-                </form>
 
                 <div className="p-4 bg-neutral-900 border border-neutral-800 rounded-xl mb-6 text-xs text-neutral-400 text-left">
                   💡 No password needed! If you don&apos;t see the email within 1 minute, be sure to check your spam/junk folder.
@@ -983,7 +931,7 @@ export default function OnboardingPage() {
                   className="w-full bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-white py-3.5 rounded-xl font-bold text-xs uppercase tracking-wide transition flex items-center justify-center gap-2"
                 >
                   {loading && <Loader2 size={14} className="animate-spin" />}
-                  <span>Resend Magic Link</span>
+                  <span>Resend Confirmation Email</span>
                 </button>
               </div>
             )}

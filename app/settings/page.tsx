@@ -264,27 +264,18 @@ export default function SettingsPage() {
   // 7. Request Compliance Data Erasure
   const handleRequestErasure = async () => {
     setErasing(true);
-    const supabase = createClient();
     try {
-      // Delete all agents
-      const { error: agentsError } = await supabase
-        .from('agents')
-        .delete()
-        .eq('user_id', userId);
-      if (agentsError) throw agentsError;
+      const res = await fetch("/api/account/delete", {
+        method: "POST",
+      });
+      const data = await res.json();
 
-      // Delete profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('id', userId);
-      if (profileError) throw profileError;
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to complete data erasure");
+      }
 
-      // Sign out
-      await supabase.auth.signOut();
-
-      showToast("Your profile and workforce data have been completely erased.", "success");
-      router.push("/login");
+      showToast("Your account and all workforce data have been completely erased.", "success");
+      router.push("/onboarding");
     } catch (err: any) {
       showToast("Failed to complete data erasure: " + err.message, "error");
       setErasing(false);
