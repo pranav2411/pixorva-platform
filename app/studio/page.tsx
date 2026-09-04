@@ -314,43 +314,43 @@ export default function StudioPage() {
   return (
     <div className={`min-h-screen bg-[#0e0f12] text-white ${inter.className} flex flex-col selection:bg-[#ffc700] selection:text-black`}>
       
-      {/* MARGINAL NAVBAR */}
-      <header className="bg-[#141519]/90 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50 shadow-md">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between w-full">
+      {/* EXPANDED MARGINAL NAVBAR */}
+      <header className="bg-[#141519]/95 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50 shadow-md">
+        <div className="w-full px-6 md:px-10 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <BackButton
               fallback="/workspace"
-              iconSize={16}
-              className="bg-black text-white p-2 rounded-lg border border-white/20 hover:bg-[#ffc700] hover:text-black hover:border-black transition shadow-sm flex items-center justify-center shrink-0"
+              iconSize={18}
+              className="bg-black text-white p-2.5 rounded-xl border border-white/20 hover:bg-[#ffc700] hover:text-black hover:border-black transition shadow-sm flex items-center justify-center shrink-0"
             />
-            <Link href="/" className="flex items-center gap-2.5 group">
+            <Link href="/" className="flex items-center gap-3 group">
               <Image
                 src="/favicon.ico"
                 alt="Pixorva Logo"
-                width={28}
-                height={28}
-                className="w-7 h-7 rounded-lg group-hover:scale-105 transition"
+                width={32}
+                height={32}
+                className="w-8 h-8 rounded-lg group-hover:scale-105 transition"
               />
-              <span className={`text-2xl font-black uppercase tracking-wider text-white ${oswald.className}`}>
+              <span className={`text-2xl md:text-3xl font-black uppercase tracking-wider text-white ${oswald.className}`}>
                 Pixorva
               </span>
             </Link>
-            <span className="text-neutral-600 hidden sm:inline">/</span>
-            <span className={`text-lg uppercase text-neutral-300 hidden sm:inline ${oswald.className}`}>
+            <span className="text-neutral-600 text-xl hidden sm:inline">/</span>
+            <span className={`text-lg md:text-xl uppercase tracking-wide text-neutral-200 hidden sm:inline ${oswald.className}`}>
               Agent Studio
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 md:gap-4">
             <Link
               href="/workspace"
-              className="text-xs font-bold uppercase tracking-wider text-neutral-400 hover:text-white transition px-3 py-1.5 rounded-lg hover:bg-white/5"
+              className="text-xs md:text-sm font-bold uppercase tracking-wider text-neutral-300 hover:text-white transition px-3.5 py-2 rounded-xl hover:bg-white/5"
             >
               Workspace
             </Link>
             <Link
               href="/employees"
-              className="text-xs font-black uppercase tracking-wider bg-[#ffc700] text-black px-4 py-2 rounded-xl hover:bg-white transition shadow-sm"
+              className="text-xs md:text-sm font-black uppercase tracking-wider bg-[#ffc700] text-black px-5 py-2.5 rounded-xl hover:bg-white transition shadow-md"
             >
               Marketplace
             </Link>
@@ -372,48 +372,48 @@ export default function StudioPage() {
             {/* PRESETS */}
             <div className="mb-10">
                 <label className="text-xs font-black uppercase tracking-widest text-neutral-400 mb-3 block">Quick Start Templates</label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3.5">
                     <button 
                       onClick={() => applyPreset('coder')} 
-                      className="p-3.5 bg-blue-950/30 text-blue-300 border border-blue-500/30 rounded-xl text-[10px] font-black uppercase text-left hover:bg-blue-900/40 hover:border-blue-400 transition flex flex-col gap-1 shadow-sm"
+                      className="p-4 bg-[#181a24] hover:bg-[#1e2130] text-left border-2 border-blue-500/40 hover:border-blue-400 rounded-2xl transition flex flex-col gap-1.5 shadow-sm group"
                     >
-                      <span>Code Expert</span>
-                      <span className="text-[9px] text-blue-400/80 font-medium normal-case">Write & debug clean code.</span>
+                      <span className="text-xs font-black uppercase tracking-wider text-blue-400 group-hover:text-blue-300">Code Expert</span>
+                      <span className="text-xs font-semibold text-neutral-200 normal-case leading-snug">Write & debug clean code.</span>
                     </button>
                     <button 
                       onClick={() => applyPreset('writer')} 
-                      className="p-3.5 bg-emerald-950/30 text-emerald-300 border border-emerald-500/30 rounded-xl text-[10px] font-black uppercase text-left hover:bg-emerald-900/40 hover:border-emerald-400 transition flex flex-col gap-1 shadow-sm"
+                      className="p-4 bg-[#14231c] hover:bg-[#192f24] text-left border-2 border-emerald-500/40 hover:border-emerald-400 rounded-2xl transition flex flex-col gap-1.5 shadow-sm group"
                     >
-                      <span>Viral Writer</span>
-                      <span className="text-[9px] text-emerald-400/80 font-medium normal-case">Punchy hook writer.</span>
+                      <span className="text-xs font-black uppercase tracking-wider text-emerald-400 group-hover:text-emerald-300">Viral Writer</span>
+                      <span className="text-xs font-semibold text-neutral-200 normal-case leading-snug">Punchy hook writer.</span>
                     </button>
                     <button 
                       onClick={() => applyPreset('negotiator')} 
-                      className="p-3.5 bg-amber-950/30 text-amber-300 border border-amber-500/30 rounded-xl text-[10px] font-black uppercase text-left hover:bg-amber-900/40 hover:border-amber-400 transition flex flex-col gap-1 shadow-sm"
+                      className="p-4 bg-[#231f14] hover:bg-[#2e2819] text-left border-2 border-amber-500/40 hover:border-amber-400 rounded-2xl transition flex flex-col gap-1.5 shadow-sm group"
                     >
-                      <span>Negotiator</span>
-                      <span className="text-[9px] text-amber-400/80 font-medium normal-case">Tough offer negotiations.</span>
+                      <span className="text-xs font-black uppercase tracking-wider text-[#ffc700] group-hover:text-yellow-300">Negotiator</span>
+                      <span className="text-xs font-semibold text-neutral-200 normal-case leading-snug">Tough offer negotiations.</span>
                     </button>
                     <button 
                       onClick={() => applyPreset('github_resolver')} 
-                      className="p-3.5 bg-indigo-950/30 text-indigo-300 border border-indigo-500/30 rounded-xl text-[10px] font-black uppercase text-left hover:bg-indigo-900/40 hover:border-indigo-400 transition flex flex-col gap-1 shadow-sm"
+                      className="p-4 bg-[#191928] hover:bg-[#202035] text-left border-2 border-indigo-500/40 hover:border-indigo-400 rounded-2xl transition flex flex-col gap-1.5 shadow-sm group"
                     >
-                      <span>QA OctoFixer</span>
-                      <span className="text-[9px] text-indigo-400/80 font-medium normal-case">Resolve repo bugs & PRs.</span>
+                      <span className="text-xs font-black uppercase tracking-wider text-indigo-400 group-hover:text-indigo-300">QA OctoFixer</span>
+                      <span className="text-xs font-semibold text-neutral-200 normal-case leading-snug">Resolve repo bugs & PRs.</span>
                     </button>
                     <button 
                       onClick={() => applyPreset('ads_manager')} 
-                      className="p-3.5 bg-orange-950/30 text-orange-300 border border-orange-500/30 rounded-xl text-[10px] font-black uppercase text-left hover:bg-orange-900/40 hover:border-orange-400 transition flex flex-col gap-1 shadow-sm"
+                      className="p-4 bg-[#241a14] hover:bg-[#302219] text-left border-2 border-orange-500/40 hover:border-orange-400 rounded-2xl transition flex flex-col gap-1.5 shadow-sm group"
                     >
-                      <span>AdPulse Marketing</span>
-                      <span className="text-[9px] text-orange-400/80 font-medium normal-case">Ad conversions copy.</span>
+                      <span className="text-xs font-black uppercase tracking-wider text-orange-400 group-hover:text-orange-300">AdPulse Marketing</span>
+                      <span className="text-xs font-semibold text-neutral-200 normal-case leading-snug">Ad conversions copy.</span>
                     </button>
                     <button 
                       onClick={() => applyPreset('retention_bot')} 
-                      className="p-3.5 bg-rose-950/30 text-rose-300 border border-rose-500/30 rounded-xl text-[10px] font-black uppercase text-left hover:bg-rose-900/40 hover:border-rose-400 transition flex flex-col gap-1 shadow-sm"
+                      className="p-4 bg-[#25151a] hover:bg-[#321c23] text-left border-2 border-rose-500/40 hover:border-rose-400 rounded-2xl transition flex flex-col gap-1.5 shadow-sm group"
                     >
-                      <span>LoyaltyGuard CS</span>
-                      <span className="text-[9px] text-rose-400/80 font-medium normal-case">Mitigate churn friction.</span>
+                      <span className="text-xs font-black uppercase tracking-wider text-rose-400 group-hover:text-rose-300">LoyaltyGuard CS</span>
+                      <span className="text-xs font-semibold text-neutral-200 normal-case leading-snug">Mitigate churn friction.</span>
                     </button>
                 </div>
             </div>
@@ -496,20 +496,20 @@ export default function StudioPage() {
 
         </div>
 
-        {/* RIGHT: LIVE PREVIEW WITH VIDEO BACKGROUND */}
-        <div className="w-full md:w-1/2 flex flex-col items-center justify-center p-8 relative overflow-hidden min-h-[600px] md:min-h-0 md:h-[calc(100vh-73px)]">
+        {/* RIGHT: LIVE PREVIEW WITH SUBTLE CINEMATIC VIDEO BACKGROUND */}
+        <div className="w-full md:w-1/2 flex flex-col items-center justify-center p-8 relative overflow-hidden min-h-[600px] md:min-h-0 md:h-[calc(100vh-73px)] bg-[#0a0a0c]">
             
-            {/* Background Video */}
+            {/* Background Video with decreased intensity */}
             <video 
               src="/studio-bg.mp4"
               autoPlay
               loop
               muted
               playsInline
-              className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
+              className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none opacity-30"
             />
-            {/* Dark overlay for contrast */}
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] z-0" />
+            {/* Deep dark gradient overlay so video is ambient and atmospheric */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#0e0f12]/80 via-[#0e0f12]/60 to-[#0e0f12]/90 backdrop-blur-[1px] z-0" />
 
             {/* Preview Mode Pill */}
             <div className="absolute top-6 right-6 z-10">
