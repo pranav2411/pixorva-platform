@@ -267,7 +267,7 @@ export default function PricingPage() {
       </div>
 
       {/* PLAN COMPARISON TABLE */}
-      <div className="max-w-6xl mx-auto px-6 pb-24">
+      <div className="w-full max-w-6xl mx-auto px-6 pb-24">
         <h3 className={`text-3xl text-center uppercase mb-8 ${oswald.className}`}>Plan Feature Comparison</h3>
         <div className="border-4 border-black rounded-2xl bg-white overflow-x-auto shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <table className="w-full text-left text-xs border-collapse min-w-[600px]">
@@ -328,15 +328,15 @@ export default function PricingPage() {
       </div>
 
       {/* FREQUENTLY ASKED QUESTIONS */}
-      <div className="max-w-4xl mx-auto px-6 pb-24">
+      <div className="w-full max-w-4xl mx-auto px-6 pb-24">
         <h3 className={`text-3xl text-center uppercase mb-8 ${oswald.className}`}>Frequently Asked Questions</h3>
-        <div className="space-y-4">
+        <div className="w-full space-y-4">
           {FAQ_LIST.map((faq, idx) => {
             const isOpen = activeFaq === idx;
             return (
               <div 
                 key={idx}
-                className="border-2 border-black rounded-xl bg-white overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition"
+                className="w-full border-2 border-black rounded-xl bg-white overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
               >
                 <button
                   type="button"
