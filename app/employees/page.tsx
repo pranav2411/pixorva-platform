@@ -265,7 +265,8 @@ export default function EmployeesPage() {
             .from('agents')
             .select('*', { count: 'exact', head: true })
             .eq('user_id', user.id)
-            .eq('is_paid_individually', false);
+            .eq('is_paid_individually', false)
+            .not('schedule', 'in', '("WEBSITE","API_KEY","INVOICE")');
 
         if (countError) throw countError;
 
@@ -354,7 +355,8 @@ export default function EmployeesPage() {
                 .from('agents')
                 .select('*', { count: 'exact', head: true })
                 .eq('user_id', user.id)
-                .eq('is_paid_individually', false);
+                .eq('is_paid_individually', false)
+                .not('schedule', 'in', '("WEBSITE","API_KEY","INVOICE")');
 
             if (countError) throw countError;
             

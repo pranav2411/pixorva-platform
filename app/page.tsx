@@ -153,8 +153,23 @@ export default function Home() {
           }
         }
 
-        const { data: agents } = await supabase.from('agents').select('*').order('created_at', { ascending: false });
-        if (agents) setMyAgents(agents);
+        const { data: agents } = await supabase
+          .from('agents')
+          .select('*')
+          .not('schedule', 'in', '("WEBSITE","API_KEY","INVOICE")')
+          .order('created_at', { ascending: false });
+
+        if (agents) {
+          const realAgents = agents.filter(a =>
+            a.schedule !== 'WEBSITE' &&
+            a.schedule !== 'API_KEY' &&
+            a.schedule !== 'INVOICE' &&
+            !a.name?.startsWith('[WEBSITE]') &&
+            !a.name?.startsWith('[API_KEY]') &&
+            !a.name?.startsWith('[INVOICE]')
+          );
+          setMyAgents(realAgents);
+        }
 
         const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).single();
         if (profileData) setProfile(profileData);
@@ -498,7 +513,15 @@ export default function Home() {
 
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {myAgents.filter(a => a.name !== "Governance Control Tower").map((agent) => (
+                  {myAgents.filter(a => 
+                    a.name !== "Governance Control Tower" &&
+                    a.schedule !== 'WEBSITE' &&
+                    a.schedule !== 'API_KEY' &&
+                    a.schedule !== 'INVOICE' &&
+                    !a.name?.startsWith('[WEBSITE]') &&
+                    !a.name?.startsWith('[API_KEY]') &&
+                    !a.name?.startsWith('[INVOICE]')
+                  ).map((agent) => (
                     <div key={agent.id} className="group relative h-[300px] border-4 border-black bg-white rounded-2xl p-6 flex flex-col justify-between hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-y-1">
                       <div>
                         <div className="flex justify-between items-start mb-4">
