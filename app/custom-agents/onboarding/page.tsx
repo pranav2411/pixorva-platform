@@ -22,7 +22,14 @@ import {
   Layers,
   Database,
   ShieldCheck,
-  Server
+  Server,
+  Headphones,
+  Zap,
+  Code,
+  BarChart3,
+  ClipboardList,
+  Rocket,
+  PlusCircle
 } from "lucide-react";
 
 const oswald = Oswald({ subsets: ["latin"], weight: ["400", "700"] });
@@ -31,20 +38,66 @@ const inter = Inter({ subsets: ["latin"] });
 const TOTAL_STEPS = 8;
 
 const ROLE_OPTIONS = [
-  { id: "support", title: "24/7 Tier-1 & Tier-2 Support", desc: "Ticket triaging, empathy-first resolving, escalation routing", icon: "🎧" },
-  { id: "sales", title: "Sales & Inbound Lead Qualifier", desc: "Autonomous prospect scoring, outbound cadences, CRM updates", icon: "💼" },
-  { id: "devops", title: "DevOps & Cloud SRE Guard", desc: "Log monitoring, canary alerts, auto-rollback triggers", icon: "⚡" },
-  { id: "fullstack", title: "Full-Stack Code Synthesizer", desc: "PR creation, unit test authoring, architectural sandboxing", icon: "💻" },
-  { id: "finance", title: "Financial & Invoicing Auditor", desc: "Tax receipts reconciliation, anomaly detection, payment tracking", icon: "📊" },
-  { id: "governance", title: "Compliance & Safety Auditor", desc: "PII masking, audit logging, security policy enforcement", icon: "🛡️" },
-  { id: "ops", title: "Internal Operations Coordinator", desc: "Calendar dispatch, sprint reports, cross-team sync digests", icon: "📋" },
-  { id: "marketing", title: "Growth & Content Strategist", desc: "SEO research, blog authoring, social content scheduling", icon: "🚀" }
+  { 
+    id: "support", 
+    title: "24/7 Tier-1 & Tier-2 Support", 
+    desc: "Ticket triaging, empathy-first resolving, escalation routing", 
+    icon: <Headphones size={20} className="text-[#ffc700]" /> 
+  },
+  { 
+    id: "sales", 
+    title: "Sales & Inbound Lead Qualifier", 
+    desc: "Autonomous prospect scoring, outbound cadences, CRM updates", 
+    icon: <Briefcase size={20} className="text-[#ffc700]" /> 
+  },
+  { 
+    id: "devops", 
+    title: "DevOps & Cloud SRE Guard", 
+    desc: "Log monitoring, canary alerts, auto-rollback triggers", 
+    icon: <Zap size={20} className="text-[#ffc700]" /> 
+  },
+  { 
+    id: "fullstack", 
+    title: "Full-Stack Code Synthesizer", 
+    desc: "PR creation, unit test authoring, architectural sandboxing", 
+    icon: <Code size={20} className="text-[#ffc700]" /> 
+  },
+  { 
+    id: "finance", 
+    title: "Financial & Invoicing Auditor", 
+    desc: "Tax receipts reconciliation, anomaly detection, payment tracking", 
+    icon: <BarChart3 size={20} className="text-[#ffc700]" /> 
+  },
+  { 
+    id: "governance", 
+    title: "Compliance & Safety Auditor", 
+    desc: "PII masking, audit logging, security policy enforcement", 
+    icon: <ShieldCheck size={20} className="text-[#ffc700]" /> 
+  },
+  { 
+    id: "ops", 
+    title: "Internal Operations Coordinator", 
+    desc: "Calendar dispatch, sprint reports, cross-team sync digests", 
+    icon: <ClipboardList size={20} className="text-[#ffc700]" /> 
+  },
+  { 
+    id: "marketing", 
+    title: "Growth & Content Strategist", 
+    desc: "SEO research, blog authoring, social content scheduling", 
+    icon: <Rocket size={20} className="text-[#ffc700]" /> 
+  },
+  { 
+    id: "other", 
+    title: "Other / Custom Role", 
+    desc: "Specify your proprietary role or custom department workflow", 
+    icon: <PlusCircle size={20} className="text-[#ffc700]" /> 
+  }
 ];
 
 const INTEGRATION_OPTIONS = [
   "Slack", "Discord", "HubSpot", "Salesforce", "PostgreSQL",
   "MongoDB", "Snowflake", "Notion", "GitHub", "Jira",
-  "Stripe / Razorpay", "WhatsApp API", "Custom REST / GraphQL"
+  "Stripe / Razorpay", "WhatsApp API", "Custom REST / GraphQL", "Other"
 ];
 
 const INDUSTRIES = [
@@ -71,10 +124,13 @@ export default function CustomAgentOnboardingPage() {
     "24/7 Tier-1 & Tier-2 Support",
     "Sales & Inbound Lead Qualifier"
   ]);
+  const [customRoleText, setCustomRoleText] = useState<string>("");
+  const [customIndustryText, setCustomIndustryText] = useState<string>("");
   const [selectedIntegrations, setSelectedIntegrations] = useState<string[]>([
     "Slack",
     "PostgreSQL"
   ]);
+  const [customIntegrationText, setCustomIntegrationText] = useState<string>("");
   const [bottlenecks, setBottlenecks] = useState<string>("");
   const [dailyVolume, setDailyVolume] = useState<string>("1,000 - 5,000 actions/day");
   const [hostingPreference, setHostingPreference] = useState<string>("Managed Dedicated Cloud");
@@ -149,6 +205,24 @@ export default function CustomAgentOnboardingPage() {
     setIsSubmitting(true);
     setSubmitError(null);
 
+    const finalRoles = selectedRoles.map(r => {
+      if (r === "Other / Custom Role" && customRoleText.trim()) {
+        return `Other: ${customRoleText.trim()}`;
+      }
+      return r;
+    });
+
+    const finalIndustry = (industry === "Other" && customIndustryText.trim())
+      ? `Other: ${customIndustryText.trim()}`
+      : industry;
+
+    const finalIntegrations = selectedIntegrations.map(i => {
+      if (i === "Other" && customIntegrationText.trim()) {
+        return `Other: ${customIntegrationText.trim()}`;
+      }
+      return i;
+    });
+
     try {
       const response = await fetch("/api/custom-agents/request", {
         method: "POST",
@@ -156,10 +230,10 @@ export default function CustomAgentOnboardingPage() {
         body: JSON.stringify({
           companyName,
           website,
-          industry,
+          industry: finalIndustry,
           companySize,
-          roles: selectedRoles,
-          integrations: selectedIntegrations,
+          roles: finalRoles,
+          integrations: finalIntegrations,
           bottlenecks,
           dailyVolume,
           hostingPreference,
@@ -180,10 +254,10 @@ export default function CustomAgentOnboardingPage() {
         refId: data.refId,
         companyName,
         website,
-        industry,
+        industry: finalIndustry,
         companySize,
-        roles: selectedRoles,
-        integrations: selectedIntegrations,
+        roles: finalRoles,
+        integrations: finalIntegrations,
         workEmail,
         fullName,
         timeline,
@@ -410,6 +484,18 @@ export default function CustomAgentOnboardingPage() {
                       </option>
                     ))}
                   </select>
+                  {industry === "Other" && (
+                    <div className="space-y-1 pt-2 animate-fadeIn">
+                      <input
+                        type="text"
+                        placeholder="Please specify your industry (e.g. CleanTech, Aerospace, Non-Profit...)"
+                        value={customIndustryText}
+                        onChange={(e) => setCustomIndustryText(e.target.value)}
+                        autoFocus
+                        className="w-full bg-[#0e0f12] border border-[#ffc700]/50 rounded-xl px-4 py-3 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700]"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-1.5">
@@ -483,7 +569,9 @@ export default function CustomAgentOnboardingPage() {
                           : "bg-[#0e0f12] border-white/10 hover:border-white/20"
                       }`}
                     >
-                      <span className="text-2xl shrink-0">{role.icon}</span>
+                      <div className="p-2 rounded-xl bg-black/40 border border-white/10 shrink-0 flex items-center justify-center">
+                        {role.icon}
+                      </div>
                       <div className="flex-grow min-w-0">
                         <div className="flex items-center justify-between">
                           <h5 className="font-bold text-xs text-white truncate">{role.title}</h5>
@@ -497,6 +585,22 @@ export default function CustomAgentOnboardingPage() {
                   );
                 })}
               </div>
+
+              {selectedRoles.includes("Other / Custom Role") && (
+                <div className="space-y-1.5 pt-2 animate-fadeIn">
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#ffc700]">
+                    Specify your other custom role:
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Healthcare Claims Specialist, Supply Chain Analyst, Legal Paralegal..."
+                    value={customRoleText}
+                    onChange={(e) => setCustomRoleText(e.target.value)}
+                    autoFocus
+                    className="w-full bg-[#0e0f12] border border-[#ffc700]/50 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700] transition"
+                  />
+                </div>
+              )}
 
               {submitError && (
                 <div className="text-xs text-red-400 bg-red-950/40 border border-red-800 p-3 rounded-xl">
@@ -565,6 +669,22 @@ export default function CustomAgentOnboardingPage() {
                   );
                 })}
               </div>
+
+              {selectedIntegrations.includes("Other") && (
+                <div className="space-y-1.5 pt-2 animate-fadeIn">
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#ffc700]">
+                    Specify other tools or APIs:
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Asana, Linear, Supabase, proprietary internal ERP..."
+                    value={customIntegrationText}
+                    onChange={(e) => setCustomIntegrationText(e.target.value)}
+                    autoFocus
+                    className="w-full bg-[#0e0f12] border border-[#ffc700]/50 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700] transition"
+                  />
+                </div>
+              )}
 
               <p className="text-xs text-neutral-500 italic">
                 * We also build custom connectors for internal proprietary microservices and ERPs.
