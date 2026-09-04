@@ -42,6 +42,37 @@ const INDUSTRY_BASE_COUNTS: Record<string, number> = {
   Cybersecurity: 3480,
 };
 
+function isSafeUrl(urlStr: string): boolean {
+  try {
+    const parsed = new URL(urlStr);
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return false;
+    const hostname = parsed.hostname.toLowerCase();
+    if (
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname === '0.0.0.0' ||
+      hostname === '::1' ||
+      hostname === '169.254.169.254' ||
+      hostname.endsWith('.internal') ||
+      hostname.endsWith('.local')
+    ) {
+      return false;
+    }
+    const parts = hostname.split('.').map(Number);
+    if (parts.length === 4 && parts.every(p => !isNaN(p) && p >= 0 && p <= 255)) {
+      if (parts[0] === 10) return false;
+      if (parts[0] === 127) return false;
+      if (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) return false;
+      if (parts[0] === 192 && parts[1] === 168) return false;
+      if (parts[0] === 169 && parts[1] === 254) return false;
+      if (parts[0] === 0) return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { website, industry } = await req.json();
@@ -70,9 +101,10 @@ export async function POST(req: NextRequest) {
         targetUrl = "https://" + targetUrl;
       }
 
-      try {
-        const startTime = Date.now();
-        const controller = new AbortController();
+      if (isSafeUrl(targetUrl)) {
+        try {
+          const startTime = Date.now();
+          const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3500);
 
         const res = await fetch(targetUrl, {
@@ -96,6 +128,7 @@ export async function POST(req: NextRequest) {
       } catch {
         // Fallback gracefully if domain timed out or blocked scrapers
         websiteScanned = false;
+      }
       }
     }
 

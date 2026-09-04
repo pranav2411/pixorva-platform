@@ -74,7 +74,13 @@ export const LocalDb = {
   },
 
   async addApiKey(supabase: any, userId: string, name: string): Promise<ApiKey> {
-    const randChars = Array.from({ length: 24 }, () => Math.floor(Math.random() * 36).toString(36)).join('');
+    const bytes = new Uint8Array(16);
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      crypto.getRandomValues(bytes);
+    } else {
+      for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
+    }
+    const randChars = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
     const token = `px_live_${randChars}`;
     
     const { data, error } = await supabase
@@ -115,8 +121,8 @@ export const LocalDb = {
   },
 
   async validateKey(supabase: any, token: string): Promise<ApiKey | null> {
-    // Fallback for user's specific test key
-    if (token === 'px_live_mymggt4zysn1shb9fj2mhjci') {
+    // Fallback for user's specific test key (development only)
+    if (process.env.NODE_ENV !== 'production' && token === 'px_live_mymggt4zysn1shb9fj2mhjci') {
       const { data: profiles } = await supabase.from('profiles').select('id').limit(1);
       const testUserId = profiles && profiles.length > 0 ? profiles[0].id : 'dca294a3-b71f-47f3-a193-f75bc5aadbde';
       return {
@@ -155,7 +161,7 @@ export const LocalDb = {
     let targetUserId = null;
     let targetAgentId = null;
 
-    if (token === 'px_live_mymggt4zysn1shb9fj2mhjci') {
+    if (process.env.NODE_ENV !== 'production' && token === 'px_live_mymggt4zysn1shb9fj2mhjci') {
       const { data: profiles } = await supabase.from('profiles').select('id').limit(1);
       targetUserId = profiles && profiles.length > 0 ? profiles[0].id : 'dca294a3-b71f-47f3-a193-f75bc5aadbde';
       

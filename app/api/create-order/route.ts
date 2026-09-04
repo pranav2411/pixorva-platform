@@ -1,14 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import Razorpay from "razorpay";
 
+const CANONICAL_PLANS: Record<string, number> = {
+  growth_pro: 499900,
+  enterprise: 1999900,
+};
+const DEFAULT_AGENT_PRICE = 99900; // ₹999/mo in paise
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
-    const { amount, currency, receipt, notes, isSubscription = true } = body;
+    const { currency, receipt, notes, isSubscription = true } = body;
 
-    // Validation: Check minimum amount (100 paise = ₹1)
-    if (!amount || amount < 100) {
-      return NextResponse.json({ error: "Invalid amount. Minimum 100 paise required." }, { status: 400 });
+    // Server-side canonical pricing enforcement
+    let verifiedAmount = DEFAULT_AGENT_PRICE;
+    if (notes?.isPlan === "true") {
+      const planCode = notes?.planCode;
+      if (!planCode || !CANONICAL_PLANS[planCode]) {
+        return NextResponse.json({ error: "Invalid or unrecognized subscription plan." }, { status: 400 });
+      }
+      verifiedAmount = CANONICAL_PLANS[planCode];
     }
 
     const keyId = process.env.RAZORPAY_KEY_ID;
@@ -32,7 +43,7 @@ export async function POST(req: NextRequest) {
         interval: 1,
         item: {
           name: `${cleanName} - Monthly Subscription`,
-          amount: Math.round(amount),
+          amount: Math.round(verifiedAmount),
           currency: currency || "INR"
         }
       });
@@ -47,13 +58,13 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({
         subscription_id: subscription.id,
-        amount: amount,
+        amount: verifiedAmount,
         currency: currency || "INR"
       });
     } else {
       // One-time order fallback
       const order = await razorpay.orders.create({
-        amount: Math.round(amount),
+        amount: Math.round(verifiedAmount),
         currency: currency || "INR",
         receipt: receipt || `receipt_${Date.now()}`,
         notes: notes || {}

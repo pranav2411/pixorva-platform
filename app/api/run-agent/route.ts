@@ -82,8 +82,19 @@ export async function POST(req: Request) {
         }
     );
 
-    const { input, agentId, userId, agentRole, fileData } = await req.json();
-    const finalUserId = resolvedUserId || userId;
+    const { input, agentId, agentRole, fileData } = await req.json();
+
+    if (!resolvedUserId) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        return NextResponse.json({
+          success: false,
+          result: "❌ Unauthorized: You must be logged in or provide a valid API Key (Bearer px_live_...) to execute AI agents."
+        }, { status: 401 });
+      }
+      resolvedUserId = user.id;
+    }
+    const finalUserId = resolvedUserId;
 
     // --- 1. GET HISTORY ---
     let historyContext = "";
