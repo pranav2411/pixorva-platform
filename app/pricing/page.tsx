@@ -85,10 +85,24 @@ export default function PricingPage() {
   };
 
   return (
-    <div className={`min-h-screen bg-white text-black ${inter.className} flex flex-col`}>
+    <div className={`min-h-screen bg-transparent text-black ${inter.className} flex flex-col relative`}>
       
+      {/* BACKGROUND VIDEO */}
+      <div className="fixed inset-0 w-full h-full -z-10 overflow-hidden pointer-events-none">
+        <video
+          src="/pricing-bg.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover"
+        />
+        {/* Soft overlay so text and neobrutalist contrast stay crisp */}
+        <div className="absolute inset-0 bg-white/50 backdrop-blur-[1.5px]" />
+      </div>
+
       {/* NAVBAR */}
-      <nav className="flex items-center justify-between px-6 md:px-12 py-5 border-b-4 border-black sticky top-0 bg-white z-50">
+      <nav className="flex items-center justify-between px-6 md:px-12 py-5 border-b-4 border-black sticky top-0 bg-white/85 backdrop-blur-md z-50">
         <Link href="/" className="flex items-center gap-2">
             <Image
                 src="/favicon.ico"
@@ -108,29 +122,29 @@ export default function PricingPage() {
 
       {/* HERO */}
       <div className="max-w-7xl mx-auto px-6 py-20 text-center">
-        <div className="inline-block bg-red-500 text-white border-2 border-black px-4 py-1 rounded-full text-xs font-black uppercase mb-6 transform -rotate-2">
+        <div className="inline-block bg-red-500 text-white border-2 border-black px-4 py-1 rounded-full text-xs font-black uppercase mb-6 transform -rotate-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             Stop Burning Cash on Payroll
         </div>
         <h1 className={`text-5xl md:text-8xl uppercase leading-[0.9] mb-8 ${oswald.className}`}>
           Hire an Entire Team <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-orange-600">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-orange-600 drop-shadow-sm">
              For the Price of Lunch.
           </span>
         </h1>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-12">
+        <p className="text-xl text-gray-800 max-w-2xl mx-auto mb-12 font-medium">
             Why pay ₹50,000/mo for one intern when you can have 15 Senior AI Experts for a fraction of the cost?
         </p>
       </div>
 
       {/* THE COMPARISON (US VS THEM) */}
       <div className="max-w-6xl mx-auto px-6 mb-24">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-4 border-black rounded-3xl overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] bg-white/70 backdrop-blur-md">
               
               {/* FREELANCER */}
-              <div className="bg-gray-100 p-8 border-b-4 md:border-b-0 md:border-r-4 border-black flex flex-col items-center text-center opacity-60">
+              <div className="bg-gray-100/80 backdrop-blur-sm p-8 border-b-4 md:border-b-0 md:border-r-4 border-black flex flex-col items-center text-center opacity-75">
                   <h3 className={`text-2xl uppercase mb-4 ${oswald.className}`}>Freelancer</h3>
-                  <div className="text-4xl font-black mb-2 text-gray-500">₹30k<span className="text-sm">/mo</span></div>
-                  <ul className="space-y-4 mt-6 text-sm font-bold text-gray-500">
+                  <div className="text-4xl font-black mb-2 text-gray-600">₹30k<span className="text-sm">/mo</span></div>
+                  <ul className="space-y-4 mt-6 text-sm font-bold text-gray-600">
                       <li className="flex items-center justify-center gap-2"><X size={16}/> Availability: 9-5 only</li>
                       <li className="flex items-center justify-center gap-2"><X size={16}/> Speed: 3-5 days/task</li>
                       <li className="flex items-center justify-center gap-2"><X size={16}/> Skills: Limited to one</li>
@@ -139,10 +153,10 @@ export default function PricingPage() {
               </div>
 
               {/* AGENCY */}
-              <div className="bg-gray-100 p-8 border-b-4 md:border-b-0 md:border-r-4 border-black flex flex-col items-center text-center opacity-60">
+              <div className="bg-gray-100/80 backdrop-blur-sm p-8 border-b-4 md:border-b-0 md:border-r-4 border-black flex flex-col items-center text-center opacity-75">
                   <h3 className={`text-2xl uppercase mb-4 ${oswald.className}`}>Traditional Agency</h3>
-                  <div className="text-4xl font-black mb-2 text-gray-500">₹1.5L<span className="text-sm">/mo</span></div>
-                  <ul className="space-y-4 mt-6 text-sm font-bold text-gray-500">
+                  <div className="text-4xl font-black mb-2 text-gray-600">₹1.5L<span className="text-sm">/mo</span></div>
+                  <ul className="space-y-4 mt-6 text-sm font-bold text-gray-600">
                       <li className="flex items-center justify-center gap-2"><Check size={16}/> Availability: 9-5 M-F</li>
                       <li className="flex items-center justify-center gap-2"><X size={16}/> Speed: Weeks/Months</li>
                       <li className="flex items-center justify-center gap-2"><Check size={16}/> Skills: High</li>
@@ -151,7 +165,7 @@ export default function PricingPage() {
               </div>
 
               {/* PIXORVA (HERO) */}
-              <div className="bg-yellow-300 p-8 flex flex-col items-center text-center relative overflow-hidden">
+              <div className="bg-yellow-300/90 backdrop-blur-sm p-8 flex flex-col items-center text-center relative overflow-hidden">
                   <div className="absolute top-0 right-0 bg-black text-white text-[10px] font-bold px-2 py-1 uppercase">Winner</div>
                   <h3 className={`text-4xl uppercase mb-4 ${oswald.className}`}>Pixorva AI</h3>
                   <div className="text-5xl font-black mb-2">₹4,999<span className="text-xl">/mo</span></div>
@@ -178,7 +192,7 @@ export default function PricingPage() {
           
           {/* Consent Checkbox */}
           <div className="max-w-md mx-auto mb-12 flex justify-center text-center">
-             <div className="flex items-start gap-3 text-xs font-semibold text-gray-600 bg-gray-50 border-2 border-black p-4 rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] text-left">
+             <div className="flex items-start gap-3 text-xs font-semibold text-gray-700 bg-white/80 backdrop-blur-md border-2 border-black p-4 rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] text-left">
                <input
                  type="checkbox"
                  id="pricing-agree"
@@ -199,12 +213,12 @@ export default function PricingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               
               {/* STARTER */}
-              <div className="border-4 border-black rounded-2xl p-8 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition hover:-translate-y-1 bg-white flex flex-col justify-between">
+              <div className="border-4 border-black rounded-2xl p-8 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition hover:-translate-y-1 bg-white/80 backdrop-blur-md flex flex-col justify-between">
                   <div>
-                      <div className="bg-gray-100 w-12 h-12 rounded-full flex items-center justify-center mb-4 border-2 border-black"><Shield size={24}/></div>
+                      <div className="bg-gray-100/90 w-12 h-12 rounded-full flex items-center justify-center mb-4 border-2 border-black"><Shield size={24}/></div>
                       <h3 className={`text-2xl uppercase ${oswald.className}`}>Starter</h3>
-                      <p className="text-gray-500 text-sm font-bold mb-6">For testing individual agents.</p>
-                      <div className="text-4xl font-black mb-6">₹0 <span className="text-sm font-medium text-gray-500">/ 3 Days</span></div>
+                      <p className="text-gray-600 text-sm font-bold mb-6">For testing individual agents.</p>
+                      <div className="text-4xl font-black mb-6">₹0 <span className="text-sm font-medium text-gray-600">/ 3 Days</span></div>
                       <ul className="space-y-3 text-sm font-medium mb-8">
                           <li className="flex gap-2"><Check size={16}/> Try 1 Agent of choice</li>
                           <li className="flex gap-2"><Check size={16}/> Full Agent capabilities</li>
@@ -212,21 +226,20 @@ export default function PricingPage() {
                       </ul>
                   </div>
                   <Link href="/trial">
-                    <button className="w-full border-2 border-black py-3 rounded-lg font-bold uppercase hover:bg-black hover:text-white transition">Start Free Trial</button>
+                    <button className="w-full border-2 border-black py-3 rounded-lg font-bold uppercase hover:bg-black hover:text-white transition bg-white/90">Start Free Trial</button>
                   </Link>
               </div>
 
               {/* PRO (HIGHLIGHTED) */}
-              <div className="border-4 border-black rounded-2xl p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-black text-white relative transform md:-translate-y-4 flex flex-col justify-between">
+              <div className="border-4 border-black rounded-2xl p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-black/85 backdrop-blur-md text-white relative transform md:-translate-y-4 flex flex-col justify-between">
                   <div>
                       <div className="absolute top-0 right-0 bg-yellow-400 text-black text-xs font-black px-3 py-1 uppercase rounded-bl-lg border-l-2 border-b-2 border-black">Most Popular</div>
                       <div className="bg-yellow-400 text-black w-12 h-12 rounded-full flex items-center justify-center mb-4 border-2 border-white"><Rocket size={24}/></div>
                       <h3 className={`text-2xl uppercase ${oswald.className}`}>Growth Pro</h3>
-                      <p className="text-gray-400 text-sm font-bold mb-6">For scaling startups.</p>
-                      <div className="text-4xl font-black mb-6 text-yellow-400">₹4,999 <span className="text-sm font-medium text-gray-400">/ mo</span></div>
+                      <p className="text-gray-300 text-sm font-bold mb-6">For scaling startups.</p>
+                      <div className="text-4xl font-black mb-6 text-yellow-400">₹4,999 <span className="text-sm font-medium text-gray-300">/ mo</span></div>
                       <ul className="space-y-3 text-sm font-medium mb-8">
-                          <li className="flex gap-2"><Check size={16}/> Full access to any 4 Agents</li>
-                          <li className="flex gap-2"><Check size={16}/> Swap active agents anytime</li>
+                          <li className="flex gap-2"><Check size={16}/> Deploy any 4 AI specialists</li>
                           <li className="flex gap-2"><Check size={16}/> Unlimited tasks & executions</li>
                           <li className="flex gap-2"><Check size={16}/> Fast execution speed</li>
                           <li className="flex gap-2"><Check size={16}/> Save workstation history</li>
@@ -241,12 +254,12 @@ export default function PricingPage() {
               </div>
 
               {/* ENTERPRISE */}
-              <div className="border-4 border-black rounded-2xl p-8 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition hover:-translate-y-1 bg-white flex flex-col justify-between">
+              <div className="border-4 border-black rounded-2xl p-8 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition hover:-translate-y-1 bg-white/80 backdrop-blur-md flex flex-col justify-between">
                   <div>
-                      <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mb-4 border-2 border-black"><Crown size={24}/></div>
+                      <div className="bg-blue-100/90 w-12 h-12 rounded-full flex items-center justify-center mb-4 border-2 border-black"><Crown size={24}/></div>
                       <h3 className={`text-2xl uppercase ${oswald.className}`}>Enterprise</h3>
-                      <p className="text-gray-500 text-sm font-bold mb-6">For heavy workflows.</p>
-                      <div className="text-4xl font-black mb-6">₹19,999 <span className="text-sm font-medium text-gray-500">/ mo</span></div>
+                      <p className="text-gray-600 text-sm font-bold mb-6">For heavy workflows.</p>
+                      <div className="text-4xl font-black mb-6">₹19,999 <span className="text-sm font-medium text-gray-600">/ mo</span></div>
                       <ul className="space-y-3 text-sm font-medium mb-8">
                           <li className="flex gap-2"><Check size={16}/> Deploy ALL 15 AI Agents</li>
                           <li className="flex gap-2"><Check size={16}/> Unlimited tasks & executions</li>
@@ -257,7 +270,7 @@ export default function PricingPage() {
                   </div>
                   <button 
                     onClick={() => handleSubscribe('enterprise', 19999)}
-                    className="w-full border-2 border-black py-3 rounded-lg font-bold uppercase hover:bg-black hover:text-white transition"
+                    className="w-full border-2 border-black py-3 rounded-lg font-bold uppercase hover:bg-black hover:text-white transition bg-white/90"
                   >
                       Get Enterprise
                   </button>
@@ -269,13 +282,13 @@ export default function PricingPage() {
       {/* PLAN COMPARISON TABLE */}
       <div className="w-full max-w-6xl mx-auto px-6 pb-24">
         <h3 className={`text-3xl text-center uppercase mb-8 ${oswald.className}`}>Plan Feature Comparison</h3>
-        <div className="border-4 border-black rounded-2xl bg-white overflow-x-auto shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <div className="border-4 border-black rounded-2xl bg-white/80 backdrop-blur-md overflow-x-auto shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <table className="w-full text-left text-xs border-collapse min-w-[600px]">
             <thead>
-              <tr className="border-b-4 border-black bg-gray-100">
+              <tr className="border-b-4 border-black bg-gray-100/80 backdrop-blur-sm">
                 <th className="p-4 font-black uppercase text-sm">Feature</th>
                 <th className="p-4 font-black uppercase text-sm text-center">Starter</th>
-                <th className="p-4 font-black uppercase text-sm text-center bg-yellow-200">Growth Pro</th>
+                <th className="p-4 font-black uppercase text-sm text-center bg-yellow-200/90">Growth Pro</th>
                 <th className="p-4 font-black uppercase text-sm text-center">Enterprise</th>
               </tr>
             </thead>
@@ -283,43 +296,43 @@ export default function PricingPage() {
               <tr>
                 <td className="p-4 font-bold text-black">Active AI Agents</td>
                 <td className="p-4 text-center">1 Agent</td>
-                <td className="p-4 text-center bg-yellow-50 font-black text-black">Any 4 Specialists</td>
+                <td className="p-4 text-center bg-yellow-50/70 font-black text-black">Any 4 Specialists</td>
                 <td className="p-4 text-center font-black text-black">All 15 AI Agents</td>
               </tr>
               <tr>
                 <td className="p-4 font-bold text-black">Monthly Tasks</td>
                 <td className="p-4 text-center">Trial Capped</td>
-                <td className="p-4 text-center bg-yellow-50 font-black text-black">Unlimited Tasks</td>
+                <td className="p-4 text-center bg-yellow-50/70 font-black text-black">Unlimited Tasks</td>
                 <td className="p-4 text-center font-black text-black">Unlimited Parallel Tasks</td>
               </tr>
               <tr>
                 <td className="p-4 font-bold text-black">Execution Speed</td>
                 <td className="p-4 text-center">Standard</td>
-                <td className="p-4 text-center bg-yellow-50 font-black text-black">Fast Execution</td>
+                <td className="p-4 text-center bg-yellow-50/70 font-black text-black">Fast Execution</td>
                 <td className="p-4 text-center font-black text-black">Priority Execution</td>
               </tr>
               <tr>
                 <td className="p-4 font-bold text-black">Workstation History & Memory</td>
                 <td className="p-4 text-center">72-Hour History</td>
-                <td className="p-4 text-center bg-yellow-50 font-black text-black">Full Workstation History</td>
+                <td className="p-4 text-center bg-yellow-50/70 font-black text-black">Full Workstation History</td>
                 <td className="p-4 text-center font-black text-black">Persistent Multi-Agent Memory</td>
               </tr>
               <tr>
                 <td className="p-4 font-bold text-black">Agent Selection</td>
                 <td className="p-4 text-center">1 Choice (Trial)</td>
-                <td className="p-4 text-center bg-yellow-50 font-black text-black">Any 4 Specialists</td>
+                <td className="p-4 text-center bg-yellow-50/70 font-black text-black">Any 4 Specialists</td>
                 <td className="p-4 text-center font-black text-black">All 15 Specialists Included</td>
               </tr>
               <tr>
                 <td className="p-4 font-bold text-black">Governance & Compliance</td>
                 <td className="p-4 text-center text-gray-400">—</td>
-                <td className="p-4 text-center bg-yellow-50">Standard Audit</td>
+                <td className="p-4 text-center bg-yellow-50/70">Standard Audit</td>
                 <td className="p-4 text-center font-black text-black">Full Universal AI Tower</td>
               </tr>
               <tr>
                 <td className="p-4 font-bold text-black">Customer Support</td>
                 <td className="p-4 text-center">Self-service</td>
-                <td className="p-4 text-center bg-yellow-50 font-black text-black">Priority Email Support</td>
+                <td className="p-4 text-center bg-yellow-50/70 font-black text-black">Priority Email Support</td>
                 <td className="p-4 text-center font-black text-black">Dedicated Account Support</td>
               </tr>
             </tbody>
@@ -336,12 +349,12 @@ export default function PricingPage() {
             return (
               <div 
                 key={idx}
-                className="w-full border-2 border-black rounded-xl bg-white overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                className="w-full border-2 border-black rounded-xl bg-white/80 backdrop-blur-md overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
               >
                 <button
                   type="button"
                   onClick={() => toggleFaq(idx)}
-                  className="w-full p-5 text-left flex items-center justify-between font-bold text-sm hover:bg-gray-50 transition"
+                  className="w-full p-5 text-left flex items-center justify-between font-bold text-sm hover:bg-white/50 transition"
                 >
                   <span className="pr-4">{faq.question}</span>
                   {isOpen ? <ChevronUp size={18} className="shrink-0" /> : <ChevronDown size={18} className="shrink-0 text-gray-500" />}
