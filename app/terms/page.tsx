@@ -12,7 +12,8 @@ import {
   Eye,
   CheckCircle2,
   Lock,
-  Server
+  Server,
+  Mail
 } from "lucide-react";
 import Link from "next/link";
 
@@ -260,9 +261,174 @@ export default function TermsPage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-white/10 bg-[#0e0f12] py-8 text-center text-xs text-neutral-500 font-mono">
-        © 2026 PIXORVA INC. ALL RIGHTS RESERVED. // TERMS OF SERVICE
+      {/* FOOTER WITH BIG PIXORVA BACKGROUND WATERMARK */}
+      <footer className="relative bg-black text-white pt-20 pb-12 border-t border-white/10 overflow-hidden mt-auto">
+        {/* Big PIXORVA Background Text */}
+        <div
+          className={`absolute top-6 left-0 right-0 text-[18vw] font-black tracking-tighter text-white/[0.035] select-none pointer-events-none text-center leading-none ${oswald.className}`}
+        >
+          PIXORVA
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-6">
+          {/* Main 4-Column Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 pb-16 border-b border-white/10">
+            
+            {/* Column 1: Pixorva Details & Brand (Spans 2 columns on lg) */}
+            <div className="lg:col-span-2 space-y-4">
+              <div>
+                <span className={`text-2xl font-black uppercase tracking-wider text-white ${oswald.className}`}>
+                  Pixorva
+                </span>
+              </div>
+
+              <p className="text-sm text-neutral-400 leading-relaxed max-w-md">
+                Pixorva is the autonomous AI workforce platform engineered for high-growth enterprises and modern operational teams. We design, deploy, and govern role-specialized AI agent swarms with dedicated vector memory, private VPC isolation, and proprietary tool connectors.
+              </p>
+
+              {/* Support Callout */}
+              <div className="pt-2">
+                <a
+                  href="mailto:support@pixorva.org"
+                  className="inline-flex items-center gap-2 text-xs font-bold text-[#ffc700] hover:underline bg-[#ffc700]/10 border border-[#ffc700]/20 px-3 py-1.5 rounded-lg transition"
+                >
+                  <Mail size={13} />
+                  <span>support@pixorva.org</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Column 2: Platform Navigation */}
+            <div className="space-y-3">
+              <h5 className="text-xs font-black uppercase tracking-wider text-neutral-300">
+                Platform
+              </h5>
+              <ul className="space-y-2 text-xs text-neutral-400">
+                <li>
+                  <Link href="/" className="hover:text-[#ffc700] transition">
+                    Agent Marketplace
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/custom-agents" className="text-[#ffc700] font-semibold hover:underline">
+                    Custom Business Agents
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/custom-agents/onboarding" className="hover:text-[#ffc700] transition">
+                    Request Custom Agents
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/studio" className="hover:text-[#ffc700] transition">
+                    Agent Studio
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/workspace" className="hover:text-[#ffc700] transition">
+                    Team Workspace
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/employees" className="hover:text-[#ffc700] transition">
+                    Hired AI Workforce
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/trial" className="hover:text-[#ffc700] transition">
+                    Enterprise Trial
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 3: Enterprise & Governance */}
+            <div className="space-y-3">
+              <h5 className="text-xs font-black uppercase tracking-wider text-neutral-300">
+                Enterprise & Control
+              </h5>
+              <ul className="space-y-2 text-xs text-neutral-400">
+                <li>
+                  <Link href="/governance" className="hover:text-[#ffc700] transition">
+                    Governance & Guardrails
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/governance/info" className="hover:text-[#ffc700] transition">
+                    Governance Framework
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/docs" className="hover:text-[#ffc700] transition">
+                    Developer Documentation
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pricing" className="hover:text-[#ffc700] transition">
+                    Pricing & Plans
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/billing" className="hover:text-[#ffc700] transition">
+                    Billing & Invoicing
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/settings" className="hover:text-[#ffc700] transition">
+                    Account & API Keys
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 4: Contact & Legal */}
+            <div className="space-y-3">
+              <h5 className="text-xs font-black uppercase tracking-wider text-neutral-300">
+                Contact & Legal
+              </h5>
+              <div className="space-y-3 text-xs text-neutral-400">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-neutral-500 block">General Support</span>
+                  <a href="mailto:support@pixorva.org" className="text-white hover:text-[#ffc700] transition">
+                    support@pixorva.org
+                  </a>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-neutral-500 block">Privacy & Data Office</span>
+                  <a href="mailto:privacy@pixorva.com" className="text-white hover:text-[#ffc700] transition">
+                    privacy@pixorva.com
+                  </a>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-neutral-500 block">Grievance Redressal</span>
+                  <a href="mailto:grievance@pixorva.com" className="text-white hover:text-[#ffc700] transition">
+                    grievance@pixorva.com
+                  </a>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-neutral-500 block">Legal Department</span>
+                  <a href="mailto:legal@pixorva.com" className="text-white hover:text-[#ffc700] transition">
+                    legal@pixorva.com
+                  </a>
+                </div>
+                <div className="pt-2 flex flex-col gap-1.5 font-bold uppercase text-[11px] border-t border-white/5">
+                  <Link href="/privacy" className="text-neutral-300 hover:text-[#ffc700] transition">
+                    Privacy Policy →
+                  </Link>
+                  <Link href="/terms" className="text-neutral-300 hover:text-[#ffc700] transition">
+                    Terms & Conditions →
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Bottom Sub-Footer Bar */}
+          <div className="pt-8 text-center sm:text-left text-xs text-neutral-500 font-mono">
+            © 2026 PIXORVA INC. ALL RIGHTS RESERVED.
+          </div>
+        </div>
       </footer>
 
     </div>
