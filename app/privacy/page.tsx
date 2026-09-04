@@ -25,7 +25,7 @@ const inter = Inter({ subsets: ["latin"] });
 export default function PrivacyPage() {
   return (
     <div className={`min-h-screen bg-[#0e0f12] text-white ${inter.className} selection:bg-[#ffc700] selection:text-black flex flex-col`}>
-      
+
       {/* Top Header */}
       <header className="bg-[#141519]/80 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between w-full">
@@ -55,7 +55,7 @@ export default function PrivacyPage() {
       {/* Main Content */}
       <main className="flex-grow py-12 px-6">
         <div className="max-w-5xl mx-auto space-y-8">
-          
+
           {/* Hero Banner Card */}
           <div className="bg-[#141519] border border-white/10 p-8 sm:p-10 rounded-3xl relative overflow-hidden shadow-2xl">
             <div className="relative z-10 space-y-3">
@@ -84,7 +84,7 @@ export default function PrivacyPage() {
 
           {/* Detailed Policy Sections */}
           <div className="bg-[#141519] border border-white/10 rounded-3xl p-6 sm:p-12 space-y-12 shadow-2xl">
-            
+
             {/* Section 1: Overview & Scope */}
             <section className="space-y-4">
               <h3 className={`text-2xl font-black uppercase text-white flex items-center gap-3 pb-3 border-b border-white/10 ${oswald.className}`}>
@@ -283,7 +283,7 @@ export default function PrivacyPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           {/* Main 4-Column Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 pb-16 border-b border-white/10">
-            
+
             {/* Column 1: Pixorva Details & Brand (Spans 2 columns on lg) */}
             <div className="lg:col-span-2 space-y-4">
               <div>
@@ -320,7 +320,7 @@ export default function PrivacyPage() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/custom-agents" className="text-[#ffc700] font-semibold hover:underline">
+                  <Link href="/custom-agents" className="hover:text-[#ffc700] transition">
                     Custom Business Agents
                   </Link>
                 </li>

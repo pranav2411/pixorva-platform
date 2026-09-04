@@ -34,7 +34,7 @@ export default function CustomAgentsPage() {
 
   return (
     <div className={`min-h-screen bg-[#0e0f12] text-white ${inter.className} flex flex-col selection:bg-[#ffc700] selection:text-black`}>
-      
+
       {/* Top Header */}
       <header className="bg-[#141519]/90 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50 shadow-md">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between w-full">
@@ -77,7 +77,7 @@ export default function CustomAgentsPage() {
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-12 pb-16 border-b border-white/10">
         <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(255,199,0,0.12),rgba(255,255,255,0))]" />
-        
+
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="max-w-3xl space-y-6">
             <div className="inline-flex items-center gap-2 bg-[#1a1b22] border border-[#ffc700]/30 px-3.5 py-1.5 rounded-full text-xs font-bold text-neutral-300">
@@ -155,44 +155,40 @@ export default function CustomAgentsPage() {
           <div className="flex flex-wrap items-center gap-2 border-b border-white/10 pb-4 shrink-0">
             <button
               onClick={() => setActiveDocTab("architecture")}
-              className={`px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition flex items-center gap-2 ${
-                activeDocTab === "architecture"
+              className={`px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition flex items-center gap-2 ${activeDocTab === "architecture"
                   ? "bg-[#ffc700] text-black shadow-md"
                   : "bg-black/40 text-neutral-400 hover:text-white hover:bg-black/60"
-              }`}
+                }`}
             >
               <Workflow size={14} />
               <span>1. Custom Agent Architecture</span>
             </button>
             <button
               onClick={() => setActiveDocTab("integrations")}
-              className={`px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition flex items-center gap-2 ${
-                activeDocTab === "integrations"
+              className={`px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition flex items-center gap-2 ${activeDocTab === "integrations"
                   ? "bg-[#ffc700] text-black shadow-md"
                   : "bg-black/40 text-neutral-400 hover:text-white hover:bg-black/60"
-              }`}
+                }`}
             >
               <Database size={14} />
               <span>2. Custom Tool & API Calling</span>
             </button>
             <button
               onClick={() => setActiveDocTab("security")}
-              className={`px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition flex items-center gap-2 ${
-                activeDocTab === "security"
+              className={`px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition flex items-center gap-2 ${activeDocTab === "security"
                   ? "bg-[#ffc700] text-black shadow-md"
                   : "bg-black/40 text-neutral-400 hover:text-white hover:bg-black/60"
-              }`}
+                }`}
             >
               <ShieldCheck size={14} />
               <span>3. Enterprise Security & Isolation</span>
             </button>
             <button
               onClick={() => setActiveDocTab("lifecycle")}
-              className={`px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition flex items-center gap-2 ${
-                activeDocTab === "lifecycle"
+              className={`px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition flex items-center gap-2 ${activeDocTab === "lifecycle"
                   ? "bg-[#ffc700] text-black shadow-md"
                   : "bg-black/40 text-neutral-400 hover:text-white hover:bg-black/60"
-              }`}
+                }`}
             >
               <Clock size={14} />
               <span>4. Delivery & Governance SLA</span>
@@ -559,7 +555,7 @@ export default function CustomAgentsPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           {/* Main 4-Column Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 pb-16 border-b border-white/10">
-            
+
             {/* Column 1: Pixorva Details & Brand (Spans 2 columns on lg) */}
             <div className="lg:col-span-2 space-y-4">
               <div>
@@ -596,7 +592,7 @@ export default function CustomAgentsPage() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/custom-agents" className="text-[#ffc700] font-semibold hover:underline">
+                  <Link href="/custom-agents" className="hover:text-[#ffc700] transition">
                     Custom Business Agents
                   </Link>
                 </li>
