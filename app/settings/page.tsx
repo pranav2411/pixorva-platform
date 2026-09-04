@@ -616,19 +616,6 @@ export default function SettingsPage() {
               </nav>
             </div>
 
-            {/* ACTIVE TEAM SUMMARY BADGE */}
-            <div className="bg-[#121316]/60 backdrop-blur-md border border-white/10 rounded-3xl p-5 shadow-xl">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold uppercase text-neutral-400">My Active Team</span>
-                <span className="text-xs font-bold uppercase bg-green-950/80 text-green-400 border border-green-800/80 px-2.5 py-0.5 rounded-full">
-                  {paidAgents.length} Running
-                </span>
-              </div>
-              <p className="text-[11px] text-neutral-400 leading-relaxed">
-                All {paidAgents.length} provisioned AI staff members are active in your workspace.
-              </p>
-            </div>
-
           </aside>
 
           {/* RIGHT RAIL / MAIN CONTENT (9 Columns) */}
