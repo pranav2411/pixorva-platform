@@ -14,12 +14,14 @@ export async function POST(req: NextRequest) {
 
     // Server-side canonical pricing enforcement
     let verifiedAmount = DEFAULT_AGENT_PRICE;
-    if (notes?.isPlan === "true") {
+    if (notes?.isPlan === "true" || notes?.isPlan === true) {
       const planCode = notes?.planCode;
       if (!planCode || !CANONICAL_PLANS[planCode]) {
         return NextResponse.json({ error: "Invalid or unrecognized subscription plan." }, { status: 400 });
       }
       verifiedAmount = CANONICAL_PLANS[planCode];
+    } else if (notes?.agentName && String(notes.agentName).toLowerCase().includes("governance")) {
+      verifiedAmount = 199900; // ₹1,999 in paise for Governance Control Tower
     }
 
     const keyId = process.env.RAZORPAY_KEY_ID;

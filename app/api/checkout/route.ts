@@ -75,6 +75,9 @@ export async function POST(req: Request) {
     } else {
       // 2. Create a monthly recurring subscription session for a single agent/utility
       const cleanAgentName = agentName ? String(agentName).slice(0, 80) : "AI Employee";
+      const isGovernance = cleanAgentName.toLowerCase().includes("governance");
+      const unitAmount = isGovernance ? 199900 : DEFAULT_AGENT_PRICE;
+
       session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [
@@ -86,7 +89,7 @@ export async function POST(req: Request) {
                 description: 'Monthly salary for AI Employee',
                 images: ['https://cdn-icons-png.flaticon.com/512/4712/4712035.png'],
               },
-              unit_amount: DEFAULT_AGENT_PRICE,
+              unit_amount: unitAmount,
               recurring: {
                 interval: 'month',
               },
