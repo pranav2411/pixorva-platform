@@ -119,20 +119,24 @@ export default function AgentDetailPage() {
     <div className={`min-h-screen bg-white text-black ${inter.className} flex flex-col`}>
       
       {/* HEADER */}
-      <header className="bg-white border-b-4 border-black px-6 py-4 flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-3">
-          <BackButton
-            fallback="/employees"
-            iconSize={16}
-            className="bg-black text-white p-2 rounded-lg border-2 border-black hover:bg-yellow-400 hover:text-black transition shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-y-0.5 flex items-center justify-center shrink-0"
-          />
-          <span className={`text-2xl font-black uppercase tracking-wider ${oswald.className}`}>
-            Pixorva Marketplace
-          </span>
+      <header className="bg-white border-b-4 border-black sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between w-full">
+          <div className="flex items-center gap-3">
+            <BackButton
+              fallback="/employees"
+              iconSize={16}
+              className="bg-black text-white p-2 rounded-lg border-2 border-black hover:bg-yellow-400 hover:text-black transition shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-y-0.5 flex items-center justify-center shrink-0"
+            />
+            <Link href="/employees" className="hover:opacity-80 transition flex items-center gap-2">
+              <span className={`text-2xl font-black uppercase tracking-wider ${oswald.className}`}>
+                Pixorva Marketplace
+              </span>
+            </Link>
+          </div>
+          <Link href="/employees" className="text-xs font-black uppercase border-2 border-black px-4 py-2 rounded-xl hover:bg-yellow-400 hover:text-black transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5">
+            Marketplace
+          </Link>
         </div>
-        <Link href="/employees" className="text-xs font-black uppercase border-2 border-black px-4 py-2 rounded-xl hover:bg-gray-50 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5">
-          Marketplace
-        </Link>
       </header>
 
       {/* HERO SECTION - Bespoke Background */}
