@@ -8,6 +8,7 @@ import {
   Megaphone, DollarSign, PenTool, Brain, CheckCircle, Target, X, Loader2 
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from '../utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { showToast } from '../utils/Toast';
@@ -311,211 +312,271 @@ export default function StudioPage() {
   };
 
   return (
-    <div className={`min-h-screen bg-gray-50 text-black ${inter.className} flex flex-col md:flex-row`}>
+    <div className={`min-h-screen bg-[#0e0f12] text-white ${inter.className} flex flex-col selection:bg-[#ffc700] selection:text-black`}>
       
-      {/* LEFT: BUILDER FORM */}
-      <div className="w-full md:w-1/2 p-8 md:p-12 overflow-y-auto h-screen bg-white border-r border-gray-200">
-          
-          <div className="mb-8">
-              <div className="flex items-center gap-3 mb-3">
-                <BackButton
-                  fallback="/workspace"
-                  iconSize={16}
-                  className="bg-black text-white p-2 rounded-lg border-2 border-black hover:bg-yellow-400 hover:text-black transition shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-y-0.5 flex items-center justify-center shrink-0"
-                />
-                <h1 className={`text-5xl uppercase leading-none ${oswald.className}`}>Agent Studio</h1>
-              </div>
-              <p className="text-gray-500 font-medium">Design a custom AI employee from scratch.</p>
+      {/* MARGINAL NAVBAR */}
+      <header className="bg-[#141519]/90 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50 shadow-md">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between w-full">
+          <div className="flex items-center gap-4">
+            <BackButton
+              fallback="/workspace"
+              iconSize={16}
+              className="bg-black text-white p-2 rounded-lg border border-white/20 hover:bg-[#ffc700] hover:text-black hover:border-black transition shadow-sm flex items-center justify-center shrink-0"
+            />
+            <Link href="/" className="flex items-center gap-2.5 group">
+              <Image
+                src="/favicon.ico"
+                alt="Pixorva Logo"
+                width={28}
+                height={28}
+                className="w-7 h-7 rounded-lg group-hover:scale-105 transition"
+              />
+              <span className={`text-2xl font-black uppercase tracking-wider text-white ${oswald.className}`}>
+                Pixorva
+              </span>
+            </Link>
+            <span className="text-neutral-600 hidden sm:inline">/</span>
+            <span className={`text-lg uppercase text-neutral-300 hidden sm:inline ${oswald.className}`}>
+              Agent Studio
+            </span>
           </div>
 
-          {/* PRESETS */}
-          <div className="mb-10">
-              <label className="text-xs font-black uppercase tracking-widest text-gray-400 mb-3 block">Quick Start Templates</label>
-              <div className="grid grid-cols-2 gap-3">
-                  <button 
-                    onClick={() => applyPreset('coder')} 
-                    className="p-3 bg-blue-50 text-blue-800 border-2 border-blue-200 rounded-xl text-[10px] font-black uppercase text-left hover:bg-blue-100 hover:border-black transition flex flex-col gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none"
-                  >
-                    <span>Code Expert</span>
-                    <span className="text-[8px] text-blue-600 font-medium normal-case">Write & debug clean code.</span>
-                  </button>
-                  <button 
-                    onClick={() => applyPreset('writer')} 
-                    className="p-3 bg-green-50 text-green-800 border-2 border-green-200 rounded-xl text-[10px] font-black uppercase text-left hover:bg-green-100 hover:border-black transition flex flex-col gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none"
-                  >
-                    <span>Viral Writer</span>
-                    <span className="text-[8px] text-green-600 font-medium normal-case">Punchy hook writer.</span>
-                  </button>
-                  <button 
-                    onClick={() => applyPreset('negotiator')} 
-                    className="p-3 bg-yellow-50 text-yellow-800 border-2 border-yellow-200 rounded-xl text-[10px] font-black uppercase text-left hover:bg-yellow-100 hover:border-black transition flex flex-col gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none"
-                  >
-                    <span>Negotiator</span>
-                    <span className="text-[8px] text-yellow-600 font-medium normal-case">Tough offer negotiations.</span>
-                  </button>
-                  <button 
-                    onClick={() => applyPreset('github_resolver')} 
-                    className="p-3 bg-indigo-50 text-indigo-800 border-2 border-indigo-200 rounded-xl text-[10px] font-black uppercase text-left hover:bg-indigo-100 hover:border-black transition flex flex-col gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none"
-                  >
-                    <span>QA OctoFixer</span>
-                    <span className="text-[8px] text-indigo-600 font-medium normal-case">Resolve repo bugs & PRs.</span>
-                  </button>
-                  <button 
-                    onClick={() => applyPreset('ads_manager')} 
-                    className="p-3 bg-orange-50 text-orange-800 border-2 border-orange-200 rounded-xl text-[10px] font-black uppercase text-left hover:bg-orange-100 hover:border-black transition flex flex-col gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none"
-                  >
-                    <span>AdPulse Marketing</span>
-                    <span className="text-[8px] text-orange-600 font-medium normal-case">Ad conversions copy.</span>
-                  </button>
-                  <button 
-                    onClick={() => applyPreset('retention_bot')} 
-                    className="p-3 bg-red-50 text-red-800 border-2 border-red-200 rounded-xl text-[10px] font-black uppercase text-left hover:bg-red-100 hover:border-black transition flex flex-col gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none"
-                  >
-                    <span>LoyaltyGuard CS</span>
-                    <span className="text-[8px] text-red-600 font-medium normal-case">Mitigate churn friction.</span>
-                  </button>
-              </div>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/workspace"
+              className="text-xs font-bold uppercase tracking-wider text-neutral-400 hover:text-white transition px-3 py-1.5 rounded-lg hover:bg-white/5"
+            >
+              Workspace
+            </Link>
+            <Link
+              href="/employees"
+              className="text-xs font-black uppercase tracking-wider bg-[#ffc700] text-black px-4 py-2 rounded-xl hover:bg-white transition shadow-sm"
+            >
+              Marketplace
+            </Link>
           </div>
+        </div>
+      </header>
 
-          {/* FORM */}
-          <div className="space-y-6">
-              
-              {/* Identity */}
-              <div className="grid grid-cols-2 gap-4">
-                  <div>
-                      <label className="block text-sm font-bold mb-2">Name</label>
-                      <input 
-                        type="text" 
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="e.g. Jarvis" 
-                        className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:border-black focus:ring-0 transition font-bold"
-                      />
-                  </div>
-                  <div>
-                      <label className="block text-sm font-bold mb-2">Role Title</label>
-                      <input 
-                        type="text" 
-                        value={role}
-                        onChange={(e) => setRole(e.target.value)}
-                        placeholder="e.g. Personal Assistant" 
-                        className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:border-black focus:ring-0 transition font-bold"
-                      />
-                  </div>
-              </div>
+      {/* BODY SPLIT: BUILDER & LIVE PREVIEW */}
+      <div className="flex-grow flex flex-col md:flex-row">
+        
+        {/* LEFT: BUILDER FORM */}
+        <div className="w-full md:w-1/2 p-8 md:p-12 overflow-y-auto md:h-[calc(100vh-73px)] bg-[#141519] border-r border-white/10 text-white">
+            
+            <div className="mb-8">
+                <h1 className={`text-4xl md:text-5xl uppercase leading-none text-white ${oswald.className}`}>Agent Studio</h1>
+                <p className="text-neutral-400 font-medium text-sm mt-2">Design and configure a custom AI employee from scratch.</p>
+            </div>
 
-              {/* Icon Selection */}
-              <div>
-                  <label className="block text-sm font-bold mb-2">Select Appearance</label>
-                  <div className="flex gap-2 flex-wrap">
-                      {["Bot", "Zap", "Code", "Terminal", "Shield", "Megaphone", "DollarSign", "PenTool", "Brain"].map((ic) => (
-                          <button 
-                            key={ic}
-                            onClick={() => setIcon(ic)}
-                            className={`w-10 h-10 rounded-lg flex items-center justify-center border-2 transition ${icon === ic ? 'bg-black text-white border-black' : 'bg-white text-gray-400 border-gray-200 hover:border-black'}`}
-                          >
-                              {getIcon(ic)}
-                          </button>
-                      ))}
-                  </div>
-              </div>
+            {/* PRESETS */}
+            <div className="mb-10">
+                <label className="text-xs font-black uppercase tracking-widest text-neutral-400 mb-3 block">Quick Start Templates</label>
+                <div className="grid grid-cols-2 gap-3">
+                    <button 
+                      onClick={() => applyPreset('coder')} 
+                      className="p-3.5 bg-blue-950/30 text-blue-300 border border-blue-500/30 rounded-xl text-[10px] font-black uppercase text-left hover:bg-blue-900/40 hover:border-blue-400 transition flex flex-col gap-1 shadow-sm"
+                    >
+                      <span>Code Expert</span>
+                      <span className="text-[9px] text-blue-400/80 font-medium normal-case">Write & debug clean code.</span>
+                    </button>
+                    <button 
+                      onClick={() => applyPreset('writer')} 
+                      className="p-3.5 bg-emerald-950/30 text-emerald-300 border border-emerald-500/30 rounded-xl text-[10px] font-black uppercase text-left hover:bg-emerald-900/40 hover:border-emerald-400 transition flex flex-col gap-1 shadow-sm"
+                    >
+                      <span>Viral Writer</span>
+                      <span className="text-[9px] text-emerald-400/80 font-medium normal-case">Punchy hook writer.</span>
+                    </button>
+                    <button 
+                      onClick={() => applyPreset('negotiator')} 
+                      className="p-3.5 bg-amber-950/30 text-amber-300 border border-amber-500/30 rounded-xl text-[10px] font-black uppercase text-left hover:bg-amber-900/40 hover:border-amber-400 transition flex flex-col gap-1 shadow-sm"
+                    >
+                      <span>Negotiator</span>
+                      <span className="text-[9px] text-amber-400/80 font-medium normal-case">Tough offer negotiations.</span>
+                    </button>
+                    <button 
+                      onClick={() => applyPreset('github_resolver')} 
+                      className="p-3.5 bg-indigo-950/30 text-indigo-300 border border-indigo-500/30 rounded-xl text-[10px] font-black uppercase text-left hover:bg-indigo-900/40 hover:border-indigo-400 transition flex flex-col gap-1 shadow-sm"
+                    >
+                      <span>QA OctoFixer</span>
+                      <span className="text-[9px] text-indigo-400/80 font-medium normal-case">Resolve repo bugs & PRs.</span>
+                    </button>
+                    <button 
+                      onClick={() => applyPreset('ads_manager')} 
+                      className="p-3.5 bg-orange-950/30 text-orange-300 border border-orange-500/30 rounded-xl text-[10px] font-black uppercase text-left hover:bg-orange-900/40 hover:border-orange-400 transition flex flex-col gap-1 shadow-sm"
+                    >
+                      <span>AdPulse Marketing</span>
+                      <span className="text-[9px] text-orange-400/80 font-medium normal-case">Ad conversions copy.</span>
+                    </button>
+                    <button 
+                      onClick={() => applyPreset('retention_bot')} 
+                      className="p-3.5 bg-rose-950/30 text-rose-300 border border-rose-500/30 rounded-xl text-[10px] font-black uppercase text-left hover:bg-rose-900/40 hover:border-rose-400 transition flex flex-col gap-1 shadow-sm"
+                    >
+                      <span>LoyaltyGuard CS</span>
+                      <span className="text-[9px] text-rose-400/80 font-medium normal-case">Mitigate churn friction.</span>
+                    </button>
+                </div>
+            </div>
 
-              {/* Goal */}
-              <div>
-                  <label className="block text-sm font-bold mb-2">Primary Goal</label>
-                  <input 
-                    type="text" 
-                    value={goal}
-                    onChange={(e) => setGoal(e.target.value)}
-                    placeholder="What is the main purpose of this agent?" 
-                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:border-black focus:ring-0 transition font-medium text-sm"
-                  />
-              </div>
+            {/* FORM */}
+            <div className="space-y-6">
+                
+                {/* Identity */}
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-xs font-black uppercase tracking-wider text-neutral-300 mb-2">Name</label>
+                        <input 
+                          type="text" 
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          placeholder="e.g. Jarvis" 
+                          className="w-full p-3 bg-[#1a1b22] border border-white/15 rounded-xl text-white placeholder-neutral-500 focus:border-[#ffc700] focus:ring-0 transition font-bold text-sm"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-xs font-black uppercase tracking-wider text-neutral-300 mb-2">Role Title</label>
+                        <input 
+                          type="text" 
+                          value={role}
+                          onChange={(e) => setRole(e.target.value)}
+                          placeholder="e.g. Personal Assistant" 
+                          className="w-full p-3 bg-[#1a1b22] border border-white/15 rounded-xl text-white placeholder-neutral-500 focus:border-[#ffc700] focus:ring-0 transition font-bold text-sm"
+                        />
+                    </div>
+                </div>
 
-              {/* THE BRAIN (System Prompt) */}
-              <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <label className="block text-sm font-bold">System Instructions (The Brain)</label>
-                    <span className="text-[10px] bg-yellow-100 text-yellow-800 px-2 py-1 rounded font-bold uppercase">Critical</span>
-                  </div>
-                  <textarea 
-                    value={instructions}
-                    onChange={(e) => setInstructions(e.target.value)}
-                    placeholder="You are an expert in... Always answer with... Never do..." 
-                    className="w-full h-40 p-4 bg-gray-900 text-green-400 font-mono text-sm rounded-xl border-none focus:ring-2 focus:ring-yellow-400 resize-none"
-                  ></textarea>
-                  <p className="text-xs text-gray-400 mt-2">This defines how the AI thinks, speaks, and behaves.</p>
-              </div>
+                {/* Icon Selection */}
+                <div>
+                    <label className="block text-xs font-black uppercase tracking-wider text-neutral-300 mb-2">Select Appearance</label>
+                    <div className="flex gap-2.5 flex-wrap">
+                        {["Bot", "Zap", "Code", "Terminal", "Shield", "Megaphone", "DollarSign", "PenTool", "Brain"].map((ic) => (
+                            <button 
+                              key={ic}
+                              onClick={() => setIcon(ic)}
+                              className={`w-10 h-10 rounded-xl flex items-center justify-center transition ${
+                                icon === ic 
+                                  ? 'bg-[#ffc700] text-black border-2 border-[#ffc700] shadow-[2px_2px_0px_0px_rgba(255,199,0,0.4)]' 
+                                  : 'bg-[#1a1b22] text-neutral-400 border border-white/15 hover:border-white/40 hover:text-white'
+                              }`}
+                            >
+                                {getIcon(ic)}
+                            </button>
+                        ))}
+                    </div>
+                </div>
 
-          </div>
+                {/* Goal */}
+                <div>
+                    <label className="block text-xs font-black uppercase tracking-wider text-neutral-300 mb-2">Primary Goal</label>
+                    <input 
+                      type="text" 
+                      value={goal}
+                      onChange={(e) => setGoal(e.target.value)}
+                      placeholder="What is the main purpose of this agent?" 
+                      className="w-full p-3 bg-[#1a1b22] border border-white/15 rounded-xl text-white placeholder-neutral-500 focus:border-[#ffc700] focus:ring-0 transition font-medium text-sm"
+                    />
+                </div>
+
+                {/* THE BRAIN (System Prompt) */}
+                <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <label className="block text-xs font-black uppercase tracking-wider text-neutral-300">System Instructions (The Brain)</label>
+                      <span className="text-[10px] bg-[#ffc700]/15 text-[#ffc700] border border-[#ffc700]/30 px-2.5 py-0.5 rounded-full font-bold uppercase">Critical</span>
+                    </div>
+                    <textarea 
+                      value={instructions}
+                      onChange={(e) => setInstructions(e.target.value)}
+                      placeholder="You are an expert in... Always answer with... Never do..." 
+                      className="w-full h-40 p-4 bg-black text-green-400 font-mono text-sm rounded-xl border border-white/15 focus:border-[#ffc700] focus:ring-1 focus:ring-[#ffc700] resize-none"
+                    ></textarea>
+                    <p className="text-xs text-neutral-500 mt-2">This defines how the AI agent thinks, processes context, and executes workflows.</p>
+                </div>
+
+            </div>
+
+        </div>
+
+        {/* RIGHT: LIVE PREVIEW WITH VIDEO BACKGROUND */}
+        <div className="w-full md:w-1/2 flex flex-col items-center justify-center p-8 relative overflow-hidden min-h-[600px] md:min-h-0 md:h-[calc(100vh-73px)]">
+            
+            {/* Background Video */}
+            <video 
+              src="/studio-bg.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
+            />
+            {/* Dark overlay for contrast */}
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] z-0" />
+
+            {/* Preview Mode Pill */}
+            <div className="absolute top-6 right-6 z-10">
+                <div className="bg-[#141519]/80 backdrop-blur-md text-white border border-white/20 px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider shadow-lg flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#ffc700] animate-pulse"></span>
+                    Preview Mode
+                </div>
+            </div>
+
+            {/* CARD PREVIEW */}
+            <div className="relative z-10 w-full max-w-sm bg-white border-4 border-black rounded-3xl p-8 shadow-[15px_15px_0px_0px_rgba(0,0,0,1)] transform transition hover:-translate-y-1 duration-300">
+                <div className="flex justify-between items-start mb-6">
+                    <div className="w-16 h-16 bg-black text-white rounded-xl flex items-center justify-center border-2 border-black">
+                        {getIcon(icon)}
+                    </div>
+                    <div className="bg-green-100 text-green-800 px-3 py-1 rounded border border-green-200 text-[10px] font-bold uppercase">
+                        New Hire
+                    </div>
+                </div>
+
+                <h2 className={`text-3xl uppercase leading-none mb-1 text-black ${oswald.className}`}>{name || "Agent Name"}</h2>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">{role || "Role Title"}</p>
+
+                <div className="space-y-3 mb-8">
+                    <div className="flex items-center gap-3 text-sm font-bold text-gray-600">
+                        <Target size={18} className="text-black"/> 
+                        {goal || "Define a goal..."}
+                    </div>
+                    <div className="flex items-center gap-3 text-sm font-bold text-gray-600">
+                        <Zap size={18} className="text-black"/> 
+                        Manual Schedule
+                    </div>
+                </div>
+
+                <button 
+                  onClick={handleDeploy}
+                  disabled={loading}
+                  className="w-full bg-[#ffc700] text-black border-4 border-black py-4 rounded-xl font-black uppercase tracking-wide hover:bg-black hover:text-white transition flex items-center justify-center gap-2 disabled:opacity-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-1"
+                >
+                    {loading ? <><Loader2 className="animate-spin" size={18}/> Deploying...</> : <><Save size={20}/> Deploy Agent</>}
+                </button>
+            </div>
+
+            <p className="relative z-10 mt-8 text-white/90 text-xs font-black uppercase tracking-widest drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                Ready to bring {name || "this agent"} to life?
+            </p>
+
+        </div>
 
       </div>
 
-      {/* RIGHT: LIVE PREVIEW */}
-      <div className="w-full md:w-1/2 bg-gray-100 flex flex-col items-center justify-center p-8 relative">
-          
-          <div className="absolute top-8 right-8">
-              <div className="bg-white px-4 py-2 rounded-full text-xs font-bold shadow-sm flex items-center gap-2">
-                  Preview Mode
-              </div>
-          </div>
-
-          {/* CARD PREVIEW */}
-          <div className="w-full max-w-sm bg-white border-4 border-black rounded-3xl p-8 shadow-[15px_15px_0px_0px_rgba(0,0,0,1)] transform transition hover:-translate-y-1 duration-300">
-              <div className="flex justify-between items-start mb-6">
-                  <div className="w-16 h-16 bg-black text-white rounded-xl flex items-center justify-center border-2 border-black">
-                      {getIcon(icon)}
-                  </div>
-                  <div className="bg-green-100 text-green-800 px-3 py-1 rounded border border-green-200 text-[10px] font-bold uppercase">
-                      New Hire
-                  </div>
-              </div>
-
-              <h2 className={`text-3xl uppercase leading-none mb-1 ${oswald.className}`}>{name || "Agent Name"}</h2>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">{role || "Role Title"}</p>
-
-              <div className="space-y-3 mb-8">
-                  <div className="flex items-center gap-3 text-sm font-bold text-gray-600">
-                      <Target size={18} className="text-black"/> 
-                      {goal || "Define a goal..."}
-                  </div>
-                  <div className="flex items-center gap-3 text-sm font-bold text-gray-600">
-                      <Zap size={18} className="text-black"/> 
-                      Manual Schedule
-                  </div>
-              </div>
-
-              <button 
-                onClick={handleDeploy}
-                disabled={loading}
-                className="w-full bg-yellow-400 text-black border-4 border-black py-4 rounded-xl font-black uppercase tracking-wide hover:bg-white transition flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                  {loading ? <><Loader2 className="animate-spin" size={18}/> Deploying...</> : <><Save size={20}/> Deploy Agent</>}
-              </button>
-          </div>
-
-          <p className="mt-8 text-gray-400 text-xs font-bold uppercase tracking-widest">
-              Ready to bring {name || "this agent"} to life?
-          </p>
-
-      </div>
-
-      {/* CUSTOM NEOBRUTALIST CONFIRMATION MODAL */}
+      {/* CUSTOM CONFIRMATION MODAL */}
       {confirmModal.isOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-            <div className="bg-white border-4 border-black p-8 rounded-3xl max-w-md w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] animate-in zoom-in-95 duration-200 text-center relative">
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+            <div className="bg-[#141519] border border-white/20 p-8 rounded-3xl max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 text-center relative text-white">
                 {confirmModal.type !== 'success' && (
                     <button 
                       disabled={modalLoading}
                       onClick={() => setConfirmModal({ isOpen: false, type: 'trial' })} 
-                      className="absolute right-4 top-4 text-gray-400 hover:text-black transition disabled:opacity-50"
+                      className="absolute right-4 top-4 text-neutral-400 hover:text-white transition disabled:opacity-50"
                     >
                         <X size={24} />
                     </button>
                 )}
 
                 <div className="mb-6 flex justify-center">
-                    <div className={`${confirmModal.type === 'success' ? 'bg-green-400' : 'bg-yellow-400'} p-4 rounded-2xl border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black`}>
+                    <div className={`${confirmModal.type === 'success' ? 'bg-emerald-400' : 'bg-[#ffc700]'} p-4 rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black`}>
                         {confirmModal.type === 'success' ? (
                             <CheckCircle size={36} strokeWidth={3} className="text-black" />
                         ) : (
@@ -524,7 +585,7 @@ export default function StudioPage() {
                     </div>
                 </div>
 
-                <h3 className={`text-3xl uppercase mb-3 ${oswald.className}`}>
+                <h3 className={`text-3xl uppercase mb-3 text-white ${oswald.className}`}>
                     {confirmModal.type === 'success' 
                         ? 'Deployed Successfully!' 
                         : confirmModal.type === 'trial' 
@@ -532,14 +593,14 @@ export default function StudioPage() {
                         : 'Deploy Option'}
                 </h3>
 
-                <div className="text-sm font-semibold text-gray-600 mb-8 leading-relaxed">
+                <div className="text-sm font-semibold text-neutral-300 mb-8 leading-relaxed">
                     {confirmModal.type === 'success' ? (
-                        <p className="text-base text-gray-800 font-bold">{confirmModal.successMessage}</p>
+                        <p className="text-base text-white font-bold">{confirmModal.successMessage}</p>
                     ) : confirmModal.type === 'trial' ? (
-                        <>Would you like to use your one-time <strong>3-day Free Trial</strong> to deploy <strong>{name}</strong> for free?</>
+                        <>Would you like to use your one-time <strong className="text-[#ffc700]">3-day Free Trial</strong> to deploy <strong className="text-white">{name}</strong> for free?</>
                     ) : (
                         <>
-                            Choose how you would like to deploy <strong>{name}</strong>:
+                            Choose how you would like to deploy <strong className="text-white">{name}</strong>:
                         </>
                     )}
                 </div>
@@ -551,7 +612,7 @@ export default function StudioPage() {
                               setConfirmModal({ isOpen: false, type: 'trial' });
                               router.push("/");
                           }}
-                          className="w-full bg-black text-white hover:bg-yellow-400 hover:text-black py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md"
+                          className="w-full bg-[#ffc700] text-black hover:bg-white py-4 rounded-xl font-black uppercase text-sm tracking-wider transition shadow-md"
                         >
                             Go to Dashboard
                         </button>
@@ -560,14 +621,14 @@ export default function StudioPage() {
                             <button 
                               disabled={modalLoading}
                               onClick={handleConfirmTrial}
-                              className="w-full bg-black text-white hover:bg-yellow-400 hover:text-black py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                              className="w-full bg-[#ffc700] text-black hover:bg-white py-4 rounded-xl font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
                             >
                                 {modalLoading ? <Loader2 className="animate-spin" size={16} /> : 'Deploy using Free Trial'}
                             </button>
                             <button 
                               disabled={modalLoading}
                               onClick={handleConfirmPaidUpgrade}
-                              className="w-full bg-yellow-400 text-black hover:bg-black hover:text-white py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                              className="w-full bg-white text-black hover:bg-[#ffc700] py-4 rounded-xl font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
                             >
                                 {modalLoading ? <Loader2 className="animate-spin" size={16} /> : 'Purchase Individually (₹999/mo)'}
                             </button>
@@ -579,14 +640,14 @@ export default function StudioPage() {
                                 <button 
                                   disabled={modalLoading || slotCount >= 4}
                                   onClick={handleConfirmPlanHire}
-                                  className="w-full bg-black text-white hover:bg-yellow-400 hover:text-black py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:border-gray-300"
+                                  className="w-full bg-[#ffc700] text-black hover:bg-white py-4 rounded-xl font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-40 disabled:bg-neutral-800 disabled:text-neutral-500 disabled:border-neutral-700"
                                 >
                                     {modalLoading ? <Loader2 className="animate-spin" size={16} /> : 'Add to Plan (Free Slot)'}
                                 </button>
-                                <p className="text-[10px] text-gray-500 font-bold mt-1.5 uppercase">
+                                <p className="text-[10px] text-neutral-400 font-bold mt-1.5 uppercase">
                                     {slotCount >= 4 
                                         ? 'All 4 plan slots used. Upgrade or buy one-off.' 
-                                        : `plan slots used: ${slotCount} / 4`}
+                                        : `Plan slots used: ${slotCount} / 4`}
                                 </p>
                             </div>
 
@@ -595,11 +656,11 @@ export default function StudioPage() {
                                 <button 
                                   disabled={modalLoading}
                                   onClick={handleConfirmPaidUpgrade}
-                                  className="w-full bg-yellow-400 text-black hover:bg-black hover:text-white py-4 rounded-xl border-2 border-black font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                                  className="w-full bg-white text-black hover:bg-[#ffc700] py-4 rounded-xl font-black uppercase text-sm tracking-wider transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
                                 >
                                     {modalLoading ? <Loader2 className="animate-spin" size={16} /> : 'Purchase Individually (₹999/mo)'}
                                 </button>
-                                <p className="text-[10px] text-gray-500 font-bold mt-1.5 uppercase">
+                                <p className="text-[10px] text-neutral-500 font-bold mt-1.5 uppercase">
                                     Keep your plan slots open for other agents
                                 </p>
                             </div>
@@ -610,7 +671,7 @@ export default function StudioPage() {
                         <button 
                           disabled={modalLoading}
                           onClick={() => setConfirmModal({ isOpen: false, type: 'trial' })}
-                          className="w-full bg-white text-gray-500 hover:text-red-500 py-2 font-bold uppercase text-xs tracking-wider transition disabled:opacity-50 mt-2"
+                          className="w-full text-neutral-400 hover:text-rose-400 py-2 font-bold uppercase text-xs tracking-wider transition disabled:opacity-50 mt-2"
                         >
                             Cancel
                         </button>
