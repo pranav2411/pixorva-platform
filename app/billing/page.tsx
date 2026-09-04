@@ -92,11 +92,19 @@ export default function BillingPage() {
         // Fetch active salaries/subscriptions from agents table
         const { data: activeAgents } = await supabase
           .from('agents')
-          .select('id, name, icon')
+          .select('id, name, icon, schedule')
           .eq('user_id', currentUser.id);
 
         if (activeAgents) {
-          const salaryList: Subscription[] = activeAgents.map(agent => {
+          const realAgents = activeAgents.filter(a =>
+            a.schedule !== 'WEBSITE' &&
+            a.schedule !== 'API_KEY' &&
+            a.schedule !== 'INVOICE' &&
+            !a.name?.startsWith('[WEBSITE]') &&
+            !a.name?.startsWith('[API_KEY]') &&
+            !a.name?.startsWith('[INVOICE]')
+          );
+          const salaryList: Subscription[] = realAgents.map(agent => {
             const isGov = agent.name === "Governance Control Tower";
             
             // Map price levels

@@ -282,7 +282,15 @@ export default function WorkspacePage() {
           .order('created_at', { ascending: false });
 
         if (agents) {
-          setMyAgents(agents);
+          const realAgents = agents.filter(a =>
+            a.schedule !== 'WEBSITE' &&
+            a.schedule !== 'API_KEY' &&
+            a.schedule !== 'INVOICE' &&
+            !a.name?.startsWith('[WEBSITE]') &&
+            !a.name?.startsWith('[API_KEY]') &&
+            !a.name?.startsWith('[INVOICE]')
+          );
+          setMyAgents(realAgents);
           // Channels start with empty active agents selection by default
         }
 

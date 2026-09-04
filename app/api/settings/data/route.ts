@@ -33,14 +33,21 @@ export async function GET() {
       .eq('id', user.id)
       .maybeSingle();
 
-    // 2. Retrieve all active agents for this user
+    // 2. Retrieve all active agents for this user (filtering out polymorphic records like websites, API keys, invoices)
     const { data: allAgents } = await supabase
       .from('agents')
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 
-    const agentsList = allAgents || [];
+    const agentsList = (allAgents || []).filter(a =>
+      a.schedule !== 'WEBSITE' &&
+      a.schedule !== 'API_KEY' &&
+      a.schedule !== 'INVOICE' &&
+      !a.name?.startsWith('[WEBSITE]') &&
+      !a.name?.startsWith('[API_KEY]') &&
+      !a.name?.startsWith('[INVOICE]')
+    );
     const subscriptionAgents = agentsList.filter(a => !a.is_paid_individually);
     const paidAgents = agentsList;
 

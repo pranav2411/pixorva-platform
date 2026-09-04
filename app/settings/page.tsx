@@ -512,8 +512,16 @@ export default function SettingsPage() {
     );
   }
 
-  const hasGovernance = paidAgents.some(a => a.name === "Governance Control Tower");
-  const hiredIndividuals = paidAgents.filter(a => a.name !== "Governance Control Tower");
+  const realPaidAgents = paidAgents.filter(a =>
+    a.schedule !== 'WEBSITE' &&
+    a.schedule !== 'API_KEY' &&
+    a.schedule !== 'INVOICE' &&
+    !a.name?.startsWith('[WEBSITE]') &&
+    !a.name?.startsWith('[API_KEY]') &&
+    !a.name?.startsWith('[INVOICE]')
+  );
+  const hasGovernance = realPaidAgents.some(a => a.name === "Governance Control Tower");
+  const hiredIndividuals = realPaidAgents.filter(a => a.name !== "Governance Control Tower");
 
   return (
     <div className={`min-h-screen bg-[#0e0f12] text-white relative selection:bg-[#ffc700] selection:text-black ${inter.className}`}>
