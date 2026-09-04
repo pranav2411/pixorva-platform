@@ -483,13 +483,13 @@ export default function CustomAgentsPage() {
       <section className="py-20 border-t border-white/10 bg-[#141519]/70 text-center relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-6 space-y-6 relative z-10">
           <div className="inline-flex items-center gap-2 bg-[#ffc700]/10 text-[#ffc700] border border-[#ffc700]/30 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-widest">
-            Dedicated Intake Flow
+            Request Your Custom Workforce
           </div>
           <h3 className={`text-4xl sm:text-5xl font-black uppercase text-white leading-tight ${oswald.className}`}>
             Get Personalized Agents For Your Business
           </h3>
           <p className="text-base text-neutral-300 max-w-xl mx-auto leading-relaxed">
-            Answer a few questions about your company, required workforce roles, and existing software stack in our dedicated onboarding wizard.
+            Answer a few quick questions about your company, required workforce roles, and existing software stack to get started.
           </p>
           <div className="pt-4">
             <Link
