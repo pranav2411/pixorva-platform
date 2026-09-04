@@ -6,6 +6,7 @@ import { createClient } from "../utils/supabase/client";
 import { Oswald, Inter } from "next/font/google";
 import { ArrowLeft, Mail, Loader2, KeyRound, RefreshCw } from "lucide-react";
 import Link from "next/link";
+import BackButton from "../components/BackButton";
 import { showToast } from "../utils/Toast";
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
@@ -150,9 +151,12 @@ export default function LoginPage() {
     <div className={`min-h-screen bg-white text-black flex flex-col items-center justify-center p-6 ${inter.className}`}>
       
       {/* Back Button */}
-      <Link href="/" className="absolute top-8 left-8 flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-black transition">
-        <ArrowLeft size={16} /> Back to Home
-      </Link>
+      <BackButton
+        fallback="/"
+        className="absolute top-8 left-8 flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-black transition"
+      >
+        <ArrowLeft size={16} /> Back
+      </BackButton>
 
       <div className="w-full max-w-md">
         {/* Header */}

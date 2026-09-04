@@ -17,6 +17,7 @@ import {
   CheckCircle2
 } from "lucide-react";
 import Link from "next/link";
+import BackButton from "../components/BackButton";
 
 const oswald = Oswald({ subsets: ["latin"], weight: ["400", "700"] });
 const inter = Inter({ subsets: ["latin"] });
@@ -29,12 +30,7 @@ export default function PrivacyPage() {
       <header className="bg-[#141519]/80 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between w-full">
           <div className="flex items-center gap-4">
-            <Link
-              href="/"
-              className="bg-black/50 text-white p-2 rounded-xl hover:bg-[#ffc700] hover:text-black transition border border-white/15 shadow-sm flex items-center justify-center shrink-0"
-            >
-              <ArrowLeft size={16} />
-            </Link>
+            <BackButton fallback="/" iconSize={16} />
             <div>
               <span className="text-[10px] uppercase font-black tracking-widest text-[#ffc700]">
                 Legal & Compliance

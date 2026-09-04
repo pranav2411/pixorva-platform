@@ -121,7 +121,11 @@ export default function OnboardingPage() {
     if (step > 1) {
       goToStep(step - 1);
     } else {
-      router.push("/");
+      if (typeof window !== "undefined" && window.history.length > 1) {
+        router.back();
+      } else {
+        router.push("/");
+      }
     }
   };
 

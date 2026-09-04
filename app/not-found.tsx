@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Oswald, Inter } from "next/font/google";
-import { ArrowLeft, Home, Briefcase } from "lucide-react";
+import { Home, Briefcase } from "lucide-react";
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });

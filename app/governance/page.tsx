@@ -11,6 +11,7 @@ import { showToast } from "../utils/Toast";
 import { createClient } from "../utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import BackButton from "../components/BackButton";
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -464,9 +465,7 @@ END OF COMPLIANCE INTEGRITY CERTIFICATION`;
       <div className="bg-[#141519]/90 backdrop-blur-xl border-b border-white/10 sticky top-0 z-20 shadow-md">
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-4">
-                  <Link href="/" className="bg-black/50 text-white p-2 rounded-xl hover:bg-[#ffc700] hover:text-black transition border border-white/15 shadow-sm flex items-center justify-center">
-                    <ArrowLeft size={20}/>
-                  </Link>
+                  <BackButton fallback="/workspace" iconSize={20} />
                   <div>
                     <h1 className={`text-2xl md:text-3xl uppercase ${oswald.className} tracking-tighter leading-none text-white`}>AI Governance Lab</h1>
                     <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wide">Universal LLM Proxy Control Tower</span>

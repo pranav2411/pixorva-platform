@@ -15,6 +15,7 @@ import { showToast } from '../../utils/Toast';
 import { EMPLOYEES } from '../../employees/page';
 import { triggerRazorpayCheckout } from '../../utils/RazorpayCheckout';
 import AgentAvatar from "../../components/AgentAvatar";
+import BackButton from "../../components/BackButton";
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -1171,7 +1172,9 @@ export default function AgentWorkstation() {
              >
                  <X size={20} />
              </button>
-             <Link href="/" className="flex items-center gap-2 text-gray-500 hover:text-black mb-6 font-bold text-sm"><ArrowLeft size={16}/> Back to HQ</Link>
+             <BackButton fallback="/workspace" className="flex items-center gap-2 text-gray-500 hover:text-black mb-6 font-bold text-sm">
+                <ArrowLeft size={16}/> Back
+             </BackButton>
              <div className="flex items-center gap-4">
                 <AgentAvatar id={getRegistryIdByName(agent.name)} className="w-16 h-16 rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] shrink-0" />
                 <div>

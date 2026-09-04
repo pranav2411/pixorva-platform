@@ -10,6 +10,7 @@ import {
   Check, Globe, ExternalLink, Code2, Copy, AlertTriangle, Pencil, Plus
 } from "lucide-react";
 import Link from "next/link";
+import BackButton from "../components/BackButton";
 import { showToast } from "../utils/Toast";
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
@@ -549,13 +550,11 @@ export default function SettingsPage() {
       <nav className="bg-[#141519]/80 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50 shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between w-full">
           <div className="flex items-center gap-4">
-            <Link
-              href="/"
+            <BackButton
+              fallback="/workspace"
               className="bg-black/50 text-white p-2 rounded-xl hover:bg-[#ffc700] hover:text-black transition border border-white/15 flex items-center justify-center shrink-0 shadow-sm"
-              aria-label="Back to Home"
-            >
-              <ArrowLeft size={18} />
-            </Link>
+              iconSize={18}
+            />
             <div>
               <h1 className={`text-2xl md:text-3xl font-black uppercase tracking-wider ${oswald.className} flex items-center gap-2 text-white`}>
                 <span>SETTINGS</span>

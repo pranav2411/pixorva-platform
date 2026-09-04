@@ -192,6 +192,8 @@ export default function CustomAgentOnboardingPage() {
   const handleBack = () => {
     if (step > 1 && !submittedRequest) {
       goToStep(step - 1);
+    } else if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
     } else {
       router.push("/custom-agents");
     }

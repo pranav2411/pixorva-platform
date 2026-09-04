@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Oswald, Inter } from "next/font/google";
-import { Check, X, Zap, ArrowLeft, Crown, Shield, Rocket } from "lucide-react";
+import { Check, X, Zap, Crown, Shield, Rocket } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";

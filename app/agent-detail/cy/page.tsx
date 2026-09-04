@@ -22,6 +22,7 @@ import { createClient } from '../../utils/supabase/client';
 import { triggerRazorpayCheckout } from '../../utils/RazorpayCheckout';
 import { showToast } from '../../utils/Toast';
 import AgentAvatar from '../../components/AgentAvatar';
+import BackButton from '../../components/BackButton';
 
 const oswald = Oswald({ subsets: ['latin'], weight: ['400', '700'] });
 const inter = Inter({ subsets: ['latin'] });
@@ -120,9 +121,11 @@ export default function AgentDetailPage() {
       {/* HEADER */}
       <header className="bg-white border-b-4 border-black px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-3">
-          <Link href="/employees" className="bg-black text-white p-2 rounded-lg border-2 border-black hover:bg-yellow-400 hover:text-black transition shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-y-0.5 flex items-center justify-center shrink-0">
-            <ArrowLeft size={16} />
-          </Link>
+          <BackButton
+            fallback="/employees"
+            iconSize={16}
+            className="bg-black text-white p-2 rounded-lg border-2 border-black hover:bg-yellow-400 hover:text-black transition shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-y-0.5 flex items-center justify-center shrink-0"
+          />
           <span className={`text-2xl font-black uppercase tracking-wider ${oswald.className}`}>
             Pixorva Marketplace
           </span>

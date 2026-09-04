@@ -10,6 +10,7 @@ import {
   Video, CheckCircle, Smartphone, Search
 } from 'lucide-react';
 import Link from "next/link";
+import BackButton from "../components/BackButton";
 import { createClient } from "../utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { showToast } from "../utils/Toast";
@@ -199,9 +200,7 @@ export default function BillingPage() {
       <nav className="bg-white border-b-4 border-black sticky top-0 z-20">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/" className="bg-black text-white p-2 rounded hover:bg-yellow-400 hover:text-black transition border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:shadow-none hover:translate-y-1">
-              <ArrowLeft size={20}/>
-            </Link>
+            <BackButton fallback="/settings" className="bg-black text-white p-2 rounded hover:bg-yellow-400 hover:text-black transition border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:shadow-none hover:translate-y-1 flex items-center justify-center shrink-0" iconSize={20} />
             <div>
               <h1 className={`text-2xl md:text-3xl uppercase ${oswald.className} tracking-tighter leading-none`}>Billing Portal</h1>
               <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wide">Manage Salaries & Subscriptions</span>

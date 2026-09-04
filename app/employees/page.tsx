@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { showToast } from '../utils/Toast';
 import { triggerRazorpayCheckout } from '../utils/RazorpayCheckout';
 import AgentAvatar from '../components/AgentAvatar';
+import BackButton from '../components/BackButton';
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -410,7 +411,7 @@ export default function EmployeesPage() {
       <div className="bg-white border-b-4 border-black sticky top-0 z-20">
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-4">
-                  <Link href="/" className="bg-black text-white p-2 rounded hover:bg-yellow-400 hover:text-black transition border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:shadow-none hover:translate-y-1"><ArrowLeft size={20}/></Link>
+                  <BackButton fallback="/" className="bg-black text-white p-2 rounded hover:bg-yellow-400 hover:text-black transition border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:shadow-none hover:translate-y-1 flex items-center justify-center shrink-0" iconSize={20} />
                   <h1 className={`text-3xl md:text-4xl uppercase ${oswald.className} tracking-tighter`}>Marketplace</h1>
               </div>
               <div className="hidden md:block text-sm font-bold bg-yellow-100 border-2 border-black px-3 py-1 rounded shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">

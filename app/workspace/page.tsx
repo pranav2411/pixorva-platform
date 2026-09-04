@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { showToast } from '../utils/Toast';
 import { getVaultFiles, saveVaultFile, deleteVaultFile, VaultFile } from "../utils/VaultStorage";
 import AgentAvatar from '../components/AgentAvatar';
+import BackButton from '../components/BackButton';
 import { EMPLOYEES } from '../employees/page';
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
@@ -503,9 +504,7 @@ export default function WorkspacePage() {
       <nav className="bg-[#141519]/90 backdrop-blur-xl border-b border-white/10 z-20 flex-shrink-0">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/" className="bg-black/50 text-white p-2 rounded-xl hover:bg-[#ffc700] hover:text-black transition border border-white/15 shadow-sm flex items-center justify-center">
-              <ArrowLeft size={20}/>
-            </Link>
+            <BackButton fallback="/" className="bg-black/50 text-white p-2 rounded-xl hover:bg-[#ffc700] hover:text-black transition border border-white/15 shadow-sm flex items-center justify-center shrink-0" iconSize={20} />
             <div>
               <h1 className={`text-2xl md:text-3xl uppercase ${oswald.className} tracking-tighter leading-none text-white`}>Workspace Dashboard</h1>
               <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wide">Multi-Agent & Resource Vault</span>

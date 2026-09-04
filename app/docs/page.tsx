@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import AgentAvatar from '../components/AgentAvatar';
+import BackButton from '../components/BackButton';
 import { 
   BookOpen, 
   Terminal, 
@@ -851,9 +852,7 @@ export default function DocsPage() {
       <header className="bg-[#141519]/90 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50 shadow-md">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between w-full">
           <div className="flex items-center gap-3">
-            <Link href="/" className="bg-black/50 text-white p-2 rounded-xl hover:bg-[#ffc700] hover:text-black transition border border-white/15 shadow-sm flex items-center justify-center shrink-0">
-              <ArrowLeft size={16} />
-            </Link>
+            <BackButton fallback="/" iconSize={16} />
             <h1 className={`text-2xl font-black uppercase tracking-wider text-white ${oswald.className}`}>Developer Docs</h1>
           </div>
           <div className="flex items-center gap-3">

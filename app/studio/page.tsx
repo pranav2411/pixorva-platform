@@ -12,6 +12,7 @@ import { createClient } from '../utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { showToast } from '../utils/Toast';
 import { triggerRazorpayCheckout } from '../utils/RazorpayCheckout';
+import BackButton from '../components/BackButton';
 
 const oswald = Oswald({ subsets: ["latin"], weight: "700" });
 const inter = Inter({ subsets: ["latin"] });
@@ -317,9 +318,11 @@ export default function StudioPage() {
           
           <div className="mb-8">
               <div className="flex items-center gap-3 mb-3">
-                <Link href="/" className="bg-black text-white p-2 rounded-lg border-2 border-black hover:bg-yellow-400 hover:text-black transition shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-y-0.5 flex items-center justify-center shrink-0">
-                  <ArrowLeft size={16} />
-                </Link>
+                <BackButton
+                  fallback="/workspace"
+                  iconSize={16}
+                  className="bg-black text-white p-2 rounded-lg border-2 border-black hover:bg-yellow-400 hover:text-black transition shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-y-0.5 flex items-center justify-center shrink-0"
+                />
                 <h1 className={`text-5xl uppercase leading-none ${oswald.className}`}>Agent Studio</h1>
               </div>
               <p className="text-gray-500 font-medium">Design a custom AI employee from scratch.</p>
