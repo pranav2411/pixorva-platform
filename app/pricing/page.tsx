@@ -90,7 +90,7 @@ export default function PricingPage() {
       {/* BACKGROUND VIDEO */}
       <div className="fixed inset-0 w-full h-full -z-10 overflow-hidden pointer-events-none">
         <video
-          src="/pricing-bg.mp4"
+          src="/pricing-bg-10s.mp4"
           autoPlay
           loop
           muted
