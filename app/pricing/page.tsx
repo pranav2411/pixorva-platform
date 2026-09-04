@@ -19,8 +19,8 @@ const FAQ_LIST = [
     answer: "You get full, unrestricted access to 1 AI employee of your choice for 72 hours. You can run real tasks, test live workflows, and interact directly in the workstation with zero upfront charge."
   },
   {
-    question: "Can I swap my 4 active AI employees on Growth Pro?",
-    answer: "Yes! On the Growth Pro plan, you have 4 active employee slots. As your company priorities change, you can freely swap and rotate which 4 agents are active from your workspace."
+    question: "How do the 4 AI employees work on Growth Pro?",
+    answer: "You can select and deploy any 4 AI specialists from our team of 15 to run tasks concurrently. If you need additional agents beyond your 4 active slots, you can hire individual specialists from the Marketplace or upgrade to Enterprise for full access to all 15."
   },
   {
     question: "Can I hire single agents individually instead of a full plan?",
@@ -283,7 +283,7 @@ export default function PricingPage() {
               <tr>
                 <td className="p-4 font-bold text-black">Active AI Agents</td>
                 <td className="p-4 text-center">1 Agent</td>
-                <td className="p-4 text-center bg-yellow-50 font-black text-black">Any 4 Agents (Swappable)</td>
+                <td className="p-4 text-center bg-yellow-50 font-black text-black">Any 4 Specialists</td>
                 <td className="p-4 text-center font-black text-black">All 15 AI Agents</td>
               </tr>
               <tr>
@@ -305,10 +305,10 @@ export default function PricingPage() {
                 <td className="p-4 text-center font-black text-black">Persistent Multi-Agent Memory</td>
               </tr>
               <tr>
-                <td className="p-4 font-bold text-black">Agent Swapping</td>
-                <td className="p-4 text-center text-gray-400">—</td>
-                <td className="p-4 text-center bg-yellow-50 text-green-700 font-black">✓ Swap Anytime</td>
-                <td className="p-4 text-center text-green-700 font-black">✓ All Always Active</td>
+                <td className="p-4 font-bold text-black">Agent Selection</td>
+                <td className="p-4 text-center">1 Choice (Trial)</td>
+                <td className="p-4 text-center bg-yellow-50 font-black text-black">Any 4 Specialists</td>
+                <td className="p-4 text-center font-black text-black">All 15 Specialists Included</td>
               </tr>
               <tr>
                 <td className="p-4 font-bold text-black">Governance & Compliance</td>
