@@ -857,8 +857,17 @@ export default function DocsPage() {
             </Link>
             <h1 className={`text-2xl font-black uppercase tracking-wider text-white ${oswald.className}`}>Developer Docs</h1>
           </div>
-          <div className="bg-[#ffc700] text-black border border-yellow-300 px-3 py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wider shadow-sm">
-            Live Spec v1.4.0
+          <div className="flex items-center gap-3">
+            <Link
+              href="/custom-agents"
+              className="bg-[#18191f] hover:bg-[#ffc700] hover:text-black text-neutral-200 border border-white/15 px-3 py-1.5 rounded-lg font-bold text-[11px] uppercase tracking-wider transition flex items-center gap-1.5"
+            >
+              <Sparkles size={12} className="text-[#ffc700]" />
+              <span>Bespoke Agents</span>
+            </Link>
+            <div className="bg-[#ffc700] text-black border border-yellow-300 px-3 py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wider shadow-sm">
+              Live Spec v1.4.0
+            </div>
           </div>
         </div>
       </header>

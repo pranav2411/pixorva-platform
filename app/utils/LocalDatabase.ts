@@ -24,6 +24,28 @@ export interface WebsiteItem {
   created: string;
 }
 
+export interface CustomAgentRequest {
+  id: string;
+  refId: string;
+  userId?: string;
+  companyName: string;
+  website: string;
+  industry: string;
+  companySize: string;
+  roles: string[];
+  integrations: string[];
+  bottlenecks: string;
+  dailyVolume: string;
+  hostingPreference: string;
+  fullName: string;
+  workEmail: string;
+  phone: string;
+  timeline: string;
+  additionalNotes?: string;
+  status: 'PENDING' | 'CONTACTED' | 'IN_PROGRESS' | 'COMPLETED';
+  created: string;
+}
+
 export const LocalDb = {
   // --- API KEYS ---
   async getApiKeys(supabase: any, userId: string): Promise<ApiKey[]> {
@@ -325,5 +347,109 @@ export const LocalDb = {
       .eq('schedule', 'WEBSITE');
 
     return !error;
+  },
+
+  // --- CUSTOM ENTERPRISE AGENT REQUESTS ---
+  async saveCustomAgentRequest(supabase: any, data: Omit<CustomAgentRequest, 'id' | 'refId' | 'created' | 'status'> & { refId?: string }): Promise<CustomAgentRequest> {
+    const randomSuffix = Math.floor(10000 + Math.random() * 90000);
+    const refId = data.refId || `PX-REQ-${randomSuffix}`;
+
+    const payload = {
+      refId,
+      companyName: data.companyName,
+      website: data.website,
+      industry: data.industry,
+      companySize: data.companySize,
+      roles: data.roles,
+      integrations: data.integrations,
+      bottlenecks: data.bottlenecks,
+      dailyVolume: data.dailyVolume,
+      hostingPreference: data.hostingPreference,
+      fullName: data.fullName,
+      workEmail: data.workEmail,
+      phone: data.phone,
+      timeline: data.timeline,
+      additionalNotes: data.additionalNotes || '',
+      status: 'PENDING'
+    };
+
+    // If supabase instance is available, try to persist to agents table
+    let recordId = `req_${Date.now()}_${randomSuffix}`;
+    if (supabase) {
+      try {
+        const { data: dbData, error } = await supabase
+          .from('agents')
+          .insert({
+            user_id: data.userId || null,
+            name: `[CUSTOM_REQUEST] ${data.companyName} (${refId})`,
+            goal: `Custom Agent Request for ${data.companyName} - Roles: ${data.roles.join(', ')}`,
+            instructions: JSON.stringify(payload),
+            schedule: 'CUSTOM_AGENT_REQUEST',
+            steps: data.roles
+          })
+          .select()
+          .single();
+
+        if (!error && dbData) {
+          recordId = dbData.id;
+        }
+      } catch (err) {
+        console.warn('Could not persist custom agent request to Supabase directly:', err);
+      }
+    }
+
+    return {
+      id: recordId,
+      ...payload,
+      status: 'PENDING',
+      created: new Date().toISOString()
+    };
+  },
+
+  async getCustomAgentRequests(supabase: any): Promise<CustomAgentRequest[]> {
+    if (!supabase) return [];
+    try {
+      const { data, error } = await supabase
+        .from('agents')
+        .select('*')
+        .eq('schedule', 'CUSTOM_AGENT_REQUEST')
+        .order('created_at', { ascending: false });
+
+      if (error || !data) return [];
+
+      return data.map((item: any) => {
+        let parsed: any = {};
+        try {
+          parsed = JSON.parse(item.instructions || '{}');
+        } catch (e) {
+          parsed = {};
+        }
+
+        return {
+          id: item.id,
+          refId: parsed.refId || item.name.match(/\((.*?)\)/)?.[1] || item.id.slice(0, 8),
+          userId: item.user_id,
+          companyName: parsed.companyName || item.name.replace('[CUSTOM_REQUEST] ', ''),
+          website: parsed.website || '',
+          industry: parsed.industry || 'General',
+          companySize: parsed.companySize || 'Unknown',
+          roles: parsed.roles || item.steps || [],
+          integrations: parsed.integrations || [],
+          bottlenecks: parsed.bottlenecks || '',
+          dailyVolume: parsed.dailyVolume || '',
+          hostingPreference: parsed.hostingPreference || 'Managed',
+          fullName: parsed.fullName || '',
+          workEmail: parsed.workEmail || '',
+          phone: parsed.phone || '',
+          timeline: parsed.timeline || 'Immediate',
+          additionalNotes: parsed.additionalNotes || '',
+          status: parsed.status || 'PENDING',
+          created: item.created_at
+        };
+      });
+    } catch (err) {
+      console.error('Error fetching custom agent requests:', err);
+      return [];
+    }
   }
 };
