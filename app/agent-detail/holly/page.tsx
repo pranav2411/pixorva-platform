@@ -7,7 +7,6 @@ import { Oswald, Inter } from 'next/font/google';
 import { 
   ArrowLeft, 
   Check, 
-  Sparkles, 
   CreditCard, 
   Cpu, 
   MessageSquare, 
@@ -144,7 +143,6 @@ export default function AgentDetailPage() {
           {/* Left Text */}
           <div className="text-left space-y-6">
             <div className="inline-flex items-center gap-2 bg-black border-2 border-white px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transform -rotate-1 text-white">
-              <Sparkles size={12} className="text-yellow-400" />
               Meet Holly
             </div>
 

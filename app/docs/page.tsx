@@ -16,7 +16,6 @@ import {
   ChevronRight, 
   Layers, 
   Cpu, 
-  Sparkles, 
   Check, 
   ExternalLink,
   X 
@@ -71,7 +70,7 @@ export default function DocsPage() {
       category: 'getting-started',
       title: 'Introduction to Pixorva',
       subtitle: 'Learn about the autonomous AI workforce platform.',
-      icon: <Sparkles size={20} className="text-yellow-500" />,
+      icon: <BookOpen size={20} className="text-yellow-500" />,
       content: (
         <div className="space-y-6">
           <p className="text-gray-700 leading-relaxed">
@@ -860,10 +859,9 @@ export default function DocsPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/custom-agents"
-              className="bg-[#18191f] hover:bg-[#ffc700] hover:text-black text-neutral-200 border border-white/15 px-3 py-1.5 rounded-lg font-bold text-[11px] uppercase tracking-wider transition flex items-center gap-1.5"
+              className="bg-[#18191f] hover:bg-[#ffc700] hover:text-black text-neutral-200 border border-white/15 px-3 py-1.5 rounded-lg font-bold text-[11px] uppercase tracking-wider transition"
             >
-              <Sparkles size={12} className="text-[#ffc700]" />
-              <span>Bespoke Agents</span>
+              Custom Agents
             </Link>
             <div className="bg-[#ffc700] text-black border border-yellow-300 px-3 py-1.5 rounded-lg font-black text-[10px] uppercase tracking-wider shadow-sm">
               Live Spec v1.4.0

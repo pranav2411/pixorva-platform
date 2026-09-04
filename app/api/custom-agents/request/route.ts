@@ -97,7 +97,7 @@ export async function POST(req: Request) {
                       PIXORVA ENTERPRISE
                     </div>
                     <h1 style="margin:0;font-size:24px;font-weight:800;letter-spacing:-0.5px;color:#ffffff;">
-                      Request Raised: Bespoke AI Agents
+                      Request Raised: Custom AI Agents
                     </h1>
                     <p style="margin:6px 0 0 0;font-size:13px;color:#a1a1aa;">
                       Reference ID: <strong style="color:#ffc700;letter-spacing:0.5px;">${refId}</strong>
@@ -208,7 +208,7 @@ export async function POST(req: Request) {
       emailResult = await resend.emails.send({
         from: 'Pixorva Enterprise <info@pixorva.com>',
         to: workEmail,
-        subject: `Request Raised [${refId}]: Bespoke AI Agents — Pixorva`,
+        subject: `Request Raised [${refId}]: Custom AI Agents — Pixorva`,
         html: emailHtml
       });
     } catch (emailErr) {
@@ -218,7 +218,7 @@ export async function POST(req: Request) {
         emailResult = await resend.emails.send({
           from: 'onboarding@resend.dev',
           to: workEmail,
-          subject: `Request Raised [${refId}]: Bespoke AI Agents — Pixorva`,
+          subject: `Request Raised [${refId}]: Custom AI Agents — Pixorva`,
           html: emailHtml
         });
       } catch (fallbackErr) {

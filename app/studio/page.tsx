@@ -5,7 +5,7 @@ import { Oswald, Inter } from "next/font/google";
 // FIXED: Added 'Target' to the imports below
 import { 
   ArrowLeft, Save, Bot, Zap, Code, Terminal, Shield, 
-  Megaphone, DollarSign, PenTool, Brain, Sparkles, CheckCircle, Target, X, Loader2 
+  Megaphone, DollarSign, PenTool, Brain, CheckCircle, Target, X, Loader2 
 } from "lucide-react";
 import Link from "next/link";
 import { createClient } from '../utils/supabase/client';
@@ -453,7 +453,7 @@ export default function StudioPage() {
           
           <div className="absolute top-8 right-8">
               <div className="bg-white px-4 py-2 rounded-full text-xs font-bold shadow-sm flex items-center gap-2">
-                  <Sparkles size={14} className="text-yellow-500"/> Preview Mode
+                  Preview Mode
               </div>
           </div>
 
@@ -487,7 +487,7 @@ export default function StudioPage() {
                 disabled={loading}
                 className="w-full bg-yellow-400 text-black border-4 border-black py-4 rounded-xl font-black uppercase tracking-wide hover:bg-white transition flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                  {loading ? <><Sparkles className="animate-spin"/> Deploying...</> : <><Save size={20}/> Deploy Agent</>}
+                  {loading ? <><Loader2 className="animate-spin" size={18}/> Deploying...</> : <><Save size={20}/> Deploy Agent</>}
               </button>
           </div>
 

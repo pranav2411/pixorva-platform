@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Oswald, Inter } from "next/font/google";
 import { 
-  ArrowLeft, CreditCard, Sparkles, XCircle, Trash, RefreshCw,
+  ArrowLeft, CreditCard, XCircle, Trash, RefreshCw,
   Code, Megaphone, DollarSign, ShieldCheck, User as UserIcon, Zap, 
   Mail, Send, MessageSquare, Play, Globe, Clock, Database, Twitter, 
   PenTool, Target, Briefcase, Users, PieChart, Camera, Lock, Clipboard, 
@@ -235,7 +235,7 @@ export default function BillingPage() {
         
         {salaries.length === 0 ? (
           <div className="bg-white border-4 border-black p-8 rounded-2xl text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <Sparkles size={32} className="mx-auto text-gray-400 mb-3" />
+            <CreditCard size={32} className="mx-auto text-gray-400 mb-3" />
             <h4 className="font-bold text-sm uppercase">No Active Salary Subscriptions</h4>
             <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto">
               You haven&apos;t hired any individual employees or unlocked governance control centers yet. Visit the Marketplace to hire workers.
