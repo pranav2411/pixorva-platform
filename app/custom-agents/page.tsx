@@ -562,24 +562,15 @@ export default function CustomAgentsPage() {
             
             {/* Column 1: Pixorva Details & Brand (Spans 2 columns on lg) */}
             <div className="lg:col-span-2 space-y-4">
-              <div className="flex items-center gap-2">
+              <div>
                 <span className={`text-2xl font-black uppercase tracking-wider text-white ${oswald.className}`}>
                   Pixorva
-                </span>
-                <span className="text-[10px] bg-[#ffc700] text-black font-black uppercase px-2 py-0.5 rounded">
-                  Enterprise
                 </span>
               </div>
 
               <p className="text-sm text-neutral-400 leading-relaxed max-w-md">
                 Pixorva is the autonomous AI workforce platform engineered for high-growth enterprises and modern operational teams. We design, deploy, and govern role-specialized AI agent swarms with dedicated vector memory, private VPC isolation, and proprietary tool connectors.
               </p>
-
-              {/* Status Indicator */}
-              <div className="pt-2 flex items-center gap-2 text-xs text-neutral-400">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="font-mono text-neutral-300 font-semibold">System Operational // 99.9% Uptime SLA</span>
-              </div>
 
               {/* Support Callout */}
               <div className="pt-2">
@@ -610,9 +601,8 @@ export default function CustomAgentsPage() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/custom-agents/onboarding" className="hover:text-[#ffc700] transition flex items-center gap-1.5">
-                    <span>Request Custom Agents</span>
-                    <span className="text-[9px] bg-[#ffc700]/20 text-[#ffc700] px-1.5 py-0.5 rounded font-bold">Intake</span>
+                  <Link href="/custom-agents/onboarding" className="hover:text-[#ffc700] transition">
+                    Request Custom Agents
                   </Link>
                 </li>
                 <li>
@@ -721,28 +711,8 @@ export default function CustomAgentsPage() {
           </div>
 
           {/* Bottom Sub-Footer Bar */}
-          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500">
-            <div className="flex items-center gap-3">
-              <span className="font-mono">© 2026 PIXORVA INC. ALL RIGHTS RESERVED.</span>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-4 sm:gap-6 font-medium">
-              <Link href="/privacy" className="hover:text-white transition">
-                Privacy Policy
-              </Link>
-              <span>•</span>
-              <Link href="/terms" className="hover:text-white transition">
-                Terms of Service
-              </Link>
-              <span>•</span>
-              <Link href="/docs" className="hover:text-white transition">
-                API Docs
-              </Link>
-              <span>•</span>
-              <a href="mailto:support@pixorva.org" className="text-[#ffc700] hover:underline font-bold">
-                support@pixorva.org
-              </a>
-            </div>
+          <div className="pt-8 text-center sm:text-left text-xs text-neutral-500 font-mono">
+            © 2026 PIXORVA INC. ALL RIGHTS RESERVED.
           </div>
         </div>
       </footer>
