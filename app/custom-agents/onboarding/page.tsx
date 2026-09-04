@@ -37,6 +37,12 @@ const inter = Inter({ subsets: ["latin"] });
 
 const TOTAL_STEPS = 8;
 
+const AGENTS_LIST = [
+  "Cy", "Devon", "Finn", "Gordon", "Holly", "Larry", 
+  "Lawson", "Marcus", "Pat", "Quinn", "Ruby", "Sam", 
+  "Sarah", "Stella", "Vic"
+];
+
 const ROLE_OPTIONS = [
   { 
     id: "support", 
@@ -114,6 +120,7 @@ export default function CustomAgentOnboardingPage() {
   const [submittedRequest, setSubmittedRequest] = useState<any | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [copiedRef, setCopiedRef] = useState<boolean>(false);
+  const [bgAgent, setBgAgent] = useState<string>("Devon");
 
   // Form Fields
   const [companyName, setCompanyName] = useState<string>("");
@@ -139,6 +146,12 @@ export default function CustomAgentOnboardingPage() {
   const [phone, setPhone] = useState<string>("");
   const [timeline, setTimeline] = useState<string>("Immediate (< 2 weeks)");
   const [additionalNotes, setAdditionalNotes] = useState<string>("");
+
+  // Select a random agent video background on load
+  useEffect(() => {
+    const randomIndex = Math.floor(Math.random() * AGENTS_LIST.length);
+    setBgAgent(AGENTS_LIST[randomIndex]);
+  }, []);
 
   // Clean domain for favicon
   const cleanDomain = React.useMemo(() => {
@@ -283,11 +296,26 @@ export default function CustomAgentOnboardingPage() {
   const progressPercent = step <= TOTAL_STEPS ? Math.round(((step - 1) / (TOTAL_STEPS - 1)) * 100) : 100;
 
   return (
-    <div className={`min-h-screen bg-[#0e0f12] text-white ${inter.className} flex flex-col selection:bg-[#ffc700] selection:text-black`}>
+    <div className={`min-h-screen bg-[#0e0f12] text-white ${inter.className} flex flex-col selection:bg-[#ffc700] selection:text-black relative overflow-x-hidden`}>
       
-      {/* Top Header */}
-      <header className="bg-[#141519]/90 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+      {/* Background Ambient Video */}
+      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none select-none">
+        <video
+          key={bgAgent}
+          src={`/GIF/${bgAgent}.mp4`}
+          poster={`/GIF/${bgAgent}.png`}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover opacity-25 scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0e0f12]/85 via-[#0e0f12]/75 to-[#0e0f12]/95 backdrop-blur-[1px]" />
+      </div>
+
+      {/* Top Header - Seamless Margin with max-w-7xl */}
+      <header className="bg-[#141519]/80 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between w-full">
           <div className="flex items-center gap-3">
             <button
               onClick={handleBack}
@@ -306,8 +334,12 @@ export default function CustomAgentOnboardingPage() {
           </div>
 
           {!submittedRequest && (
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-neutral-400">
+            <div className="flex items-center gap-3">
+              <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-neutral-400 bg-black/40 border border-white/10 px-2.5 py-1 rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Live Agent Sandbox
+              </span>
+              <span className="text-xs font-bold text-neutral-300 bg-white/5 border border-white/10 px-2.5 py-1 rounded-lg">
                 Step {step} of {TOTAL_STEPS}
               </span>
             </div>
@@ -325,9 +357,9 @@ export default function CustomAgentOnboardingPage() {
         )}
       </header>
 
-      {/* Main Sequential Form Content */}
-      <main className="flex-grow flex items-center justify-center py-10 px-6">
-        <div className="w-full max-w-2xl bg-[#141519] border border-white/15 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
+      {/* Main Sequential Form Content - Translucent Glassmorphism Card */}
+      <main className="flex-grow flex items-center justify-center py-10 px-6 relative z-10">
+        <div className="w-full max-w-2xl bg-[#141519]/75 backdrop-blur-2xl border border-white/15 rounded-3xl p-6 sm:p-10 shadow-[0_20px_60px_rgba(0,0,0,0.8)] relative overflow-hidden">
           
           {/* STEP 1: Company Name */}
           {step === 1 && (
@@ -356,7 +388,7 @@ export default function CustomAgentOnboardingPage() {
                     }
                   }}
                   autoFocus
-                  className="w-full bg-[#0e0f12] border border-white/20 rounded-2xl px-5 py-4 text-base text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700] transition"
+                  className="w-full bg-black/40 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-4 text-base text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700] focus:bg-black/60 transition"
                 />
               </div>
 
@@ -428,7 +460,7 @@ export default function CustomAgentOnboardingPage() {
                       }
                     }}
                     autoFocus
-                    className="w-full bg-[#0e0f12] border border-white/20 rounded-2xl pl-12 pr-5 py-4 text-base text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700] transition"
+                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 rounded-2xl pl-12 pr-5 py-4 text-base text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700] focus:bg-black/60 transition"
                   />
                 </div>
               </div>
@@ -476,7 +508,7 @@ export default function CustomAgentOnboardingPage() {
                   <select
                     value={industry}
                     onChange={(e) => setIndustry(e.target.value)}
-                    className="w-full bg-[#0e0f12] border border-white/20 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#ffc700]"
+                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#ffc700] focus:bg-black/60"
                   >
                     {INDUSTRIES.map((ind) => (
                       <option key={ind} value={ind} className="bg-[#141519]">
@@ -492,7 +524,7 @@ export default function CustomAgentOnboardingPage() {
                         value={customIndustryText}
                         onChange={(e) => setCustomIndustryText(e.target.value)}
                         autoFocus
-                        className="w-full bg-[#0e0f12] border border-[#ffc700]/50 rounded-xl px-4 py-3 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700]"
+                        className="w-full bg-black/40 backdrop-blur-md border border-[#ffc700]/50 rounded-xl px-4 py-3 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700] focus:bg-black/60"
                       />
                     </div>
                   )}
@@ -511,7 +543,7 @@ export default function CustomAgentOnboardingPage() {
                         className={`p-3 rounded-xl text-xs font-bold transition border ${
                           companySize === size
                             ? "bg-[#ffc700] text-black border-yellow-300 shadow-sm"
-                            : "bg-[#0e0f12] text-neutral-300 border-white/10 hover:border-white/25"
+                            : "bg-black/30 backdrop-blur-sm text-neutral-300 border-white/10 hover:border-white/25 hover:bg-black/50"
                         }`}
                       >
                         {size} people
@@ -565,11 +597,11 @@ export default function CustomAgentOnboardingPage() {
                       onClick={() => toggleRole(role.title)}
                       className={`p-3.5 rounded-2xl border cursor-pointer transition flex items-start gap-3 ${
                         isSelected
-                          ? "bg-[#ffc700]/10 border-[#ffc700] shadow-[0_0_12px_rgba(255,199,0,0.15)]"
-                          : "bg-[#0e0f12] border-white/10 hover:border-white/20"
+                          ? "bg-[#ffc700]/15 backdrop-blur-md border-[#ffc700] shadow-[0_0_12px_rgba(255,199,0,0.15)]"
+                          : "bg-black/40 backdrop-blur-md border-white/10 hover:border-white/25 hover:bg-black/60"
                       }`}
                     >
-                      <div className="p-2 rounded-xl bg-black/40 border border-white/10 shrink-0 flex items-center justify-center">
+                      <div className="p-2 rounded-xl bg-black/50 border border-white/10 shrink-0 flex items-center justify-center">
                         {role.icon}
                       </div>
                       <div className="flex-grow min-w-0">
@@ -597,7 +629,7 @@ export default function CustomAgentOnboardingPage() {
                     value={customRoleText}
                     onChange={(e) => setCustomRoleText(e.target.value)}
                     autoFocus
-                    className="w-full bg-[#0e0f12] border border-[#ffc700]/50 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700] transition"
+                    className="w-full bg-black/50 backdrop-blur-md border border-[#ffc700]/50 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700] focus:bg-black/70 transition"
                   />
                 </div>
               )}
@@ -660,7 +692,7 @@ export default function CustomAgentOnboardingPage() {
                       className={`px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
                         isSelected
                           ? "bg-[#ffc700] text-black shadow-md border border-yellow-300"
-                          : "bg-[#0e0f12] text-neutral-300 border border-white/10 hover:border-white/25"
+                          : "bg-black/40 backdrop-blur-sm text-neutral-300 border border-white/10 hover:border-white/25 hover:bg-black/60"
                       }`}
                     >
                       {isSelected && <Check size={14} />}
@@ -681,7 +713,7 @@ export default function CustomAgentOnboardingPage() {
                     value={customIntegrationText}
                     onChange={(e) => setCustomIntegrationText(e.target.value)}
                     autoFocus
-                    className="w-full bg-[#0e0f12] border border-[#ffc700]/50 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700] transition"
+                    className="w-full bg-black/50 backdrop-blur-md border border-[#ffc700]/50 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700] focus:bg-black/70 transition"
                   />
                 </div>
               )}
@@ -732,7 +764,7 @@ export default function CustomAgentOnboardingPage() {
                   value={bottlenecks}
                   onChange={(e) => setBottlenecks(e.target.value)}
                   autoFocus
-                  className="w-full bg-[#0e0f12] border border-white/20 rounded-2xl p-4 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700] transition"
+                  className="w-full bg-black/40 backdrop-blur-md border border-white/20 rounded-2xl p-4 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700] focus:bg-black/60 transition"
                 />
               </div>
 
@@ -779,7 +811,7 @@ export default function CustomAgentOnboardingPage() {
                   <select
                     value={dailyVolume}
                     onChange={(e) => setDailyVolume(e.target.value)}
-                    className="w-full bg-[#0e0f12] border border-white/20 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#ffc700]"
+                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#ffc700] focus:bg-black/60"
                   >
                     <option value="< 500 actions/day" className="bg-[#141519]">&lt; 500 actions/day</option>
                     <option value="1,000 - 5,000 actions/day" className="bg-[#141519]">1,000 - 5,000 actions/day</option>
@@ -795,7 +827,7 @@ export default function CustomAgentOnboardingPage() {
                   <select
                     value={hostingPreference}
                     onChange={(e) => setHostingPreference(e.target.value)}
-                    className="w-full bg-[#0e0f12] border border-white/20 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#ffc700]"
+                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#ffc700] focus:bg-black/60"
                   >
                     <option value="Managed Dedicated Cloud" className="bg-[#141519]">Pixorva Managed Dedicated Cloud (Fastest Setup)</option>
                     <option value="Hybrid VPC Peering" className="bg-[#141519]">Hybrid VPC Peering (AWS / GCP)</option>
@@ -849,7 +881,7 @@ export default function CustomAgentOnboardingPage() {
                     placeholder="Alex Morgan"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="w-full bg-[#0e0f12] border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700]"
+                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700] focus:bg-black/60 transition"
                     required
                   />
                 </div>
@@ -863,7 +895,7 @@ export default function CustomAgentOnboardingPage() {
                     placeholder="alex@company.com"
                     value={workEmail}
                     onChange={(e) => setWorkEmail(e.target.value)}
-                    className="w-full bg-[#0e0f12] border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700]"
+                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700] focus:bg-black/60 transition"
                     required
                   />
                 </div>
@@ -877,7 +909,7 @@ export default function CustomAgentOnboardingPage() {
                     placeholder="+1 (555) 019-2834"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full bg-[#0e0f12] border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700]"
+                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700] focus:bg-black/60 transition"
                   />
                 </div>
 
@@ -888,7 +920,7 @@ export default function CustomAgentOnboardingPage() {
                   <select
                     value={timeline}
                     onChange={(e) => setTimeline(e.target.value)}
-                    className="w-full bg-[#0e0f12] border border-white/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ffc700]"
+                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ffc700] focus:bg-black/60 transition"
                   >
                     <option value="Immediate (< 2 weeks)" className="bg-[#141519]">Immediate (&lt; 2 weeks)</option>
                     <option value="Within 1 Month" className="bg-[#141519]">Within 1 Month</option>
@@ -907,7 +939,7 @@ export default function CustomAgentOnboardingPage() {
                   placeholder="E.g. We require NDA before code review; need SOC2 reports; custom SSO (Okta/SAML)."
                   value={additionalNotes}
                   onChange={(e) => setAdditionalNotes(e.target.value)}
-                  className="w-full bg-[#0e0f12] border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700]"
+                  className="w-full bg-black/40 backdrop-blur-md border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#ffc700] focus:bg-black/60 transition"
                 />
               </div>
 
@@ -968,7 +1000,7 @@ export default function CustomAgentOnboardingPage() {
               </div>
 
               {/* Reference ID */}
-              <div className="bg-[#0e0f12] border border-white/15 rounded-2xl p-4 max-w-md mx-auto flex items-center justify-between">
+              <div className="bg-black/40 backdrop-blur-md border border-white/15 rounded-2xl p-4 max-w-md mx-auto flex items-center justify-between">
                 <div className="text-left">
                   <span className="text-[10px] uppercase font-bold text-neutral-400">Request Reference ID</span>
                   <div className="text-base font-black text-[#ffc700] tracking-wider">{submittedRequest.refId}</div>
@@ -983,7 +1015,7 @@ export default function CustomAgentOnboardingPage() {
               </div>
 
               {/* Specification Recap */}
-              <div className="bg-[#0e0f12] border border-white/10 rounded-2xl p-5 text-left max-w-lg mx-auto space-y-2.5 font-sans text-xs">
+              <div className="bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl p-5 text-left max-w-lg mx-auto space-y-2.5 font-sans text-xs">
                 <h5 className="font-bold uppercase tracking-wider text-neutral-400 border-b border-white/10 pb-2">
                   Submitted Specification Recap
                 </h5>
@@ -1002,7 +1034,7 @@ export default function CustomAgentOnboardingPage() {
               </div>
 
               {/* Required Support Callout */}
-              <div className="bg-[#18191f] border border-[#ffc700]/30 rounded-2xl p-5 max-w-lg mx-auto text-sm space-y-1">
+              <div className="bg-[#18191f]/80 backdrop-blur-md border border-[#ffc700]/30 rounded-2xl p-5 max-w-lg mx-auto text-sm space-y-1">
                 <div className="text-neutral-300">
                   A full copy has been dispatched to <strong className="text-white">{submittedRequest.workEmail}</strong>.
                 </div>
@@ -1024,7 +1056,7 @@ export default function CustomAgentOnboardingPage() {
               <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                 <Link
                   href="/custom-agents"
-                  className="bg-[#18191f] hover:bg-neutral-800 text-neutral-300 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition border border-white/10"
+                  className="bg-black/40 hover:bg-black/60 text-neutral-300 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition border border-white/10"
                 >
                   Return to Documentation
                 </Link>
