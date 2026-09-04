@@ -1,22 +1,50 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 // 1. Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
 
 export async function POST(req: Request) {
   try {
-    const { message } = await req.json();
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll();
+          },
+          setAll() {},
+        },
+      }
+    );
 
-    // 2. FIXED: Use "gemini-1.5-flash-latest" which is the stable alias
-    // If this still fails, try "gemini-pro"
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json(
+        { error: "Unauthorized: You must be logged in to build workflows." },
+        { status: 401 }
+      );
+    }
+
+    const { message } = await req.json();
+    if (!message || typeof message !== "string" || message.trim().length === 0) {
+      return NextResponse.json({ error: "Message prompt is required." }, { status: 400 });
+    }
+
+    // Limit input length to prevent prompt stuffing and token burn
+    const cleanMessage = message.trim().slice(0, 500);
+
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     // 3. The "System Prompt" - Teaching the AI how to behave
     const prompt = `
       You are the PIXORVA Architect. Your job is to listen to the user and generate a "Workflow Step" for their AI Agent.
       
-      User Input: "${message}"
+      User Input: "${cleanMessage}"
       
       You must return a STRICT JSON object (no markdown, no backticks) with two fields:
       1. "reply": A short, professional confirmation message (e.g., "I've added a LinkedIn Scraper to your workflow.").

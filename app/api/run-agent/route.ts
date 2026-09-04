@@ -61,9 +61,15 @@ export async function POST(req: Request) {
     }
 
     const cookieStore = await cookies();
+    // If authenticated via Bearer API key, use service role key scoped to that key's owner.
+    // For user browser sessions, strictly use ANON_KEY so Supabase RLS policies are enforced.
+    const supabaseKey = activeKeyToken
+      ? (process.env.DATABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+      : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.DATABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        supabaseKey,
         {
           cookies: {
             getAll() {
