@@ -233,7 +233,7 @@ export default function Home() {
         <div className="hidden lg:flex gap-8 items-center justify-center flex-grow mx-6 text-sm font-bold uppercase tracking-wide py-1 relative">
           <Link href="/employees" className="hover:text-yellow-600 transition">Marketplace</Link>
           <Link href="/pricing" className="hover:text-yellow-600 transition">Pricing</Link>
-          <Link href="/custom-agents" className="hover:text-yellow-600 transition text-[#ca8a04]">Custom Agents</Link>
+          <Link href="/custom-agents" className="hover:text-yellow-600 transition">Custom Agents</Link>
           <Link href="/studio" className="hover:text-yellow-600 transition">Studio</Link>
           <Link href="/workspace" className="hover:text-yellow-600 transition">Workspace</Link>
           <Link href="/governance" className="hover:text-yellow-600 transition">Governance</Link>
@@ -387,7 +387,7 @@ export default function Home() {
                 <Link href="/employees" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:text-yellow-600 transition">
                   <Briefcase size={16} /> AI Employees Marketplace
                 </Link>
-                <Link href="/custom-agents" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:text-yellow-600 transition text-[#ca8a04]">
+                <Link href="/custom-agents" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:text-yellow-600 transition">
                   <Cpu size={16} /> Custom AI Agents
                 </Link>
                 <Link href="/studio" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:text-yellow-600 transition">

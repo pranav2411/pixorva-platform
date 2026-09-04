@@ -202,7 +202,122 @@ export async function POST(req: Request) {
       </html>
     `;
 
-    // 3. Send email via Resend
+    // 3. Compose internal team notification email
+    const teamEmailHtml = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="utf-8" />
+        <title>New Custom Agent Lead: ${companyName}</title>
+      </head>
+      <body style="margin:0;padding:0;background-color:#090a0c;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#ffffff;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:620px;margin:20px auto;background:#141519;border:1px solid #27272a;border-radius:16px;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,0.6);">
+          <tr>
+            <td style="padding:28px 32px;background:linear-gradient(180deg,#1c1d24 0%,#141519 100%);border-bottom:1px solid #27272a;">
+              <div style="display:inline-block;background:#3b82f6;color:#ffffff;font-weight:900;font-size:11px;letter-spacing:1px;padding:4px 10px;border-radius:6px;text-transform:uppercase;margin-bottom:10px;">
+                NEW CUSTOM AGENT LEAD
+              </div>
+              <h1 style="margin:0;font-size:22px;font-weight:800;color:#ffffff;">
+                ${companyName} (${fullName})
+              </h1>
+              <p style="margin:6px 0 0 0;font-size:13px;color:#a1a1aa;">
+                Reference: <strong style="color:#ffc700;">${refId}</strong> • Timestamp: ${new Date().toUTCString()}
+              </p>
+            </td>
+          </tr>
+
+          <!-- Contact Details Callout -->
+          <tr>
+            <td style="padding:24px 32px;background:#18191f;border-bottom:1px solid #27272a;">
+              <h3 style="margin:0 0 12px 0;font-size:12px;font-weight:700;color:#ffc700;text-transform:uppercase;letter-spacing:1px;">
+                Direct Customer Contact Details
+              </h3>
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="font-size:13px;">
+                <tr>
+                  <td style="padding:4px 0;color:#a1a1aa;width:30%;">Contact Name:</td>
+                  <td style="padding:4px 0;color:#ffffff;font-weight:600;">${fullName}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 0;color:#a1a1aa;">Work Email:</td>
+                  <td style="padding:4px 0;"><a href="mailto:${workEmail}" style="color:#38bdf8;text-decoration:none;font-weight:700;">${workEmail}</a></td>
+                </tr>
+                ${phone ? `
+                <tr>
+                  <td style="padding:4px 0;color:#a1a1aa;">Phone / WhatsApp:</td>
+                  <td style="padding:4px 0;"><a href="tel:${phone}" style="color:#ffffff;text-decoration:none;font-weight:600;">${phone}</a></td>
+                </tr>` : ''}
+              </table>
+              <div style="margin-top:16px;">
+                <a href="mailto:${workEmail}?subject=Pixorva%20AI%20Workforce%20Architecture%20Proposal%20-%20${encodeURIComponent(companyName)}%20[${refId}]" style="display:inline-block;background:#ffc700;color:#000000;font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;padding:10px 18px;border-radius:8px;text-decoration:none;">
+                  Reply to Customer →
+                </a>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Requirements -->
+          <tr>
+            <td style="padding:28px 32px;">
+              <h3 style="margin:0 0 16px 0;font-size:12px;font-weight:700;color:#a1a1aa;text-transform:uppercase;letter-spacing:1px;">
+                Full Business Requirements
+              </h3>
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="font-size:13px;border-collapse:collapse;">
+                <tr style="border-bottom:1px solid #27272a;">
+                  <td style="padding:8px 0;color:#71717a;width:35%;">Company</td>
+                  <td style="padding:8px 0;color:#ffffff;font-weight:600;">${companyName}</td>
+                </tr>
+                ${website ? `
+                <tr style="border-bottom:1px solid #27272a;">
+                  <td style="padding:8px 0;color:#71717a;">Website</td>
+                  <td style="padding:8px 0;"><a href="${website.startsWith('http') ? website : 'https://' + website}" target="_blank" style="color:#38bdf8;text-decoration:none;">${website}</a></td>
+                </tr>` : ''}
+                <tr style="border-bottom:1px solid #27272a;">
+                  <td style="padding:8px 0;color:#71717a;">Industry</td>
+                  <td style="padding:8px 0;color:#ffffff;">${industry}</td>
+                </tr>
+                <tr style="border-bottom:1px solid #27272a;">
+                  <td style="padding:8px 0;color:#71717a;">Headcount</td>
+                  <td style="padding:8px 0;color:#ffffff;">${companySize}</td>
+                </tr>
+                <tr style="border-bottom:1px solid #27272a;">
+                  <td style="padding:8px 0;color:#71717a;vertical-align:top;">Requested Roles</td>
+                  <td style="padding:8px 0;">${rolesHtml}</td>
+                </tr>
+                <tr style="border-bottom:1px solid #27272a;">
+                  <td style="padding:8px 0;color:#71717a;vertical-align:top;">Integrations</td>
+                  <td style="padding:8px 0;">${integrationsHtml}</td>
+                </tr>
+                <tr style="border-bottom:1px solid #27272a;">
+                  <td style="padding:8px 0;color:#71717a;">Daily Volume</td>
+                  <td style="padding:8px 0;color:#ffffff;">${dailyVolume}</td>
+                </tr>
+                <tr style="border-bottom:1px solid #27272a;">
+                  <td style="padding:8px 0;color:#71717a;">Hosting Preference</td>
+                  <td style="padding:8px 0;color:#ffffff;">${hostingPreference}</td>
+                </tr>
+                <tr style="border-bottom:1px solid #27272a;">
+                  <td style="padding:8px 0;color:#71717a;">Target Timeline</td>
+                  <td style="padding:8px 0;color:#ffffff;">${timeline}</td>
+                </tr>
+                ${bottlenecks ? `
+                <tr style="border-bottom:1px solid #27272a;">
+                  <td style="padding:10px 0;color:#71717a;vertical-align:top;">Core Bottlenecks</td>
+                  <td style="padding:10px 0;color:#e4e4e7;line-height:1.5;">${bottlenecks}</td>
+                </tr>` : ''}
+                ${additionalNotes ? `
+                <tr>
+                  <td style="padding:10px 0;color:#71717a;vertical-align:top;">Technical Notes</td>
+                  <td style="padding:10px 0;color:#e4e4e7;line-height:1.5;">${additionalNotes}</td>
+                </tr>` : ''}
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+
+    // 4. Send email to Customer
     let emailResult = null;
     try {
       emailResult = await resend.emails.send({
@@ -212,8 +327,7 @@ export async function POST(req: Request) {
         html: emailHtml
       });
     } catch (emailErr) {
-      console.warn('Resend email dispatch attempt failed:', emailErr);
-      // Fallback: try onboarding address if domain sending fails on test mode
+      console.warn('Resend customer email dispatch failed:', emailErr);
       try {
         emailResult = await resend.emails.send({
           from: 'onboarding@resend.dev',
@@ -222,7 +336,32 @@ export async function POST(req: Request) {
           html: emailHtml
         });
       } catch (fallbackErr) {
-        console.warn('Fallback Resend attempt failed too:', fallbackErr);
+        console.warn('Fallback customer Resend attempt failed too:', fallbackErr);
+      }
+    }
+
+    // 5. Send customer details and requirements to no-reply@pixorva.com
+    let teamEmailResult = null;
+    try {
+      teamEmailResult = await resend.emails.send({
+        from: 'Pixorva Lead Intake <info@pixorva.com>',
+        to: 'no-reply@pixorva.com',
+        replyTo: workEmail,
+        subject: `[NEW LEAD] Custom AI Agent Request: ${companyName} (${fullName}) [${refId}]`,
+        html: teamEmailHtml
+      });
+    } catch (teamErr) {
+      console.warn('Resend team notification failed:', teamErr);
+      try {
+        teamEmailResult = await resend.emails.send({
+          from: 'onboarding@resend.dev',
+          to: 'no-reply@pixorva.com',
+          replyTo: workEmail,
+          subject: `[NEW LEAD] Custom AI Agent Request: ${companyName} (${fullName}) [${refId}]`,
+          html: teamEmailHtml
+        });
+      } catch (fallbackTeamErr) {
+        console.warn('Fallback team Resend attempt failed too:', fallbackTeamErr);
       }
     }
 
@@ -231,6 +370,7 @@ export async function POST(req: Request) {
       refId,
       message: 'Request is created. Someone from our team will contact you soon with all details you have filled. For more, contact support@pixorva.org.',
       emailSent: !!emailResult,
+      teamNotified: !!teamEmailResult,
       record: savedRecord
     });
   } catch (error: any) {
