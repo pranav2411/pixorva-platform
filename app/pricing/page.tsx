@@ -172,12 +172,30 @@ export default function PricingPage() {
                   <ul className="space-y-4 mt-6 text-sm font-black text-black">
                       <li className="flex items-center justify-center gap-2"><Zap size={18} fill="black"/> Availability: 24/7/365</li>
                       <li className="flex items-center justify-center gap-2"><Zap size={18} fill="black"/> Speed: Instant Results</li>
-                      <li className="flex items-center justify-center gap-2"><Zap size={18} fill="black"/> Skills: 15+ Experts</li>
+                      <li className="flex items-center justify-center gap-2"><Zap size={18} fill="black"/> Skills: Any 4 AI Specialists</li>
                       <li className="flex items-center justify-center gap-2"><Zap size={18} fill="black"/> Drama: Zero. None.</li>
                   </ul>
+
+                  {/* Terms & Privacy Consent Checkbox */}
+                  <div className="mt-6 flex items-start gap-2.5 text-[11px] font-semibold text-black/90 bg-white/80 border-2 border-black p-3 rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-left w-full">
+                    <input
+                      type="checkbox"
+                      id="pixorva-box-agree"
+                      checked={agreeCheckout}
+                      onChange={(e) => setAgreeCheckout(e.target.checked)}
+                      className="mt-0.5 cursor-pointer w-3.5 h-3.5 border-2 border-black rounded focus:ring-0 accent-black shrink-0"
+                    />
+                    <label htmlFor="pixorva-box-agree" className="cursor-pointer select-none leading-snug text-black">
+                      I agree to Pixorva&apos;s{" "}
+                      <Link href="/terms" target="_blank" className="underline font-bold hover:text-yellow-700">Terms of Service</Link>
+                      {" "}&{" "}
+                      <Link href="/privacy" target="_blank" className="underline font-bold hover:text-yellow-700">Privacy Policy</Link>.
+                    </label>
+                  </div>
+
                   <button 
                     onClick={() => handleSubscribe('growth_pro', 4999)}
-                    className="mt-8 w-full bg-black text-white py-3 rounded-lg font-bold uppercase hover:bg-white hover:text-black hover:border-2 hover:border-black transition"
+                    className="mt-4 w-full bg-black text-white py-3 rounded-lg font-bold uppercase hover:bg-white hover:text-black hover:border-2 hover:border-black transition shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-0.5"
                   >
                       Join the Revolution
                   </button>
